@@ -11,6 +11,8 @@ import { PlayersDetailComponent } from './players/players-detail/players-detail.
 import { AddPlayerComponent } from './players/add-player/add-player.component';
 import { PlayerEditComponent } from './players/player-edit/player-edit.component';
 import { TeamComponent } from './team/team.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { TeamComponent } from './team/team.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

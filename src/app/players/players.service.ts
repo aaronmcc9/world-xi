@@ -8,16 +8,22 @@ import { Player } from "./player.model";
 })
 
 export class PlayersService {
-    player = new Subject<Player>();
+    players: Player[] = [];
+    playersChanged = new Subject<Player[]>();
 
     constructor(private http: HttpClient) { }
 
     createPlayer(player: Player) {
-        return this.http.post<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players.json',
+        return this.http.post<{name:string}>('https://world-xi-app-default-rtdb.firebaseio.com/players.json',
             player)
             .pipe(catchError(errorRes => {
                 return throwError(errorRes.error.error)
-            }));
+            }),
+                tap(key => {
+                    console.log(key);
+                    this.players.push({ ...player, id: key.name});
+                    this.playersChanged.next(this.players.slice());
+                }));
     }
 
     fetchAllPlayers() {
@@ -27,13 +33,38 @@ export class PlayersService {
                     let players: Player[] = [];
 
                     for (let key in res) {
-                        if (res.hasOwnProperty(key))
-                        {
-                            players.push({...res[key]});
+                        if (res.hasOwnProperty(key)) {
+                            players.push({ ...res[key], id: key });
                         }
                     }
-
+                    this.players = players;
                     return players;
                 }));
+    }
+
+    fetchPlayerById(id: string) {
+        return this.http.get<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + id + ".json")
+            .pipe(catchError(errorRes => {
+                console.log(errorRes);
+                return throwError(errorRes.message)
+            }),
+                map(res => {
+
+                    return { ...res, id: id };
+                }));
+    }
+
+    deletePlayer(id: string) {
+        return this.http.delete<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + id + ".json")
+            .pipe(catchError(errorRes => { return throwError(errorRes.message) }),
+                tap(res => {
+
+                    this.players = this.players.filter(player => {
+                        return player.id != id;
+                    });
+
+                    this.playersChanged.next(this.players.slice())
+                })
+            );
     }
 }

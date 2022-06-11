@@ -1,0 +1,38 @@
+.right-nav{
+    display: flex;
+    justify-content: center;
+}
+
+h2{
+    padding-top: 1em;
+}
+
+img{
+    width: 40em;
+    height: 35vh;
+    margin: 1em 0;
+}
+
+.data-container{
+    padding: 1em 4em;
+}
+.display-text{
+    font-weight: 600;
+    font-size: 1.5em;
+    text-align: left;
+    width:100%;
+}
+
+.player-text{
+    float: right;
+    font-weight: 400;
+}
+
+.btn-data{
+    float: right;
+}
+
+
+button{
+    margin: 2em .2em;
+}

@@ -41,7 +41,6 @@ export class AddPlayerComponent implements OnInit {
         }
       })
 
-    console.log(this.form.value);
     this.onClear();
   }
 

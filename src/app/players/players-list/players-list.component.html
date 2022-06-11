@@ -26,10 +26,16 @@
                     <td>{{player.country}}</td>
                     <td>{{player.position}}</td>
                     <td>{{player.age}}</td>
-                    <td *ngIf="player.isSelected" class="icon-center" ><fa-icon [icon]="selectedIcon"></fa-icon></td>
-                    <td *ngIf="!player.isSelected" class="icon-center"><fa-icon class="absent-colour" [icon]="absentIcon"></fa-icon></td>
-                    <td><img class="table-img-container" src="{{player.imagePath}}"/></td>
-                    <td class="icon-center"><fa-icon class="pointer" [icon]="openIcon"></fa-icon></td>
+                    <td *ngIf="player.isSelected" class="icon-center">
+                        <fa-icon [icon]="selectedIcon"></fa-icon>
+                    </td>
+                    <td *ngIf="!player.isSelected" class="icon-center">
+                        <fa-icon class="absent-colour" [icon]="absentIcon"></fa-icon>
+                    </td>
+                    <td><img class="table-img-container" src="{{player.imagePath}}" /></td>
+                    <td class="icon-center">
+                        <fa-icon class="pointer" routerLink="{{player.id}}" [icon]="openIcon"></fa-icon>
+                    </td>
                 </tr>
             </tbody>
         </table>

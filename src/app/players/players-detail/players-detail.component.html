@@ -1,3 +1,38 @@
-<div class="container">
-    <h2 class="text-center">Player Detail</h2>
+<div class="row">
+    <div class="col-xs-12 right-nav">
+
+        <div *ngIf="error && !isLoading" class="alert alert-danger col-xs-6 text-center">
+            <label>An Error has Occurred</label>
+            <p>{{error}}</p>
+        </div>
+        <div *ngIf="!error && !isLoading">
+            <h2 class="text-center">{{player.firstName}} {{player.lastName}} </h2>
+
+            <img src="{{player.imagePath}}" />
+
+            <div class="data-container">
+                <div class="form-group">
+                    <label class="display-text">Club: <span class="player-text">{{player.club}}</span></label>
+                </div>
+                <div class="form-group">
+                    <label class="display-text">Country: <span class="player-text">{{player.country}}</span></label>
+                </div>
+                <div class="form-group">
+                    <label class="display-text">Position: <span class="player-text">{{player.position}}</span></label>
+                </div>
+                <div class="form-group">
+                    <label class="display-text">Age: <span class="player-text">{{player.age}}</span></label>
+                </div>
+            </div>
+
+            <div class="data-container">
+                <button class="btn btn-primary float-right" type="button" routerLink="team">Team Selection</button>
+
+                <div class="btn-data">
+                    <button class="btn btn-success" type="button" routerLink="../{{player.id}}/edit">Edit</button>
+                    <button class="btn btn-danger" (click)="onDeletePlayer()" type="button">Delete</button>
+                </div> 
+            </div>
+        </div>
+    </div>
 </div>

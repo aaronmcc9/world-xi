@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
+import { faCircleCheck, faXmark, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-players-list',
@@ -13,6 +14,10 @@ export class PlayersListComponent implements OnInit {
   error = null;
   isLoading = false;
 
+  //icons
+  selectedIcon = faCircleCheck;
+  absentIcon = faXmark;
+  openIcon = faUpRightFromSquare
 
   constructor(private playerService: PlayersService, private router: Router) { }
 
@@ -22,13 +27,12 @@ export class PlayersListComponent implements OnInit {
     this.playerService.fetchAllPlayers()
       .subscribe({
         next: responseData => {
-          this.players = <Player[]>responseData;
+          this.players = responseData;
           this.isLoading = false;
         },
         error: errorMessage => {
           this.isLoading = false;
           this.error = errorMessage;
-          console.log("error", errorMessage);
         }
       });
   }

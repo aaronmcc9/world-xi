@@ -1,6 +1,7 @@
 export class Player{
 
-    constructor(private firstName: string, private lastName: string,
-        private age: number, private club: string, private nationality: string,
-        private position: string, private imagePath: string){}
+    constructor(public firstName: string, public lastName: string,
+        public age: number, public club: string, public country: string,
+        public position: string, public imagePath: string,
+        public isSelected: boolean = false){}
 }

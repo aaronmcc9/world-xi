@@ -1,0 +1,23 @@
+.table-mg{
+    margin-top: 4em;
+}
+.icon-center{
+    text-align: center;
+}
+
+.absent-colour{
+    color: #0096FF;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+.table-img-container{
+    width: 15em;
+    height: 15vh;
+}
+
+td{
+    padding: 1em;
+}

@@ -14,14 +14,14 @@ export class PlayersService {
     constructor(private http: HttpClient) { }
 
     createPlayer(player: Player) {
-        return this.http.post<{name:string}>('https://world-xi-app-default-rtdb.firebaseio.com/players.json',
+        return this.http.post<{ name: string }>('https://world-xi-app-default-rtdb.firebaseio.com/players.json',
             player)
             .pipe(catchError(errorRes => {
                 return throwError(errorRes.error.error)
             }),
                 tap(key => {
                     console.log(key);
-                    this.players.push({ ...player, id: key.name});
+                    this.players.push({ ...player, id: key.name });
                     this.playersChanged.next(this.players.slice());
                 }));
     }
@@ -67,4 +67,10 @@ export class PlayersService {
                 })
             );
     }
+
+    // updatePlayer(player: Player) {
+    //     return this.http.put<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + player.id + ".json",
+    //         { player })
+    //         .pipe(catchError(errorRes => { return throwError(errorRes.message) }));
+    // }
 }

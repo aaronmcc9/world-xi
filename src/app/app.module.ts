@@ -8,7 +8,6 @@ import { PlayersComponent } from './players/players.component';
 import { PlayersListComponent } from './players/players-list/players-list.component';
 import { PlayersDetailComponent } from './players/players-detail/players-detail.component';
 import { AddPlayerComponent } from './players/add-player/add-player.component';
-import { PlayerEditComponent } from './players/player-edit/player-edit.component';
 import { TeamComponent } from './team/team.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule} from '@angular/common/http';
@@ -23,7 +22,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     PlayersListComponent,
     PlayersDetailComponent,
     AddPlayerComponent,
-    PlayerEditComponent,
     TeamComponent
   ],
   imports: [

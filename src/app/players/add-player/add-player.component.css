@@ -5,3 +5,9 @@ button{
 .right-nav{
     padding-left: 7em;
 }
+
+img{
+    width: 35em;
+    height: 26vh;
+    margin: 1em;
+}

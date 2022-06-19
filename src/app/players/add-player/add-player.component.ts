@@ -14,7 +14,7 @@ export class AddPlayerComponent implements OnInit {
   player: Player = <Player>{}
   id: string = '';
   isLoading = false;
-  error = null;
+  error = '';
   form: FormGroup = new FormGroup({});
 
 
@@ -32,6 +32,7 @@ export class AddPlayerComponent implements OnInit {
       this.editMode = true;
 
       if (this.playerService.players != null && this.playerService.players.length > 0) {
+        
         const playerToEdit = this.playerService.players.find((player) => {
           return player.id === this.id;
         })
@@ -48,7 +49,6 @@ export class AddPlayerComponent implements OnInit {
       this.editMode = false;
     }
 
-    console.log("ger", this.player);
     this.form = new FormGroup({
       firstName: new FormControl(this.player ? this.player.firstName : '', Validators.required),
       lastName: new FormControl(this.player ? this.player.lastName : '', Validators.required),
@@ -81,13 +81,14 @@ export class AddPlayerComponent implements OnInit {
   onUpdate(){
     this.isLoading = true;
 
-    this.playerService.updatePlayer(this.form.value)
+    this.playerService.updatePlayer({...this.form.value, id:this.player.id})
       .subscribe({
-        next: ( )=>{
+        next: (res)=>{
+          console.log(res);
           this.isLoading = false;
           this.router.navigate(['']);
         },
-        error: errorMessage => {
+        error:(errorMessage: string) => {
           this.isLoading = false;
           this.error = errorMessage;
         }

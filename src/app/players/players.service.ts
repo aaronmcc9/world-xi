@@ -38,7 +38,7 @@ export class PlayersService {
                         }
                     }
                     this.players = players;
-                    return players;
+                    return players.slice();
                 }));
     }
 
@@ -68,9 +68,22 @@ export class PlayersService {
             );
     }
 
-    // updatePlayer(player: Player) {
-    //     return this.http.put<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + player.id + ".json",
-    //         { player })
-    //         .pipe(catchError(errorRes => { return throwError(errorRes.message) }));
-    // }
+    updatePlayer(player: Player) {
+        console.log(player.id)
+        return this.http.put<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + player.id + ".json",
+            player)
+            .pipe(catchError(errorRes => { return throwError(errorRes.message) }),
+                tap(() => {
+
+                    const index = this.players.findIndex((playerObj) => {
+                        return playerObj.id == player.id
+                    });
+
+                    if (index != -1) {
+                        this.players[index] = player
+                    }
+                    
+                    this.playersChanged.next(this.players.slice());
+                }));
+    }
 }

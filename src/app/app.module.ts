@@ -22,7 +22,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     PlayersListComponent,
     PlayersDetailComponent,
     AddPlayerComponent,
-    TeamComponent
+    TeamComponent,
   ],
   imports: [
     BrowserModule,

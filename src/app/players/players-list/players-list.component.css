@@ -18,7 +18,15 @@
     height: 15vh;
 }
 
+
 .table>tbody>tr>td {
     vertical-align: middle;
     padding: 1.5em;
+}
+
+table.table.table-bordered.table-striped.table-mg{
+    display:table-caption;
+    overflow-y:auto;
+    overflow-x:hidden;
+    height: 62.5vh;
 }

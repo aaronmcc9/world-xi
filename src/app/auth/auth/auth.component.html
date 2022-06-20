@@ -1,1 +1,27 @@
-<p>auth works!</p>
+<div class="row">
+    <div class="col-xs-12">
+        <h1>World XI <fa-icon [icon]="ball"></fa-icon></h1>
+        <div class="col-xs-3"></div>
+        <div class="col-xs-6">
+            <h2>{{isLogin ? "Login" : "Register"}}</h2>
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input class="form-control" type="text" formControlName="email" id="email">
+                    <span *ngIf="!form.get('email')!.valid && form.get('email')!.touched">Email is required</span>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control " type="password" formControlName="password" id="password">
+                    <span *ngIf="!form.get('password')!.valid && form.get('password')!.touched">Password is required</span>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn btn-primary">{{isLogin ? "Authenticate" : "Create"}}</button>
+                    <button class="btn btn-default" (click)="onSwitchMode()">{{isLogin ? "Switch to Register" : "Switch To Login"}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-xs-3"></div>
+</div>

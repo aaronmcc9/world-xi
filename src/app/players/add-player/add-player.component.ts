@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../player.model';
@@ -24,6 +24,16 @@ export class AddPlayerComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.form = new FormGroup({
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
+      age: new FormControl(16, [Validators.required, Validators.min(16)]),
+      position: new FormControl('', Validators.required),
+      club: new FormControl('', Validators.required),
+      country: new FormControl('', Validators.required),
+      imagePath: new FormControl('')
+    });
+
     this.activatedRoute.params.subscribe((params) => {
       this.id = params['id'];
     })
@@ -32,13 +42,20 @@ export class AddPlayerComponent implements OnInit {
       this.editMode = true;
 
       if (this.playerService.players != null && this.playerService.players.length > 0) {
-        
+
         const playerToEdit = this.playerService.players.find((player) => {
           return player.id === this.id;
         })
 
-        playerToEdit ? this.player = playerToEdit :
+        console.log(playerToEdit);
+
+        if(playerToEdit){
+          this.player = playerToEdit;
+          this.onSetForm();
+        } 
+        else{
           this.onFetchPlayer(this.id);
+        }
       }
       else {
         this.onFetchPlayer(this.id);
@@ -48,17 +65,6 @@ export class AddPlayerComponent implements OnInit {
     else {
       this.editMode = false;
     }
-
-    this.form = new FormGroup({
-      firstName: new FormControl(this.player ? this.player.firstName : '', Validators.required),
-      lastName: new FormControl(this.player ? this.player.lastName : '', Validators.required),
-      age: new FormControl(this.player ? this.player.age : 16, [Validators.required, Validators.min(16)]),
-      position: new FormControl(this.player ? this.player.position : '', Validators.required),
-      club: new FormControl(this.player ? this.player.club : '', Validators.required),
-      country: new FormControl(this.player ? this.player.country : '', Validators.required),
-      imagePath: new FormControl(this.player ? this.player.imagePath : '')
-    });
-
   }
 
   onCreate() {
@@ -78,17 +84,16 @@ export class AddPlayerComponent implements OnInit {
     this.onClear();
   }
 
-  onUpdate(){
+  onUpdate() {
     this.isLoading = true;
 
-    this.playerService.updatePlayer({...this.form.value, id:this.player.id})
+    this.playerService.updatePlayer({ ...this.form.value, id: this.player.id })
       .subscribe({
-        next: (res)=>{
-          console.log(res);
+        next: (res) => {
           this.isLoading = false;
           this.router.navigate(['']);
         },
-        error:(errorMessage: string) => {
+        error: (errorMessage: string) => {
           this.isLoading = false;
           this.error = errorMessage;
         }
@@ -104,13 +109,26 @@ export class AddPlayerComponent implements OnInit {
     this.playerService.fetchPlayerById(id)
       .subscribe({
         next: res => {
-          console.log(res);
           this.player = res;
+          this.onSetForm();
         },
         error: errorMessage => {
           this.isLoading = false;
           this.error = errorMessage;
         }
       });
+  }
+
+  onSetForm() {
+    console.log("nd", this.player);
+    this.form.setValue({
+      firstName: this.player ? this.player.firstName : '',
+      lastName: this.player ? this.player.lastName : '',
+      age: this.player ? this.player.age : 16,
+      position: this.player ? this.player.position : '',
+      club: this.player ? this.player.club : '',
+      country: this.player ? this.player.country : '',
+      imagePath: this.player ? this.player.imagePath : ''
+    });
   }
 }

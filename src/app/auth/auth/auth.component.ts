@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
-import { AuthService } from './auth.service';
+import { Observable, Subscription } from 'rxjs';
+import { AuthResponseData, AuthService } from './auth.service';
+import { User } from './user.model';
 
 @Component({
   selector: 'app-auth',
@@ -9,13 +12,14 @@ import { AuthService } from './auth.service';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit {
+  error = '';
   isLogin = true;
-  form = new FormGroup({});  
+  form = new FormGroup({});
 
   //icons
   ball = faFutbolBall;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
 
@@ -25,16 +29,32 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  onSubmit(){
-    if(this.isLogin){
-      this.authService.login(this.form.value.email, this.form.value.password);
+  onSubmit() {
+
+    let authObservable: Observable<AuthResponseData>;
+
+    if (this.isLogin) {
+      authObservable = this.authService.login(this.form.value.email, this.form.value.password);
     }
-    else{
-      this.authService.createAccount(this.form.value.email, this.form.value.password)
+    else {
+      authObservable = this.authService.createAccount(this.form.value.email, this.form.value.password)
     }
+
+    authObservable.subscribe({
+      next: responseData => {
+        console.log("response", responseData);
+        this.router.navigate(['players']);
+      },
+      error: errorMessage => {
+        this.error = errorMessage;
+        console.log("ERROR", errorMessage);
+      }
+    })
+
+    this.form.reset();
   }
 
-  onSwitchMode(){
+  onSwitchMode() {
     this.isLogin = !this.isLogin;
   }
 

@@ -10,8 +10,11 @@ import { PlayersDetailComponent } from './players/players-detail/players-detail.
 import { AddPlayerComponent } from './players/add-player/add-player.component';
 import { TeamComponent } from './team/team.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ErrorComponent } from './error/error.component';
+import { PlayersService } from './players/players.service';
+import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     PlayersDetailComponent,
     AddPlayerComponent,
     TeamComponent,
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,7 +35,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     HttpClientModule,
     FontAwesomeModule
   ],
-  providers: [],
+  providers: [PlayersService,
+  {provide: HTTP_INTERCEPTORS,
+    useClass:AuthInterceptorService,
+    multi:true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -30,3 +30,7 @@ table.table.table-bordered.table-striped.table-mg{
     overflow-x:hidden;
     height: 62.5vh;
 }
+
+::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}

@@ -2,10 +2,7 @@
     <div class="right-nav">
         <form [formGroup]="form" (ngSubmit)="editMode ? onUpdate() : onCreate()">
 
-            <div *ngIf="error" class="alert alert-danger">
-                <h4>An Error Occurred!</h4>
-                <p>{{error}}</p>
-            </div>
+            <app-error *ngIf="error" [message]="error"></app-error>
 
             <div class="row">
                 <button *ngIf="!editMode" class="btn btn-success" type="submit">Add</button>

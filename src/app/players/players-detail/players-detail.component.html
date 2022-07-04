@@ -1,10 +1,7 @@
 <div class="row">
     <div class="col-xs-9 right-nav">
 
-        <div *ngIf="error && !isLoading" class="alert alert-danger col-xs-6 text-center">
-            <label>An Error has Occurred</label>
-            <p>{{error}}</p>
-        </div>
+        <app-error *ngIf="error && !isLoading" [(message)]=" error"></app-error>
         <div *ngIf="!error && !isLoading">
             <h2 class="text-center">{{player.firstName}} {{player.lastName}} </h2>
 

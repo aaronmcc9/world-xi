@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 export class PlayersListComponent implements OnInit, OnDestroy {
   players: Player[] = [];
   subscription: Subscription = new Subscription();
-  error = null;
+  error = '';
   isLoading = false;
 
   //icons

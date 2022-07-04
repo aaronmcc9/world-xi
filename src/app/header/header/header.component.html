@@ -10,12 +10,12 @@
 
         <div class="navbar-collapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
             <ul class="nav navbar-nav">
-                <li routerLinkActive="active"><a routerLink="/players">Players</a></li>
-                <li routerLinkActive="active"><a routerLink="/team">Team</a></li>
-                <li routerLinkActive="active"><a routerLink="/auth">Login</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">Players</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">Team</a></li>
+                <li *ngIf="!isAuthenticated" routerLinkActive="active"><a routerLink="/auth">Login</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a>Logout</a></li>
+                <li *ngIf="isAuthenticated"><a (click)="logout()">Logout</a></li>
             </ul>
         </div>
     </div>

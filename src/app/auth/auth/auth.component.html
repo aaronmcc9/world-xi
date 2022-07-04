@@ -1,4 +1,5 @@
 <div class="row">
+    <app-error *ngIf="error" [(message)]="error"></app-error>
     <div class="col-xs-12">
         <h1>World XI <fa-icon [icon]="ball"></fa-icon></h1>
         <div class="col-xs-3"></div>
@@ -18,7 +19,7 @@
 
                 <div class="btn-container">
                     <button class="btn btn-primary">{{isLogin ? "Authenticate" : "Create"}}</button>
-                    <button class="btn btn-default" (click)="onSwitchMode()">{{isLogin ? "Switch to Register" : "Switch To Login"}}</button>
+                    <button class="btn btn-default" type="button" (click)="onSwitchMode()">{{isLogin ? "Switch to Register" : "Switch To Login"}}</button>
                 </div>
             </form>
         </div>

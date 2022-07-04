@@ -1,0 +1,10 @@
+.error-pos{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button{
+    margin-top: .5em;
+    padding: .2em 2em;
+}

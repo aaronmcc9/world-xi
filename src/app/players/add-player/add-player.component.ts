@@ -120,7 +120,6 @@ export class AddPlayerComponent implements OnInit {
   }
 
   onSetForm() {
-    console.log("nd", this.player);
     this.form.setValue({
       firstName: this.player ? this.player.firstName : '',
       lastName: this.player ? this.player.lastName : '',

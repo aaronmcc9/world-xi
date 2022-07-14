@@ -32,7 +32,6 @@ export class AuthService {
             })
             .pipe(catchError((error: HttpErrorResponse) => throwError(error.message)),
                 tap(user => {
-                    console.log(user);
                     this.setUser(user);
                 }));
     }
@@ -66,18 +65,18 @@ export class AuthService {
                 email: string,
                 id: string,
                 _authToken: string,
-                _expiryDate: string
+                _expiresIn: string
             } = JSON.parse(storedDetails);
 
             const storedUser = new User(userData.email,
                 userData.id,
                 userData._authToken,
-                new Date(userData._expiryDate));
+                new Date(userData._expiresIn));
 
             if(storedUser.authToken){
                 this.user.next(storedUser);
 
-                const currentExpiryTime = new Date(userData._expiryDate).getTime() 
+                const currentExpiryTime = new Date(userData._expiresIn).getTime() 
                     - new Date().getTime();
                 
                 this.autoLogout(currentExpiryTime);
@@ -87,6 +86,7 @@ export class AuthService {
 
     autoLogout(expirationTime: number) {
          this.tokenExpirationEvent = setTimeout(() =>{
+            console.log("here", expirationTime);
             this.logout();
         }, expirationTime)
     }

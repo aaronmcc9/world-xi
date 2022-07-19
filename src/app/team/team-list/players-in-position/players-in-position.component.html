@@ -1,3 +1,7 @@
 <div *ngFor="let player of players">
-    <label>{{player.firstName}</label>
+    <div >
+        <label>{{player.firstName}} {{player.lastName}}</label>
+        <fa-icon class="pointer" [icon]="selectIcon"></fa-icon>
+    </div>
+    <hr>
 </div>

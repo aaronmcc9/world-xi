@@ -6,3 +6,7 @@ body{
 button{
     margin: .2em
 }
+
+.pointer{
+    cursor: pointer;;
+}

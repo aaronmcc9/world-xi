@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Position } from '../player-position';
 import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
 
@@ -12,6 +13,7 @@ import { PlayersService } from '../players.service';
 export class AddPlayerComponent implements OnInit {
   editMode = false;
   player: Player = <Player>{}
+  positionTypes: string[] = []
   id: string = '';
   isLoading = false;
   error = '';
@@ -38,6 +40,11 @@ export class AddPlayerComponent implements OnInit {
       this.id = params['id'];
     })
 
+    this.positionTypes = <string[]>Object.values(Position)
+      .filter(p => {
+        return typeof p === 'string';
+      })
+
     if (this.id) {
       this.editMode = true;
 
@@ -51,6 +58,7 @@ export class AddPlayerComponent implements OnInit {
 
         if(playerToEdit){
           this.player = playerToEdit;
+          console.log("playerToEdit", playerToEdit);
           this.onSetForm();
         } 
         else{
@@ -120,11 +128,12 @@ export class AddPlayerComponent implements OnInit {
   }
 
   onSetForm() {
+
     this.form.setValue({
       firstName: this.player ? this.player.firstName : '',
       lastName: this.player ? this.player.lastName : '',
       age: this.player ? this.player.age : 16,
-      position: this.player ? this.player.position : '',
+      position: this.player ? this.player.position : Position.Goalkeeper,
       club: this.player ? this.player.club : '',
       country: this.player ? this.player.country : '',
       imagePath: this.player ? this.player.imagePath : ''

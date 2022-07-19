@@ -1,3 +1,5 @@
+import { Position } from "./player-position";
+
 export class Player{
 
     constructor(public firstName: string, public lastName: string,

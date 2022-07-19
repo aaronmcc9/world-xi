@@ -1,0 +1,8 @@
+<div class="container global-list">
+    <div *ngFor="let pos of positions; let p = index">
+        <div class="position-header">
+            <h4>{{pos}}s</h4>
+        </div>
+        <app-players-in-position [position]="p"></app-players-in-position>  
+    </div>
+</div>

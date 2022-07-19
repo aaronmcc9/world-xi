@@ -5,7 +5,7 @@
             <app-error *ngIf="error" [message]="error"></app-error>
 
             <div class="row">
-                <button *ngIf="!editMode" class="btn btn-success" type="submit">Add</button>
+                <button *ngIf="!editMode" disabled="form.valid" class="btn btn-success" type="submit">Add</button>
                 <button *ngIf="editMode" class="btn btn-success" type="submit">Update</button>
                 <button class="btn btn-default" type="button" disabled="form.dirty" (click)="onClear()">Clear</button>
                 <button class="btn btn-danger" type="button" routerLink="/players">Cancel</button>
@@ -30,7 +30,11 @@
                 </div>
                 <div class="form-group">
                     <label for="position">Position</label>
-                    <input type="text" formControlName="position" class="form-control">
+                    <select type="text" formControlName="position" class="form-control">
+                        <option *ngFor="let pos of positionTypes">
+                            {{pos}}
+                        </option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="club">Club</label>

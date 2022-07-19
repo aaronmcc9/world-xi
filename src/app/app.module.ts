@@ -15,6 +15,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ErrorComponent } from './error/error.component';
 import { PlayersService } from './players/players.service';
 import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
+import { TeamListComponent } from './team/team-list/team-list.component';
+import { PlayersInPositionComponent } from './team/team-list/players-in-position/players-in-position.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
     AddPlayerComponent,
     TeamComponent,
     ErrorComponent,
+    TeamListComponent,
+    PlayersInPositionComponent,
   ],
   imports: [
     BrowserModule,

@@ -13,11 +13,12 @@ export class TeamListComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+
+    //get an array of all positions
     this.positions = <string[]>Object.values(Position)
       .filter(p => {
         return typeof p === typeof 'string';
       })
-    console.log(this.positions);
   }
 
 }

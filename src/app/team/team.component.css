@@ -1,0 +1,14 @@
+.img-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+}
+
+.pitch{
+    width: 60em;
+    max-height: 70vh;
+    background-image: url(../../assets/images/pitch.jpg);
+    background-size: 60em 70vh;
+}
+

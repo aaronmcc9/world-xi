@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-team',
@@ -7,9 +8,38 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TeamComponent implements OnInit {
 
+  form = new FormGroup({});
+  formationsList: string[] = [];
+
+  //formation values
+  defenceCount = 4;
+  midfieldCount = 4;
+  forwardCount = 2;
+
+
   constructor() { }
 
   ngOnInit(): void {
+
+    this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523']
+
+    this.form = new FormGroup({
+      formation: new FormControl('442', Validators.required)
+    });
+
+  }
+
+  onFormationChange() {
+    let formation = this.form.controls['formation'].value;
+
+    if (formation != null && formation.length === 3) {
+      this.defenceCount = formation[0];
+      this.midfieldCount = formation[1];
+      this.forwardCount = formation[2];
+    }
+
+    console.log(this.midfieldCount);
+
   }
 
 }

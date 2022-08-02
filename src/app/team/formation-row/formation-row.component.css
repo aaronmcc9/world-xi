@@ -1,0 +1,13 @@
+.flex{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.img-container{
+    padding: 2em;
+}
+
+img{
+    height: 11vh;
+    width: 6em;
+}

@@ -17,6 +17,7 @@ import { PlayersService } from './players/players.service';
 import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
 import { TeamListComponent } from './team/team-list/team-list.component';
 import { PlayersInPositionComponent } from './team/team-list/players-in-position/players-in-position.component';
+import { FormationRowComponent } from './team/formation-row/formation-row.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { PlayersInPositionComponent } from './team/team-list/players-in-position
     ErrorComponent,
     TeamListComponent,
     PlayersInPositionComponent,
+    FormationRowComponent,
   ],
   imports: [
     BrowserModule,

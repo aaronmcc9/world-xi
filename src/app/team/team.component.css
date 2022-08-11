@@ -1,14 +1,49 @@
-.img-container{
+.img-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2em;
+    flex-direction: column;
 }
 
-.pitch{
+.pitch {
     width: 60em;
     max-height: 70vh;
     background-image: url(../../assets/images/pitch.jpg);
     background-size: 60em 70vh;
 }
 
+.form-controls {
+    width: 60em;
+    height: 9vh;
+    padding: 1em .2em;
+    height: 10vh;
+
+    display: -webkit-box;
+}
+
+.formation {
+    display: flex;
+    align-items: center;
+}
+
+.formation-label {
+    margin-right: .2em;
+    margin-bottom: 0;
+    font-size: 1.2em;
+}
+
+.formation-select{
+    padding: 0.2em 0.6em;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.team-list {
+    display: flex;
+    justify-content: flex-start;
+    margin-top:10vh ;
+}

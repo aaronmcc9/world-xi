@@ -12,9 +12,9 @@ export class TeamComponent implements OnInit {
   formationsList: string[] = [];
 
   //formation values
-  defenceCount = 4;
-  midfieldCount = 4;
-  forwardCount = 2;
+  defenceCount: number = 4;
+  midfieldCount: number = 4;
+  forwardCount: number = 2;
 
 
   constructor() { }
@@ -33,12 +33,15 @@ export class TeamComponent implements OnInit {
     let formation = this.form.controls['formation'].value;
 
     if (formation != null && formation.length === 3) {
-      this.defenceCount = formation[0];
-      this.midfieldCount = formation[1];
-      this.forwardCount = formation[2];
+      this.defenceCount = +formation[0];
+      this.midfieldCount = +formation[1];
+      this.forwardCount = +formation[2];
     }
 
-    console.log(this.midfieldCount);
+    console.log("this.defenceCount", this.defenceCount);
+    console.log("this.midfieldCount", this.midfieldCount);
+    console.log("this.forwardCount", this.forwardCount);
+
 
   }
 

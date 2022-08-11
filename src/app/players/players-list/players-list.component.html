@@ -1,7 +1,9 @@
 <div class="row">
     <div class="col-xs-12 col-md-6 col-md-offset-3">
-        <button class="btn btn-success" type="button" routerLink="/players/new">Add Player</button>
-        <h1>Available Players</h1>
+        <div>
+            <button class="btn btn-success" type="button" routerLink="/players/new">Add Player</button>
+            <h1>Available Players</h1>
+        </div>
 
         <h3 *ngIf="players.length === 0">You have no players!</h3>
 

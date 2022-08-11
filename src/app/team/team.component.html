@@ -1,18 +1,22 @@
 <div class="row">
-    <div class="col-sm-9">
-        <form [formGroup]="form">
-            <div class="form-controls">
-                <button type="submit" class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-danger">Cancel</button>
-                
-                    <label>Formation</label>
-                    <select formControlName="formation" name="formation" id="formation"
-                        (change)="onFormationChange()">
-                        <option *ngFor="let f of formationsList">{{f}}</option>
-                    </select>
-            </div>
-        </form>
+    <div class="col-sm-8">
         <div class="img-container">
+            <form [formGroup]="form">
+                <div class="form-controls">
+                    <div class="formation">
+                        <label class="formation-label">Formation</label>
+                        <select formControlName="formation" name="formation" id="formation"
+                            class="formation-select"
+                            (change)="onFormationChange()">
+                            <option *ngFor="let f of formationsList">{{f}}</option>
+                        </select>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-success">Save</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </form>
             <div class="pitch">
                 <app-formation-row></app-formation-row>
                 <app-formation-row [playerCount]="defenceCount"></app-formation-row>
@@ -21,7 +25,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4 team-list">
         <app-team-list></app-team-list>
     </div>
 </div>

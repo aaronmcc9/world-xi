@@ -23,21 +23,14 @@ export class TeamListComponent implements OnInit {
     this.positionService.teamListPosition
       .subscribe((filterString) => {
 
-        console.log("WORKING", filterString);
         this.positions = this.positionService.positionList
           .filter((p) => {
 
             if (filterString == '')
               return p;
 
-              console.log("p == filterString", p == filterString)
             return p === filterString;
           });
-
-        console.log("not WORKING", this.positions);
-        console.log("Mere", this.positionService.positionList);
-
-
-      })
+      });
   }
 }

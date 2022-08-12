@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { withModule } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 
@@ -7,7 +8,7 @@ import { PositionService } from '../players/position.service';
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.css']
 })
-export class TeamComponent implements OnInit {
+export class TeamComponent implements OnInit, AfterViewInit {
 
   form = new FormGroup({});
   formationsList: string[] = [];
@@ -22,16 +23,19 @@ export class TeamComponent implements OnInit {
 
 
   constructor(private positionService: PositionService) { }
-
+  
   ngOnInit(): void {
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523']
     this.positions = this.positionService.fetchPositions();
 
     this.form = new FormGroup({
-      formation: new FormControl('442', Validators.required)
+      formation: new FormControl()
     });
+  }
 
+  ngAfterViewInit(): void {
+    this.form.controls['formation'].setValue(this.formationsList[3], { onlySelf: true });
   }
 
   onFormationChange() {
@@ -46,7 +50,6 @@ export class TeamComponent implements OnInit {
 
   onFilterPlayerList(value: string) {
     this.positionService.teamListPosition.next(value);
-    // this.playerPositionFilter = value;
   }
 
 }

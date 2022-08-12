@@ -5,8 +5,7 @@
                 <div class="form-controls">
                     <div class="formation">
                         <label class="formation-label">Formation</label>
-                        <select formControlName="formation" name="formation" id="formation"
-                            class="formation-select"
+                        <select formControlName="formation" name="formation" id="formation" class="formation-select"
                             (change)="onFormationChange()">
                             <option *ngFor="let f of formationsList">{{f}}</option>
                         </select>
@@ -26,6 +25,15 @@
         </div>
     </div>
     <div class="col-sm-4 team-list">
-        <app-team-list></app-team-list>
+        <div class="player-filter-container">
+            
+        <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)" #filterValue
+            class="player-filter col-xs-6">
+                <option value="">-- All --</option>
+                <option value="{{p}}" *ngFor="let p of positions">-- {{p}} --</option>
+            </select>
+        </div>
+
+        <app-team-list [playerFilter]="playerPositionFilter"></app-team-list>
     </div>
 </div>

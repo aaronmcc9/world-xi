@@ -45,5 +45,18 @@
 .team-list {
     display: flex;
     justify-content: flex-start;
-    margin-top:10vh ;
+    flex-direction: column;
+    /* margin-top:10vh ; */
+}
+
+.player-filter-container{
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    padding: 2em 1em;
+}
+
+.player-filter{
+    padding: 0.2em 0.6em;
+    text-align:  center;
 }

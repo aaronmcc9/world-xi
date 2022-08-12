@@ -30,6 +30,8 @@ export class PlayersInPositionComponent implements OnInit {
         return p.position == Position[this.position];
       });
 
+      console.log("this.players", this.players)
+
 
     if (this.players === null || this.players.length === 0)
       this.fetchPlayers();
@@ -52,7 +54,6 @@ export class PlayersInPositionComponent implements OnInit {
         error: message => {
           this.error = message;
           this.loading = false;
-
         }
       });
   }

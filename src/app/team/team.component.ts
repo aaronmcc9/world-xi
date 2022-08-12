@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { PositionService } from '../players/position.service';
 
 @Component({
   selector: 'app-team',
@@ -10,18 +11,22 @@ export class TeamComponent implements OnInit {
 
   form = new FormGroup({});
   formationsList: string[] = [];
+  positions: string[] = [];
 
   //formation values
   defenceCount: number = 4;
   midfieldCount: number = 4;
   forwardCount: number = 2;
 
+  playerPositionFilter = '';
 
-  constructor() { }
+
+  constructor(private positionService: PositionService) { }
 
   ngOnInit(): void {
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523']
+    this.positions = this.positionService.fetchPositions();
 
     this.form = new FormGroup({
       formation: new FormControl('442', Validators.required)
@@ -37,12 +42,11 @@ export class TeamComponent implements OnInit {
       this.midfieldCount = +formation[1];
       this.forwardCount = +formation[2];
     }
+  }
 
-    console.log("this.defenceCount", this.defenceCount);
-    console.log("this.midfieldCount", this.midfieldCount);
-    console.log("this.forwardCount", this.forwardCount);
-
-
+  onFilterPlayerList(value: string) {
+    this.positionService.teamListPosition.next(value);
+    // this.playerPositionFilter = value;
   }
 
 }

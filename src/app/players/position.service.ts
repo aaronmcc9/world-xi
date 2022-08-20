@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { Position } from "./player-position";
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Position } from "./player-position";
 })
 export class PositionService{
 
-    teamListPosition = new Subject<string>();
+    teamListPosition = new BehaviorSubject<string>('');
     positionList: string[] = [];
 
     //fetches string values of positions 

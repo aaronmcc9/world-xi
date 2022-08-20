@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { withModule } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-team',
@@ -19,11 +19,16 @@ export class TeamComponent implements OnInit, AfterViewInit {
   midfieldCount: number = 4;
   forwardCount: number = 2;
 
+  //icons
+  leftNav = faArrowLeft;
+  rightNav = faArrowRight;
+
   playerPositionFilter = '';
+  teamListPage = 1;
 
 
   constructor(private positionService: PositionService) { }
-  
+
   ngOnInit(): void {
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523']
@@ -50,6 +55,15 @@ export class TeamComponent implements OnInit, AfterViewInit {
 
   onFilterPlayerList(value: string) {
     this.positionService.teamListPosition.next(value);
+  }
+
+  onPageLeft() {
+    if (this.teamListPage > 1)
+      this.teamListPage--;
+  }
+
+  onPageRight() {
+    this.teamListPage++;
   }
 
 }

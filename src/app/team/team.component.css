@@ -32,7 +32,7 @@
     font-size: 1.2em;
 }
 
-.formation-select{
+.formation-select {
     padding: 0.2em 0.6em;
 }
 
@@ -49,14 +49,24 @@
     /* margin-top:10vh ; */
 }
 
-.player-filter-container{
+.player-filter-container {
     height: 10vh;
     display: flex;
     justify-content: center;
     padding: 2em 1em;
 }
 
-.player-filter{
+.player-filter {
     padding: 0.2em 0.6em;
-    text-align:  center;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: end;
+    margin-top: 0.5em;
+}
+
+.nav-button {
+    padding-left: .2em;
 }

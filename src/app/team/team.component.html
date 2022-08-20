@@ -25,15 +25,25 @@
         </div>
     </div>
     <div class="col-sm-4 team-list">
-        <div class="player-filter-container">
-            
-        <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)" #filterValue
-            class="player-filter col-xs-6">
-                <option value="">-- All --</option>
-                <option value="{{p}}" *ngFor="let p of positions">-- {{p}} --</option>
-            </select>
-        </div>
+        <div class="col-sm-8">
+            <div class="player-filter-container">
+                <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)" #filterValue
+                    class="player-filter col-xs-6">
+                    <option value="">-- All --</option>
+                    <option value="{{p}}" *ngFor="let p of positions">-- {{p}} --</option>
+                </select>
+            </div>
 
-        <app-team-list [playerFilter]="playerPositionFilter"></app-team-list>
+            <app-team-list [playerFilter]="playerPositionFilter" [page]="teamListPage"></app-team-list>
+
+            <div class="button-container">
+                <button type="button" *ngIf="teamListPage > 1" (click)="onPageLeft()">
+                    <fa-icon [icon]="leftNav"></fa-icon>
+                </button>
+                <button type="button" class="nav-button" (click)="onPageRight()">
+                    <fa-icon [icon]="rightNav"></fa-icon>
+                </button>
+            </div>
+        </div>
     </div>
 </div>

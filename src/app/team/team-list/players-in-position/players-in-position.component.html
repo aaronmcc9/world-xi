@@ -1,7 +1,7 @@
-<div *ngFor="let player of players | slice:0:playerLimit"  class="player">
+<div *ngFor="let player of players | slice:listStart:playerLimit"  class="player">
     <div class="player-container">
         <label>{{player.firstName}} {{player.lastName}}</label>
-        <fa-icon class="pointer" [icon]="selectIcon"></fa-icon>
+        <fa-icon class="pointer" [icon]="selectIcon" (click)="modifyPlayer(player)"></fa-icon>
     </div>
     <hr>
 </div>

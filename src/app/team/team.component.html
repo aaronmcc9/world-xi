@@ -1,7 +1,10 @@
+<app-modify-selection *ngIf="playerToModify"></app-modify-selection>
+
 <div class="row">
     <div class="col-sm-8">
         <div class="img-container">
             <form [formGroup]="form">
+                <h2 *ngIf="!canSave" class="text-center">Please Select 11 Players</h2>
                 <div class="form-controls">
                     <div class="formation">
                         <label class="formation-label">Formation</label>
@@ -11,7 +14,7 @@
                         </select>
                     </div>
                     <div class="buttons">
-                        <button type="submit" class="btn btn-success">Save</button>
+                        <button type="submit" [disabled]="!canSave" class="btn btn-success">Save</button>
                         <button type="button" class="btn btn-danger">Cancel</button>
                     </div>
                 </div>
@@ -34,13 +37,13 @@
                 </select>
             </div>
 
-            <app-team-list [playerFilter]="playerPositionFilter" [page]="teamListPage"></app-team-list>
+            <app-team-list ></app-team-list>
 
             <div class="button-container">
-                <button type="button" *ngIf="teamListPage > 1" (click)="onPageLeft()">
+                <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
                     <fa-icon [icon]="leftNav"></fa-icon>
                 </button>
-                <button type="button" class="nav-button" (click)="onPageRight()">
+                <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="canPageRight">
                     <fa-icon [icon]="rightNav"></fa-icon>
                 </button>
             </div>

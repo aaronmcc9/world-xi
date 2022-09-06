@@ -1,4 +1,5 @@
 import { HttpClient } from "@angular/common/http";
+import { ThisReceiver } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { catchError, map, Subject, tap, throwError } from "rxjs";
 import { Player } from "./player.model";
@@ -37,7 +38,10 @@ export class PlayersService {
                             players.push({ ...res[key], id: key });
                         }
                     }
+                    
                     this.players = players;
+                    this.playersChanged.next(this.players.slice());
+                    
                     return players.slice();
                 }));
     }
@@ -85,5 +89,11 @@ export class PlayersService {
                     
                     this.playersChanged.next(this.players.slice());
                 }));
+    }
+
+    getPlayerCountByPosition(position : string){
+        return this.players.filter((player : Player) => {
+            return player.position === position;
+        }).length;
     }
 }

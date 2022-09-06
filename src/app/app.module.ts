@@ -18,6 +18,7 @@ import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
 import { TeamListComponent } from './team/team-list/team-list.component';
 import { PlayersInPositionComponent } from './team/team-list/players-in-position/players-in-position.component';
 import { FormationRowComponent } from './team/formation-row/formation-row.component';
+import { ModifySelectionComponent } from './team/modify-selection/modify-selection.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { FormationRowComponent } from './team/formation-row/formation-row.compon
     TeamListComponent,
     PlayersInPositionComponent,
     FormationRowComponent,
+    ModifySelectionComponent,
   ],
   imports: [
     BrowserModule,

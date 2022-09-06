@@ -10,10 +10,6 @@ import { PositionService } from 'src/app/players/position.service';
 })
 export class TeamListComponent implements OnInit, OnDestroy{
   positions: string[] = [];
-
-  @Input('playerFilter') playerFilter = 'All';
-  @Input('page') page = 1;
-
   positionSubscription = new Subscription();
 
   constructor(private positionService: PositionService) { }

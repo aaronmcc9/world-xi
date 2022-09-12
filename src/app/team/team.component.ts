@@ -6,6 +6,7 @@ import { Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { PlayersService } from '../players/players.service';
 import { Player } from '../players/player.model';
+import { Position } from '../players/player-position';
 
 @Component({
   selector: 'app-team',
@@ -18,18 +19,25 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   formationsList: string[] = [];
   positions: string[] = [];
 
+  error: string = '';
+
   //formation values
+  goalkeeper: Player[] = new Array<Player>(1); 
+  defence: Player[] = new Array<Player>(4);
+  midfield: Player[] = new Array<Player>(4);
+  forwards: Player[] = new Array<Player>(2);
+
+
   defenceCount: number = 4;
   midfieldCount: number = 4;
   forwardCount: number = 2;
-
   //icons
   leftNav = faArrowLeft;
   rightNav = faArrowRight;
 
   //page information
   maxPage: number = 1
-  canPageRight: boolean = false;  
+  canPageRight: boolean = false;
   playersPage: number = 1;
   playerCount: number = 0;
 
@@ -43,12 +51,16 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   playerSubscription = new Subscription();
   playerModificationSubscription = new Subscription();
 
+  goalkeeperSubscription = new Subscription()
+  defenceSubscription = new Subscription()
+  midfieldSubscription = new Subscription()
+  forwardsSubscription = new Subscription()
 
   constructor(private positionService: PositionService,
     private teamService: TeamService, private playersService: PlayersService) { }
 
+  //#hooks
   ngOnInit(): void {
-
     this.pageSubscription = this.teamService.page.subscribe((page) => {
       this.playersPage = page;
     })
@@ -60,6 +72,26 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         this.playerCount = players.length;
         this.setMaxPage();
       });
+
+      // this.goalkeeperSubscription = this.teamService.teamDefence.subscribe((goalkeeper) => {
+      //   this.goalkeeper = goalkeeper;
+      // });
+      
+      // this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
+      //   this.defence = defence;
+      // });
+
+      // this.midfieldSubscription = this.teamService.teamDefence.subscribe((midfield) => {
+      //   this.midfield = midfield;
+      // });
+
+      // this.forwardsSubscription = this.teamService.teamDefence.subscribe((forwards) => {
+      //   this.forwards = forwards;
+      // });
+
+
+    if (this.playerCount === 0)
+      this.playerCount = this.playersService.players.length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
@@ -81,6 +113,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.Reset();
+
     this.pageSubscription.unsubscribe();
     this.playerSubscription.unsubscribe();
     this.playerModificationSubscription.unsubscribe();
@@ -90,9 +124,20 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let formation = this.form.controls['formation'].value;
 
     if (formation != null && formation.length === 3) {
-      this.defenceCount = +formation[0];
-      this.midfieldCount = +formation[1];
-      this.forwardCount = +formation[2];
+      
+      let goalkeeper = this.teamService.teamGoalkeeper.getValue();
+      if(goalkeeper)
+        this.goalkeeper.push(goalkeeper);
+
+      // this.defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +formation[0])
+      this.defence = this.populatePlayerArray(this.playersService.players.filter((player) => player.firstName == "Reece"), +formation[0])
+      this.midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +formation[1])
+      this.forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +formation[2])
+      console.log(this.defence);
+
+      // this.defenceCount = +formation[0];
+      // this.midfieldCount = +formation[1];
+      // this.forwardCount = +formation[2];
     }
   }
 
@@ -100,12 +145,14 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.positionService.teamListPosition.next(value);
     this.teamService.page.next(1); //reset page
 
-    this.setMaxPage(); 1
+    this.setMaxPage();
   }
 
   onPageLeft() {
-    if (this.playersPage > 1)
+    if (this.playersPage > 1) {
       this.teamService.page.next(this.playersPage - 1);
+      this.checkPageRight()
+    }
   }
 
   onPageRight() {
@@ -124,5 +171,32 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   checkPageRight() {
     this.canPageRight = this.maxPage <= this.playersPage;
+  }
+
+
+  private populatePlayerArray(existingPlayers: Player[], formationValue: number) {
+    if (existingPlayers.length === formationValue)
+      return existingPlayers;
+
+    let players = new Array<Player>(formationValue);
+    let indexesToFill = (formationValue - existingPlayers.length) - 1;
+
+    existingPlayers.forEach((player) => {
+      players.splice(indexesToFill, 1, player);
+      indexesToFill--;
+    })
+
+    return players;
+  }
+
+  // Resets values
+  private Reset() {
+    this.canPageRight = false;
+    this.maxPage = 1;
+    this.playersPage = 1;
+    this.form.reset();
+
+    this.teamService.page.next(1);
+    this.positionService.teamListPosition.next('');
   }
 }

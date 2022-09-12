@@ -1,13 +1,13 @@
+<app-error *ngIf="error" [(message)]="error"></app-error>
+
 <div class="header">
     <h3>Modify Player</h3>
 </div>
 <div class="body">
-    <form>
         <p>Are you sure you want to {{action | lowercase}} {{player!.firstName}} {{player!.lastName}}</p>
 
         <div class="buttons">
-            <button type="button" class="btn btn-default" (click)="cancel()">Cancel</button>
-            <button type="submit" class="btn btn-primary">{{action}}</button>
+            <button type="button" class="btn btn-default" (click)="endModification()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="submit()">{{action}}</button>
         </div>
-    </form>
 </div>

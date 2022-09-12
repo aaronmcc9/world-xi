@@ -1,6 +1,14 @@
-<div class="flex">
-    <div *ngFor="let item of [].constructor(playerCount); let i = index"
-        class="img-container">
-        <img [src]="'../../assets/images/jersey.jpg'"/>
+<div class="flex-row">
+    <!-- <div *ngFor="let item of [].constructor(playerCount); let i = index" -->
+    <div *ngFor="let player of players">
+        <div *ngIf="player" class="player-container">
+            <div class="img-container">
+                <img [src]="player.imagePath" />
+            </div>
+            <label>{{player.firstName}} {{player.lastName}}</label>
+        </div>
+        <div *ngIf="player == null" class="img-container">
+            <img [src]="'../../assets/images/jersey.jpg'" />
+        </div>
     </div>
 </div>

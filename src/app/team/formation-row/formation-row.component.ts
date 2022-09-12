@@ -10,16 +10,19 @@ import { TeamService } from '../team.service';
 export class FormationRowComponent implements OnInit {
 
   //the number of selections available for the position - e.g 3 midfielders
-  @Input('playerCount') playerCount: number = 1;
-  player: Player | null= null;
+  //@Input('playerCount') playerCount: number = 1;
+  @Input('players') players: Player[] = [];
   
   constructor(private teamService: TeamService) { }
 
+
   ngOnInit(): void {
-    
+    // console.log(this.playerCount);
+    //this.players = new Array<Player>(this.playerCount);
+    console.log("form", this.players);
   }
 
   modifyPlayer() {
-    this.teamService.playerToModify.next(this.player);
+    //this.teamService.playerToModify.next(this.player);
   }
 }

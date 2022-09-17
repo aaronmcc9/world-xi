@@ -86,7 +86,6 @@ export class AuthService {
 
     autoLogout(expirationTime: number) {
          this.tokenExpirationEvent = setTimeout(() =>{
-            console.log("here", expirationTime);
             this.logout();
         }, expirationTime)
     }

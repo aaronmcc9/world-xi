@@ -47,23 +47,31 @@ export class ModifySelectionComponent implements OnInit {
       case Position[Position.Goalkeeper]:
 
         if (this.action == SelectionAction[SelectionAction.Select]) {
-          if (this.teamService.teamGoalkeeper.getValue() == null) {
-            this.teamService.teamGoalkeeper.next(this.player);
+          let goalkeeper = this.teamService.teamGoalkeeper.getValue();
+          //only will ever be one goalkeeper
+          if (goalkeeper[0] === undefined) {
+            this.teamService.teamGoalkeeper.next(new Array<Player>(this.player!));
             this.endModification();
           }
         } //Remove player
         else {
+
+          this.teamService.teamGoalkeeper.next(new Array(1));
           this.teamService.playerToModify.next(null);
         }
 
         break;
 
       case Position[Position.Defender]:
-        let defence = this.teamService.teamMidfield.getValue();
+        let defence = this.teamService.teamDefence.getValue();
 
         if (this.action == SelectionAction[SelectionAction.Select]) {
-          if (defence.length < this.defenceCount) {
-            defence.push(this.player!);
+
+          //filter out empty values
+          let spotsTaken = defence.filter(Boolean).length;
+
+          if (spotsTaken < this.defenceCount) {
+            defence[spotsTaken] = this.player!;
           }
           else {
             defence = this.removePlayer(defence);
@@ -76,24 +84,37 @@ export class ModifySelectionComponent implements OnInit {
 
       case Position[Position.Midfield]:
         let midfield = this.teamService.teamMidfield.getValue();
+
         if (this.action == SelectionAction[SelectionAction.Select]) {
-          if (midfield.length < this.midfieldCount) {
-            midfield.push(this.player!);
+          //filter out empty values
+          let spotsTaken = midfield.filter(Boolean).length;
+
+          if (spotsTaken < this.midfieldCount) {
+            midfield[spotsTaken] = this.player!;
           }
         }
         else {
-          midfield = this.removePlayer(midfield);
+          // let idx = midfield.findIndex((player: Player) => {
+          //   return player.id == this.player?.id;
+          // });
+
+          // midfield[idx] = ;
+          //console.log(midfield);
         }
 
         this.teamService.teamMidfield.next(midfield);
         this.endModification();
         break;
+
       case Position[Position.Forward]:
         let forwards = this.teamService.teamForward.getValue();
 
         if (this.action == SelectionAction[SelectionAction.Select]) {
-          if (forwards.length < this.forwardCount) {
-            forwards.push(this.player!);
+          //filter out empty values
+          let spotsTaken = forwards.filter(Boolean).length;
+
+          if (spotsTaken < this.forwardCount) {
+            forwards[spotsTaken] = this.player!;
           }
         }
         else {

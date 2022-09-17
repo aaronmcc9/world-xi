@@ -1,7 +1,9 @@
 <div class="flex-row">
     <!-- <div *ngFor="let item of [].constructor(playerCount); let i = index" -->
     <div *ngFor="let player of players">
-        <div *ngIf="player" class="player-container">
+        <div *ngIf="player" 
+            class="player-container pointer"
+            (click)="removePlayer(player)">
             <div class="img-container">
                 <img [src]="player.imagePath" />
             </div>

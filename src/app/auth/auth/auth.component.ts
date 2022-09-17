@@ -41,12 +41,10 @@ export class AuthComponent implements OnInit {
 
     authObservable.subscribe({
       next: responseData => {
-        console.log("response", responseData);
         this.router.navigate(['players']);
       },
       error: errorMessage => {
         this.error = errorMessage;
-        console.log("ERROR", errorMessage);
       }
     })
 

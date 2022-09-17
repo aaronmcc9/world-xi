@@ -54,11 +54,8 @@ export class AddPlayerComponent implements OnInit {
           return player.id === this.id;
         })
 
-        console.log(playerToEdit);
-
         if(playerToEdit){
           this.player = playerToEdit;
-          console.log("playerToEdit", playerToEdit);
           this.onSetForm();
         } 
         else{

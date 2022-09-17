@@ -21,7 +21,6 @@ export class PlayersService {
                 return throwError(errorRes.error.error)
             }),
                 tap(key => {
-                    console.log(key);
                     this.players.push({ ...player, id: key.name });
                     this.playersChanged.next(this.players.slice());
                 }));
@@ -49,7 +48,6 @@ export class PlayersService {
     fetchPlayerById(id: string) {
         return this.http.get<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + id + ".json")
             .pipe(catchError(errorRes => {
-                console.log(errorRes);
                 return throwError(errorRes.message)
             }),
                 map(res => {
@@ -73,7 +71,6 @@ export class PlayersService {
     }
 
     updatePlayer(player: Player) {
-        console.log(player.id)
         return this.http.put<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + player.id + ".json",
             player)
             .pipe(catchError(errorRes => { return throwError(errorRes.message) }),

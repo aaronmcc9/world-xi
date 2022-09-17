@@ -22,15 +22,14 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   error: string = '';
 
   //formation values
-  goalkeeper: Player[] = new Array<Player>(1); 
+  goalkeeper: Player[] = new Array<Player>(1);
   defence: Player[] = new Array<Player>(4);
   midfield: Player[] = new Array<Player>(4);
   forwards: Player[] = new Array<Player>(2);
 
-
-  defenceCount: number = 4;
-  midfieldCount: number = 4;
-  forwardCount: number = 2;
+  // defenceCount: number = 4;
+  // midfieldCount: number = 4;
+  // forwardCount: number = 2;
   //icons
   leftNav = faArrowLeft;
   rightNav = faArrowRight;
@@ -73,22 +72,21 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setMaxPage();
       });
 
-      // this.goalkeeperSubscription = this.teamService.teamDefence.subscribe((goalkeeper) => {
-      //   this.goalkeeper = goalkeeper;
-      // });
-      
-      // this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
-      //   this.defence = defence;
-      // });
+    this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
+      this.goalkeeper = goalkeeper;
+    });
 
-      // this.midfieldSubscription = this.teamService.teamDefence.subscribe((midfield) => {
-      //   this.midfield = midfield;
-      // });
+    this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
+      this.defence = defence;
+    });
 
-      // this.forwardsSubscription = this.teamService.teamDefence.subscribe((forwards) => {
-      //   this.forwards = forwards;
-      // });
+    this.midfieldSubscription = this.teamService.teamMidfield.subscribe((midfield) => {
+      this.midfield = midfield;
+    });
 
+    this.forwardsSubscription = this.teamService.teamForward.subscribe((forwards) => {
+      this.forwards = forwards;
+    });
 
     if (this.playerCount === 0)
       this.playerCount = this.playersService.players.length;
@@ -108,6 +106,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    
     //set default formation to 442
     this.form.controls['formation'].setValue(this.formationsList[3], { onlySelf: true });
   }
@@ -118,26 +117,25 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pageSubscription.unsubscribe();
     this.playerSubscription.unsubscribe();
     this.playerModificationSubscription.unsubscribe();
+    this.goalkeeperSubscription.unsubscribe();
+    this.defenceSubscription.unsubscribe();
+    this.midfieldSubscription.unsubscribe();
+    this.forwardsSubscription.unsubscribe();
   }
 
   onFormationChange() {
     let formation = this.form.controls['formation'].value;
 
     if (formation != null && formation.length === 3) {
-      
+
       let goalkeeper = this.teamService.teamGoalkeeper.getValue();
-      if(goalkeeper)
-        this.goalkeeper.push(goalkeeper);
+      if (goalkeeper) {
+        this.goalkeeper = goalkeeper;
+      }
 
-      // this.defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +formation[0])
-      this.defence = this.populatePlayerArray(this.playersService.players.filter((player) => player.firstName == "Reece"), +formation[0])
-      this.midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +formation[1])
-      this.forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +formation[2])
-      console.log(this.defence);
-
-      // this.defenceCount = +formation[0];
-      // this.midfieldCount = +formation[1];
-      // this.forwardCount = +formation[2];
+      this.defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +formation[0]);
+      this.midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +formation[1]);
+      this.forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +formation[2]);
     }
   }
 

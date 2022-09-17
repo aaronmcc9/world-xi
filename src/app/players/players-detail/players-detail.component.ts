@@ -32,15 +32,12 @@ export class PlayersDetailComponent implements OnInit {
             .subscribe({
               next: playerRes => {
                 this.player = playerRes;
-                console.log(this.player);
                 this.isLoading = false;
 
               },
               error: errorMessage => {
                 this.error = errorMessage;
                 this.isLoading = false;
-
-                console.log("here", errorMessage);
               }
             });
         }

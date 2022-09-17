@@ -39,8 +39,6 @@ export class PlayersListComponent implements OnInit, OnDestroy {
         next: responseData => {
           this.players = responseData;
           this.isLoading = false;
-
-          console.log(this.players)
         },
         error: errorMessage => {
           this.isLoading = false;

@@ -7,8 +7,8 @@
 
 .pitch {
     width: 60em;
-    max-height: 70vh;
-    background-image: url(../../assets/images/pitch.jpg);
+    height: 70vh;
+    background-image: url(../../assets/images/pitch2.png);
     background-size: 60em 70vh;
 }
 
@@ -46,7 +46,6 @@
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
-    /* margin-top:10vh ; */
 }
 
 .player-filter-container {

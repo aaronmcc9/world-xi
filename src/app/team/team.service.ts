@@ -12,7 +12,7 @@ export class TeamService {
   playerToModify = new BehaviorSubject<Player | null>(null);
 
   teamGoalkeeper = new BehaviorSubject<Player[]>(new Array<Player>(1));
-  teamDefence = new BehaviorSubject<Player[]>(new Array<Player>(4));
-  teamMidfield = new BehaviorSubject<Player[]>(new Array<Player>(4));
-  teamForward = new BehaviorSubject<Player[]>(new Array<Player>(2));
+  teamDefence = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
+  teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
+  teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 }

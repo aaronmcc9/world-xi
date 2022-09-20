@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Position } from 'src/app/players/player-position';
 import { Player } from 'src/app/players/player.model';
@@ -10,7 +10,7 @@ import { TeamService } from '../team.service';
   templateUrl: './modify-selection.component.html',
   styleUrls: ['./modify-selection.component.css']
 })
-export class ModifySelectionComponent implements OnInit {
+export class ModifySelectionComponent implements OnInit, OnDestroy {
 
   player: Player | null = null;
   action: string = '';
@@ -20,23 +20,37 @@ export class ModifySelectionComponent implements OnInit {
   @Input('midfieldCount') midfieldCount = 1;
   @Input('forwardCount') forwardCount = 1;
 
+  playerToModifySubscription = new Subscription();
+
 
   constructor(private teamService: TeamService) { }
 
   ngOnInit(): void {
-    this.player = this.teamService.playerToModify.getValue();
+
+    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((player: Player | null) => {
+      this.player = player;
+    });
+
     this.action = this.player?.isSelected ? SelectionAction[SelectionAction.Remove]
       : SelectionAction[SelectionAction.Select];
+  }
+
+  ngOnDestroy(): void {
+    this.playerToModifySubscription.unsubscribe();
   }
 
   endModification() {
     this.teamService.playerToModify.next(null);
   }
 
+  changeSelectionStatus() {
+    this.player!.isSelected = !this.player!.isSelected;
+  }
+
 
   submit() {
     if (this.player) {
-      this.player.isSelected = !this.player.isSelected;
+      this.changeSelectionStatus();
       this.modifyPlayer()
     }
   }
@@ -55,9 +69,8 @@ export class ModifySelectionComponent implements OnInit {
           }
         } //Remove player
         else {
-
           this.teamService.teamGoalkeeper.next(new Array(1));
-          this.teamService.playerToModify.next(null);
+          this.endModification();
         }
 
         break;
@@ -71,15 +84,16 @@ export class ModifySelectionComponent implements OnInit {
           let spotsTaken = defence.filter(Boolean).length;
 
           if (spotsTaken < this.defenceCount) {
-            defence[spotsTaken] = this.player!;
+            defence = this.addPlayer(defence, this.defenceCount - 1);
+            this.endModification();
           }
-          else {
-            defence = this.removePlayer(defence);
-          }
-
-          this.teamService.teamDefence.next(defence);
+        }
+        else {
+          defence = this.removePlayer(defence);
           this.endModification();
         }
+
+        this.teamService.teamDefence.next(defence);
         break;
 
       case Position[Position.Midfield]:
@@ -90,20 +104,16 @@ export class ModifySelectionComponent implements OnInit {
           let spotsTaken = midfield.filter(Boolean).length;
 
           if (spotsTaken < this.midfieldCount) {
-            midfield[spotsTaken] = this.player!;
+            midfield = this.addPlayer(midfield, this.midfieldCount - 1);;
+            this.endModification();
           }
         }
         else {
-          // let idx = midfield.findIndex((player: Player) => {
-          //   return player.id == this.player?.id;
-          // });
-
-          // midfield[idx] = ;
-          //console.log(midfield);
+          midfield = this.removePlayer(midfield);
+          this.endModification();
         }
 
         this.teamService.teamMidfield.next(midfield);
-        this.endModification();
         break;
 
       case Position[Position.Forward]:
@@ -114,26 +124,61 @@ export class ModifySelectionComponent implements OnInit {
           let spotsTaken = forwards.filter(Boolean).length;
 
           if (spotsTaken < this.forwardCount) {
-            forwards[spotsTaken] = this.player!;
+            forwards = this.addPlayer(forwards, this.forwardCount - 1);
+            this.endModification();
           }
         }
         else {
           forwards = this.removePlayer(forwards);
+          this.endModification();
         }
 
         this.teamService.teamForward.next(forwards);
-        this.endModification();
         break;
     }
 
+    //player was unable to be added due to maximum reached for their position
     if (this.player != null) {
+      this.changeSelectionStatus(); //revert initial selection change
       this.error = "Please remove an existing player in the " + this.player.position + " position to complete the selection."
     }
   }
 
-  private removePlayer(players: Player[]): Player[] {
-    return players.filter((player) => {
-      return player.id !== this.player!.id;
+  private addPlayer(players: (Player | undefined)[],
+    end: number): (Player | undefined)[] {
+
+    let start = 0;
+
+    while (start < end) {
+
+      let mid = Math.round(end / 2);
+
+      if (players[mid] === undefined) {
+        players[mid] = this.player!;
+        break
+      }
+      else if (players[start] === undefined) {
+        players[start] = this.player!;
+        break
+      }
+      else if (players[end] === undefined) {
+        players[end] = this.player!;
+        break
+      }
+
+      start++;
+      end--;
+    }
+
+    return players;
+  }
+
+  private removePlayer(players: (Player | undefined)[]): (Player | undefined)[] {
+    let idx = players.findIndex((player: Player | undefined) => {
+      return player?.id == this.player?.id;
     });
+
+    players[idx] = undefined;
+    return players;
   }
 }

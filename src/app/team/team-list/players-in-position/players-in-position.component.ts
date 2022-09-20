@@ -16,7 +16,9 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
 
   @Input('position') position: string = Position[0];
   pageSubscription = new Subscription();
-
+  playerToModifySubscription = new Subscription();
+  playerToModify: Player | null = null;
+  
   players: Player[] = [];
   error = '';
   loading = false;
@@ -55,7 +57,16 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
       this.listStart = this.playerLimit * (this.page - 1);
       this.playerLimit = this.page * this.playerLimit;
     });
+
+    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((playerToModify: Player | null) => {
+      this.playerToModify = playerToModify;
+    });
   }
+
+  ngOnDestroy(): void {
+    this.pageSubscription.unsubscribe()
+    this.playerToModifySubscription.unsubscribe();
+  };
 
   fetchPlayers() {
     this.loading = true;
@@ -78,11 +89,7 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   }
 
   modifyPlayer(player: Player) {
-    this.teamService.playerToModify.next(player);
+    if (!this.playerToModify)
+      this.teamService.playerToModify.next(player);
   }
-
-  ngOnDestroy(): void {
-    this.pageSubscription.unsubscribe()
-  };
-
 }

@@ -2,11 +2,10 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Subscription, take } from 'rxjs';
+import { pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { PlayersService } from '../players/players.service';
 import { Player } from '../players/player.model';
-import { Position } from '../players/player-position';
 
 @Component({
   selector: 'app-team',
@@ -23,13 +22,10 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //formation values
   goalkeeper: Player[] = new Array<Player>(1);
-  defence: Player[] = new Array<Player>(4);
-  midfield: Player[] = new Array<Player>(4);
-  forwards: Player[] = new Array<Player>(2);
+  defence: (Player | undefined)[] = new Array<Player>(4);
+  midfield: (Player | undefined)[] = new Array<Player>(4);
+  forwards: (Player | undefined)[] = new Array<Player>(2);
 
-  // defenceCount: number = 4;
-  // midfieldCount: number = 4;
-  // forwardCount: number = 2;
   //icons
   leftNav = faArrowLeft;
   rightNav = faArrowRight;
@@ -95,7 +91,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerToModify = player;
     })
 
-
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523'];
     this.positions = this.positionService.fetchPositions();
 
@@ -103,12 +98,32 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       formation: new FormControl(''),
       startingPlayersIds: new FormControl(null, [Validators.maxLength(11), Validators.minLength(11)])
     });
+
+    this.form.get('formation')
+      ?.valueChanges
+      .pipe(pairwise())
+      .subscribe(([prev, next]: [string, string]) => {
+
+        try {
+          let defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +next[0]);
+          let midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +next[1]);
+          let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +next[2]);
+
+          // assign values after incase of formation error
+          this.defence = defence;
+          this.midfield = midfield;
+          this.forwards = forwards;
+
+        }
+        catch {
+          this.setFormation(prev);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
-    
     //set default formation to 442
-    this.form.controls['formation'].setValue(this.formationsList[3], { onlySelf: true });
+    this.setFormation(this.formationsList[3]);
   }
 
   ngOnDestroy(): void {
@@ -121,22 +136,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.defenceSubscription.unsubscribe();
     this.midfieldSubscription.unsubscribe();
     this.forwardsSubscription.unsubscribe();
-  }
-
-  onFormationChange() {
-    let formation = this.form.controls['formation'].value;
-
-    if (formation != null && formation.length === 3) {
-
-      let goalkeeper = this.teamService.teamGoalkeeper.getValue();
-      if (goalkeeper) {
-        this.goalkeeper = goalkeeper;
-      }
-
-      this.defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +formation[0]);
-      this.midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +formation[1]);
-      this.forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +formation[2]);
-    }
   }
 
   onFilterPlayerList(value: string) {
@@ -171,16 +170,29 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.canPageRight = this.maxPage <= this.playersPage;
   }
 
+  private setFormation(formation: string) {
+    this.form.controls['formation'].setValue(formation, { onlySelf: true });
+  }
 
-  private populatePlayerArray(existingPlayers: Player[], formationValue: number) {
-    if (existingPlayers.length === formationValue)
-      return existingPlayers;
+
+  private populatePlayerArray(existingPlayers: (Player | undefined)[], formationValue: number) {
+    //remove empties
+    let existingPlayersLength = existingPlayers.filter(Boolean).length
+
+    if (existingPlayersLength === formationValue){
+      return existingPlayers.filter(Boolean);
+    }
 
     let players = new Array<Player>(formationValue);
-    let indexesToFill = (formationValue - existingPlayers.length) - 1;
+    let indexesToFill = (formationValue - existingPlayersLength) - 1;
+
+    if (indexesToFill < 0) {
+      this.error = "There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation";
+      throw new Error('Player out of position exception');
+    }
 
     existingPlayers.forEach((player) => {
-      players.splice(indexesToFill, 1, player);
+      players.splice(indexesToFill, 1, player!);
       indexesToFill--;
     })
 

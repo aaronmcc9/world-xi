@@ -19,6 +19,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   positions: string[] = [];
 
   error: string = '';
+  isLoading = false;
 
   //formation values
   goalkeeper: Player[] = new Array<Player>(1);
@@ -69,18 +70,23 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
+      console.log(goalkeeper.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
+      // this.setCanSave(goalkeeper.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
       this.goalkeeper = goalkeeper;
     });
 
     this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
+      // this.setCanSave(defence.filter(Boolean).length - this.defence.filter(Boolean).length);
       this.defence = defence;
     });
 
     this.midfieldSubscription = this.teamService.teamMidfield.subscribe((midfield) => {
+      // this.setCanSave(midfield.filter(Boolean).length - this.midfield.filter(Boolean).length);
       this.midfield = midfield;
     });
 
     this.forwardsSubscription = this.teamService.teamForward.subscribe((forwards) => {
+      // this.setCanSave(forwards.filter(Boolean).length - this.forwards.filter(Boolean).length);
       this.forwards = forwards;
     });
 
@@ -166,7 +172,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkPageRight();
   }
 
-  checkPageRight() {
+  private checkPageRight() {
     this.canPageRight = this.maxPage <= this.playersPage;
   }
 
@@ -179,7 +185,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     //remove empties
     let existingPlayersLength = existingPlayers.filter(Boolean).length
 
-    if (existingPlayersLength === formationValue){
+    if (existingPlayersLength === formationValue) {
       return existingPlayers.filter(Boolean);
     }
 
@@ -199,6 +205,12 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     return players;
   }
 
+  // private setCanSave(positionAmount: number) {
+  //   this.playersSelected = this.playersSelected + positionAmount;
+  //   console.log("this.playersSelected", this.playersSelected);
+  //   this.canSave = this.playersSelected === 11;
+  // }
+
   // Resets values
   private Reset() {
     this.canPageRight = false;
@@ -208,5 +220,45 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.teamService.page.next(1);
     this.positionService.teamListPosition.next('');
+  }
+
+  save() {
+    let team: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
+    console.log("team", team);
+    if (!this.checkMaximumPlayersSelected(team)) {
+      this.error = "You must have 11 players to save a team";
+      return;
+    }
+
+    this.isLoading = true;
+
+    console.log("erm",);
+
+
+    this.teamService.createUserTeam(<Player[]>team)
+      .subscribe({
+        next: () => {
+          console.log("Player Created")
+          this.isLoading = false;
+
+        },
+        error: (errorMessage: string) => {
+          this.error = errorMessage;
+          this.isLoading = false;
+        }
+      });
+  }
+
+  private checkMaximumPlayersSelected(team: (Player | undefined)[]) {
+    console.log(team);
+
+    let playersFull = team.every((player) => {
+      return player != undefined;
+    });
+
+    this.playersSelected = 11;
+    console.log(playersFull);
+
+    return playersFull && this.playersSelected === 11
   }
 }

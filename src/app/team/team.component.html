@@ -3,6 +3,8 @@
     [forwardCount]="forwards.length" *ngIf="playerToModify"></app-modify-selection>
 <app-error *ngIf="error" [(message)]="error"></app-error>
 
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+
 <div class="row">
     <div class="col-sm-8">
         <div class="img-container">
@@ -16,7 +18,7 @@
                         </select>
                     </div>
                     <div class="buttons">
-                        <button type="submit" [disabled]="!canSave" class="btn btn-success">Save</button>
+                        <button type="submit" (click)="save()" class="btn btn-success">Save</button>
                         <button type="button" class="btn btn-danger">Cancel</button>
                     </div>
                 </div>

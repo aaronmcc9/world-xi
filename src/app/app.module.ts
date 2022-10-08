@@ -19,6 +19,7 @@ import { TeamListComponent } from './team/team-list/team-list.component';
 import { PlayersInPositionComponent } from './team/team-list/players-in-position/players-in-position.component';
 import { FormationRowComponent } from './team/formation-row/formation-row.component';
 import { ModifySelectionComponent } from './team/modify-selection/modify-selection.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { ModifySelectionComponent } from './team/modify-selection/modify-selecti
     PlayersInPositionComponent,
     FormationRowComponent,
     ModifySelectionComponent,
+    LoadingSpinnerComponent,
   ],
   imports: [
     BrowserModule,

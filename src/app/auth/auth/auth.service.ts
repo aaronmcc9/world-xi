@@ -106,4 +106,8 @@ export class AuthService {
 
     }
 
+    getCurrentUserId(): string | undefined{
+        return this.user.getValue()?.id;
+    }
+
 }

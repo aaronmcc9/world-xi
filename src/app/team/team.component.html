@@ -1,9 +1,6 @@
-<app-modify-selection [defenceCount]="defence.length"
-    [midfieldCount]="midfield.length"
-    [forwardCount]="forwards.length" *ngIf="playerToModify"></app-modify-selection>
+<app-modify-selection [defenceCount]="defence.length" [midfieldCount]="midfield.length" [forwardCount]="forwards.length"
+    *ngIf="playerToModify"></app-modify-selection>
 <app-error *ngIf="error" [(message)]="error"></app-error>
-
-<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
 
 <div class="row">
     <div class="col-sm-8">
@@ -34,14 +31,14 @@
     <div class="col-sm-4 team-list">
         <div class="col-sm-8">
             <div class="player-filter-container">
-                <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)" #filterValue
-                    class="player-filter col-xs-6">
+                <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
+                    #filterValue class="player-filter col-xs-6">
                     <option value="">-- All --</option>
                     <option value="{{p}}" *ngFor="let p of positions">-- {{p}} --</option>
                 </select>
             </div>
 
-            <app-team-list ></app-team-list>
+            <app-team-list></app-team-list>
 
             <div class="button-container">
                 <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
@@ -54,3 +51,6 @@
         </div>
     </div>
 </div>
+
+<app-alert *ngIf="alertVisible" [alertType]="alertType" [message]="alertMessage"></app-alert>
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

@@ -1,0 +1,14 @@
+.alert-container {
+    position: fixed;
+    top: 1%;
+    left: 38%;
+    border-radius: 1em;
+    border: 2px solid;
+    padding: 0.7em 1em;
+    width: 40rem;
+}
+
+p{
+    text-align: center;
+    margin: 0;
+}

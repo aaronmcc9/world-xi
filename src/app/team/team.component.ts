@@ -6,6 +6,7 @@ import { pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { PlayersService } from '../players/players.service';
 import { Player } from '../players/player.model';
+import { AlertType } from '../alert/alert-type.enum';
 
 @Component({
   selector: 'app-team',
@@ -41,6 +42,11 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   playersSelected: number = 0;
   playerToModify: Player | null = null;
   canSave: boolean = false;
+
+  //alerts
+  alertVisible = false;
+  alertType: AlertType = AlertType.Warning;
+  alertMessage: string = '';
 
   //subscriptions  
   pageSubscription = new Subscription();
@@ -240,7 +246,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           console.log("Player Created")
           this.isLoading = false;
-
+          this.toggleAlert("Your team has been successfully created!", AlertType.Success);
         },
         error: (errorMessage: string) => {
           this.error = errorMessage;
@@ -257,8 +263,26 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.playersSelected = 11;
-    console.log(playersFull);
-
     return playersFull && this.playersSelected === 11
+  }
+
+  private toggleAlert(message?: string, alertType?: AlertType) {
+    if (this.alertVisible) {
+      //close if open
+      this.alertMessage = "";
+      this.alertType = AlertType.None;
+      this.alertVisible = false;
+    }
+    else {
+      //open if closed
+      this.alertMessage = message ?? '';
+      this.alertType = alertType ?? AlertType.None;
+      this.alertVisible = true;
+
+      //closes alert
+      setTimeout(() => {
+        this.toggleAlert();
+      }, 6000)
+    }
   }
 }

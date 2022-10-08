@@ -20,6 +20,8 @@ import { PlayersInPositionComponent } from './team/team-list/players-in-position
 import { FormationRowComponent } from './team/formation-row/formation-row.component';
 import { ModifySelectionComponent } from './team/modify-selection/modify-selection.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { AlertComponent } from './alert/alert.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -37,13 +39,15 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
     FormationRowComponent,
     ModifySelectionComponent,
     LoadingSpinnerComponent,
+    AlertComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    BrowserAnimationsModule
   ],
   providers: [PlayersService,
   {provide: HTTP_INTERCEPTORS,

@@ -76,7 +76,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
-      console.log(goalkeeper.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
       // this.setCanSave(goalkeeper.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
       this.goalkeeper = goalkeeper;
     });
@@ -95,6 +94,20 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.setCanSave(forwards.filter(Boolean).length - this.forwards.filter(Boolean).length);
       this.forwards = forwards;
     });
+
+    this.isLoading = true;
+    this.teamService.fetchUserTeam().subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.canSave = false;
+        },
+        error: (errorMessage: string) => {
+          console.log(errorMessage);
+          this.error = errorMessage;
+          this.isLoading = false;
+
+        }
+      });
 
     if (this.playerCount === 0)
       this.playerCount = this.playersService.players.length;
@@ -230,7 +243,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   save() {
     let team: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
-    console.log("team", team);
     if (!this.checkMaximumPlayersSelected(team)) {
       this.error = "You must have 11 players to save a team";
       return;
@@ -238,15 +250,12 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isLoading = true;
 
-    console.log("erm",);
-
-
-    this.teamService.createUserTeam(<Player[]>team)
+    this.teamService.saveUserTeam(<Player[]>team)
       .subscribe({
         next: () => {
           console.log("Player Created")
           this.isLoading = false;
-          this.toggleAlert("Your team has been successfully created!", AlertType.Success);
+          this.toggleAlert("Your team has been successfully updated!", AlertType.Success);
         },
         error: (errorMessage: string) => {
           this.error = errorMessage;
@@ -255,9 +264,10 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  private checkMaximumPlayersSelected(team: (Player | undefined)[]) {
-    console.log(team);
+  cancel(){
+  }
 
+  private checkMaximumPlayersSelected(team: (Player | undefined)[]) {
     let playersFull = team.every((player) => {
       return player != undefined;
     });
@@ -282,7 +292,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       //closes alert
       setTimeout(() => {
         this.toggleAlert();
-      }, 6000)
+      }, 7000)
     }
   }
 }

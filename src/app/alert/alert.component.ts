@@ -1,18 +1,24 @@
-import { animate, style, transition, trigger } from '@angular/animations';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AlertType } from './alert-type.enum';
-
+//style({ opacity: 0 }
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css'],
   animations: [
     trigger('fade', [
-      transition(':enter', [
-        animate(1000, style({opacity: 1}))
+      state('invisible', style({
+        transform: 'translateY(0)'
+      })),
+      state('visible', style({
+        transform: 'translateY(70px)'
+      })),
+      transition('invisible => visible', [
+        animate(300)
       ]),
-      transition(':leave', [
-        animate(1000, style({opacity: 0}))
+      transition('visible => invisible', [
+        animate(300)
       ])
     ])
   ]
@@ -22,12 +28,12 @@ export class AlertComponent implements OnInit, OnDestroy {
   @Input('alertType') alertType: AlertType = AlertType.None;
   @Input('message') message: string = '';
   alertStyle: string = '';
+  state = "invisible";
 
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.alertType)
     switch (this.alertType) {
       case AlertType.None:
         this.alertStyle = '';
@@ -47,7 +53,15 @@ export class AlertComponent implements OnInit, OnDestroy {
         break;
     }
 
-    console.log("this.alertStyle", this.alertStyle)
+    if (this.alertType != AlertType.None) {
+      setTimeout(() => {
+        this.state = "visible";
+      }, 200);
+
+      setTimeout(() => {
+        this.state = "invisible";
+      }, 6000);
+    }
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
 export class Team {
 
-    constructor(private startingPlayerIds: number, private formation: string) { }
+    constructor(private players: number, private formation: string) { }
 }

@@ -22,6 +22,7 @@ import { ModifySelectionComponent } from './team/modify-selection/modify-selecti
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { AlertComponent } from './alert/alert.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RevertTeamComponent } from './team/revert-team/revert-team.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ModifySelectionComponent,
     LoadingSpinnerComponent,
     AlertComponent,
+    RevertTeamComponent,
   ],
   imports: [
     BrowserModule,

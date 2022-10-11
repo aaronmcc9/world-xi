@@ -1,4 +1,6 @@
+import { Player } from "../players/player.model";
+
 export class Team {
 
-    constructor(private players: number, private formation: string) { }
+    constructor(private players: Player[], private formation: string) { }
 }

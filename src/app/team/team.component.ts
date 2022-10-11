@@ -7,6 +7,7 @@ import { TeamService } from './team.service';
 import { PlayersService } from '../players/players.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
+import { Team } from './team.model';
 
 @Component({
   selector: 'app-team',
@@ -47,6 +48,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   alertVisible = false;
   alertType: AlertType = AlertType.Warning;
   alertMessage: string = '';
+
 
   //subscriptions  
   pageSubscription = new Subscription();
@@ -97,17 +99,25 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isLoading = true;
     this.teamService.fetchUserTeam().subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.canSave = false;
-        },
-        error: (errorMessage: string) => {
-          console.log(errorMessage);
-          this.error = errorMessage;
-          this.isLoading = false;
-
+      next: (res: Team) => {
+        if (res) {
+          if (res['formation']) {
+            this.setFormation(res['formation']);
+          }
+          if (res['players']) {
+            this.playerCount = res['players'].length;
+          }
         }
-      });
+
+        this.isLoading = false;
+        this.canSave = false;
+      },
+      error: (errorMessage: string) => {
+        this.error = errorMessage;
+        this.isLoading = false;
+
+      }
+    });
 
     if (this.playerCount === 0)
       this.playerCount = this.playersService.players.length;
@@ -212,7 +222,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let indexesToFill = (formationValue - existingPlayersLength) - 1;
 
     if (indexesToFill < 0) {
-      this.error = "There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation";
+      this.toggleAlert("There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation", AlertType.Danger);
       throw new Error('Player out of position exception');
     }
 
@@ -242,18 +252,19 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   save() {
-    let team: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
-    if (!this.checkMaximumPlayersSelected(team)) {
-      this.error = "You must have 11 players to save a team";
+    let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
+    if (!this.checkMaximumPlayersSelected(players)) {
+      this.toggleAlert("You must have 11 players to save a team", AlertType.Danger);
       return;
     }
 
-    this.isLoading = true;
+    let formation = this.form.controls['formation'].value;
+    let team = new Team(<Player[]>players, formation)
 
-    this.teamService.saveUserTeam(<Player[]>team)
+    this.isLoading = true;
+    this.teamService.saveUserTeam(team)
       .subscribe({
         next: () => {
-          console.log("Player Created")
           this.isLoading = false;
           this.toggleAlert("Your team has been successfully updated!", AlertType.Success);
         },
@@ -264,7 +275,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  cancel(){
+  revert(action: string) {
   }
 
   private checkMaximumPlayersSelected(team: (Player | undefined)[]) {

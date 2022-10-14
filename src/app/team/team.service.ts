@@ -5,6 +5,7 @@ import { AuthService } from "../auth/auth/auth.service";
 import { Position } from "../players/player-position";
 import { Player } from "../players/player.model";
 import { Team } from "./team.model";
+import {__, cloneDeep } from "lodash";
 
 @Injectable({
   providedIn: "root"
@@ -37,7 +38,8 @@ export class TeamService {
 
     return this.http.put<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json', team)
       .pipe(catchError((error) => throwError(error)),
-      tap((res) => this.savedTeam = res));
+      tap((res) => {this.savedTeam = this.savedTeam = cloneDeep(res);
+      }));
   }
 
 
@@ -54,9 +56,10 @@ export class TeamService {
           if (res) {
             let players = <Player[]>Object.values(res['players']);
 
-            if (players && players.length != 10) {
-              //to keep record before changes
-              this.savedTeam = res;
+            console.log(players.length);
+            if (players && players.length === 11) {
+              //to keep record before user makes changes
+              this.savedTeam = cloneDeep(res);
               this.setPlayersByPosition(players);
             }
           }
@@ -72,6 +75,10 @@ export class TeamService {
     let midfield = players.filter((player) => player.position === Position[Position.Midfield])
     let forward = players.filter((player) => player.position === Position[Position.Forward])
     this.setPlayersInPosition(goalkeeper, defence, midfield, forward);
+  }
+
+  private setSelectionStatus(){
+
   }
 
   private setPlayersInPosition(goalkeeper: Player[], defence: Player[], midfield: Player[],

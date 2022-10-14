@@ -1,5 +1,8 @@
 <app-modify-selection [defenceCount]="defence.length" [midfieldCount]="midfield.length" [forwardCount]="forwards.length"
     *ngIf="playerToModify"></app-modify-selection>
+<app-revert-team *ngIf="revertAction"
+ [action]="revertAction"
+ (closeModal)="toggleRevertModal($event)"></app-revert-team>
 <app-error *ngIf="error" [(message)]="error"></app-error>
 
 <div class="row">
@@ -16,7 +19,8 @@
                     </div>
                     <div class="buttons">
                         <button type="submit" (click)="save()" class="btn btn-success">Save</button>
-                        <button type="button" (click)="revert('Cancel')" class="btn btn-danger">Cancel</button>
+                        <button type="button" (click)="toggleRevertModal('Reset')" class="btn btn-warning">Reset</button>
+                        <button type="button" (click)="toggleRevertModal('Cancel')" class="btn btn-danger">Cancel</button>
                     </div>
                 </div>
             </form>

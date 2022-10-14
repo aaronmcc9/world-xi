@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { cloneDeep } from 'lodash';
 import { TeamService } from '../team.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { TeamService } from '../team.service';
 export class RevertTeamComponent implements OnInit {
 
   @Input('action') action: string = '';
+  @Output() closeModal = new EventEmitter<string>();
   title = '';
   body = '';
   error = ''
@@ -28,16 +30,20 @@ export class RevertTeamComponent implements OnInit {
   }
 
   confirm() {
-
+    this.action ?
+      this.cancelChanges() :
+      this.reset();
   }
 
   cancelChanges() {
-    let savedTeam = this.teamService.savedTeam;
+    let savedTeam = cloneDeep(this.teamService.savedTeam);
 
+    //if a saved team doesn't exist, reset everyone
     if (!savedTeam)
       this.reset();
 
     this.teamService.setPlayersByPosition(savedTeam['players']);
+    this.close();
   }
 
   reset() {
@@ -45,8 +51,7 @@ export class RevertTeamComponent implements OnInit {
       this.teamService.savedTeam['formation'] : '442';
   }
 
-  close(){
-    
+  close() {
+    this.closeModal.emit('');
   }
-
 }

@@ -44,11 +44,13 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   playerToModify: Player | null = null;
   canSave: boolean = false;
 
-  //alerts
+  //alerts  
   alertVisible = false;
   alertType: AlertType = AlertType.Warning;
   alertMessage: string = '';
 
+  //Cancel/ Reset
+  revertAction = '';
 
   //subscriptions  
   pageSubscription = new Subscription();
@@ -275,8 +277,11 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  revert(action: string) {
+  toggleRevertModal(action: string) {
+    this.revertAction = action;
   }
+
+
 
   private checkMaximumPlayersSelected(team: (Player | undefined)[]) {
     let playersFull = team.every((player) => {

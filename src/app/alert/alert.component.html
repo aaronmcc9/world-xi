@@ -1,7 +1,8 @@
 <div class="alert-container alert-dismissible" 
+    *ngIf="message"    
     [ngClass]="alertStyle"
     [@fade]="state">
-    <div class="">
+    <div>
         <p>{{message}}</p>
     </div>
 </div>

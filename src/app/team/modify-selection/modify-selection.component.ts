@@ -1,5 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { AlertType } from 'src/app/alert/alert-type.enum';
+import { AlertService } from 'src/app/alert/alert.service';
 import { Position } from 'src/app/players/player-position';
 import { Player } from 'src/app/players/player.model';
 import { SelectionAction } from '../selection-action';
@@ -15,15 +17,18 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
   player: Player | null = null;
   action: string = '';
   error: string = '';
+  isPlayerSelected = false;
+  playersInPositionCount = 1;
 
   @Input('defenceCount') defenceCount = 1;
   @Input('midfieldCount') midfieldCount = 1;
   @Input('forwardCount') forwardCount = 1;
 
   playerToModifySubscription = new Subscription();
+  playersListToModifySubscription = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
 
 
-  constructor(private teamService: TeamService) { }
+  constructor(private teamService: TeamService, private alertService: AlertService) { }
 
   ngOnInit(): void {
 
@@ -31,8 +36,56 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
       this.player = player;
     });
 
-    this.action = this.player?.isSelected ? SelectionAction[SelectionAction.Remove]
-      : SelectionAction[SelectionAction.Select];
+    switch (this.player!.position) {
+      case Position[Position.Goalkeeper]:
+
+        //checks current selected players for the position
+        this.isPlayerSelected = this.isPlayerSelected = this.teamService.teamGoalkeeper.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
+
+        //sets appropriate action based on selection result
+        this.action = this.isPlayerSelected ? SelectionAction[SelectionAction.Remove]
+          : SelectionAction[SelectionAction.Select];
+
+        this.playersInPositionCount = 1;
+        this.playersListToModifySubscription = this.teamService.teamGoalkeeper;
+        break;
+
+      case Position[Position.Defender]:
+        //checks current selected players for the position
+        this.isPlayerSelected = this.teamService.teamDefence.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
+
+        //sets appropriate action based on selection result
+        this.action = this.isPlayerSelected ? SelectionAction[SelectionAction.Remove]
+          : SelectionAction[SelectionAction.Select];
+
+        this.playersInPositionCount = this.defenceCount;
+        this.playersListToModifySubscription = this.teamService.teamDefence;
+        break;
+
+      case Position[Position.Midfield]:
+        //checks current selected players for the position
+        this.isPlayerSelected = this.teamService.teamMidfield.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
+
+        //sets appropriate action based on selection result
+        this.action = this.isPlayerSelected ? SelectionAction[SelectionAction.Remove]
+          : SelectionAction[SelectionAction.Select];
+
+        this.playersInPositionCount = this.midfieldCount;
+        this.playersListToModifySubscription = this.teamService.teamMidfield;
+        break;
+
+      case Position[Position.Forward]:
+        //checks current selected players for the position
+        this.isPlayerSelected = this.teamService.teamForward.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
+
+        //sets appropriate action based on selection result
+        this.action = this.isPlayerSelected ? SelectionAction[SelectionAction.Remove]
+          : SelectionAction[SelectionAction.Select];
+
+        this.playersInPositionCount = this.forwardCount;
+        this.playersListToModifySubscription = this.teamService.teamForward;
+        break;
+    }
   }
 
   ngOnDestroy(): void {
@@ -56,91 +109,33 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
   }
 
   private modifyPlayer() {
+    let playersInPosition = this.playersListToModifySubscription.getValue()
+    if (this.action == SelectionAction[SelectionAction.Select]) {
 
-    switch (this.player!.position) {
-      case Position[Position.Goalkeeper]:
+      //filter out empty values
+      let spotsTaken = playersInPosition.filter(Boolean).length;
 
-        if (this.action == SelectionAction[SelectionAction.Select]) {
-          let goalkeeper = this.teamService.teamGoalkeeper.getValue();
-          //only will ever be one goalkeeper
-          if (goalkeeper[0] === undefined) {
-            this.teamService.teamGoalkeeper.next(new Array<Player>(this.player!));
-            this.endModification();
-          }
-        } //Remove player
-        else {
-          this.teamService.teamGoalkeeper.next(new Array(1));
-          this.endModification();
-        }
+      if (spotsTaken < this.playersInPositionCount) {
+        //if one is for goalkeeper
+        this.playersInPositionCount === 1 ?
+          playersInPosition[0] = this.player! :
+          playersInPosition = this.addPlayer(playersInPosition, this.playersInPositionCount - 1);
 
-        break;
-
-      case Position[Position.Defender]:
-        let defence = this.teamService.teamDefence.getValue();
-
-        if (this.action == SelectionAction[SelectionAction.Select]) {
-
-          //filter out empty values
-          let spotsTaken = defence.filter(Boolean).length;
-
-          if (spotsTaken < this.defenceCount) {
-            defence = this.addPlayer(defence, this.defenceCount - 1);
-            this.endModification();
-          }
-        }
-        else {
-          defence = this.removePlayer(defence);
-          this.endModification();
-        }
-
-        this.teamService.teamDefence.next(defence);
-        break;
-
-      case Position[Position.Midfield]:
-        let midfield = this.teamService.teamMidfield.getValue();
-
-        if (this.action == SelectionAction[SelectionAction.Select]) {
-          //filter out empty values
-          let spotsTaken = midfield.filter(Boolean).length;
-
-          if (spotsTaken < this.midfieldCount) {
-            midfield = this.addPlayer(midfield, this.midfieldCount - 1);;
-            this.endModification();
-          }
-        }
-        else {
-          midfield = this.removePlayer(midfield);
-          this.endModification();
-        }
-
-        this.teamService.teamMidfield.next(midfield);
-        break;
-
-      case Position[Position.Forward]:
-        let forwards = this.teamService.teamForward.getValue();
-
-        if (this.action == SelectionAction[SelectionAction.Select]) {
-          //filter out empty values
-          let spotsTaken = forwards.filter(Boolean).length;
-
-          if (spotsTaken < this.forwardCount) {
-            forwards = this.addPlayer(forwards, this.forwardCount - 1);
-            this.endModification();
-          }
-        }
-        else {
-          forwards = this.removePlayer(forwards);
-          this.endModification();
-        }
-
-        this.teamService.teamForward.next(forwards);
-        break;
+        this.endModification();
+      }
     }
+    else {
+      playersInPosition = this.removePlayer(playersInPosition);
+      this.endModification();
+    }
+
+    this.playersListToModifySubscription.next(playersInPosition);
 
     //player was unable to be added due to maximum reached for their position
     if (this.player != null) {
       this.changeSelectionStatus(); //revert initial selection change
-      this.error = "Please remove an existing player in the " + this.player.position + " position to complete the selection."
+      this.alertService.toggleAlert("Please remove an existing player in the " + this.player.position + " position to complete the selection.",
+        AlertType.Danger);
     }
   }
 

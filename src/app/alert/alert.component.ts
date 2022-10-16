@@ -1,7 +1,10 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AlertType } from './alert-type.enum';
-//style({ opacity: 0 }
+import { Alert } from './alert.model';
+import { AlertService } from './alert.service';
+
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
@@ -25,15 +28,24 @@ import { AlertType } from './alert-type.enum';
 })
 export class AlertComponent implements OnInit, OnDestroy {
 
-  @Input('alertType') alertType: AlertType = AlertType.None;
-  @Input('message') message: string = '';
+  alertType: AlertType = AlertType.None;
+  message: string = '';
   alertStyle: string = '';
   state = "invisible";
+  alertSubscription = new Subscription()
 
-
-  constructor() { }
+  constructor(private alertService: AlertService) { }
 
   ngOnInit(): void {
+
+    this.alertSubscription = this.alertService.alertSubscription.subscribe((alert: Alert) => {
+      this.message = alert.message;
+      this.alertType = alert.alertType;
+      this.setAlert();
+    });
+  }
+
+  private setAlert() {
     switch (this.alertType) {
       case AlertType.None:
         this.alertStyle = '';
@@ -68,5 +80,6 @@ export class AlertComponent implements OnInit, OnDestroy {
     this.message = '';
     this.alertStyle = '';
     this.alertType = AlertType.None;
+    this.alertSubscription.unsubscribe();
   }
 }

@@ -17,7 +17,7 @@ export class TeamService {
   page = new BehaviorSubject<number>(1);
   playerToModify = new BehaviorSubject<Player | null>(null);
 
-  teamGoalkeeper = new BehaviorSubject<Player[]>(new Array<Player>(1));
+  teamGoalkeeper = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(1));
   teamDefence = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
@@ -56,7 +56,6 @@ export class TeamService {
           if (res) {
             let players = <Player[]>Object.values(res['players']);
 
-            console.log(players.length);
             if (players && players.length === 11) {
               //to keep record before user makes changes
               this.savedTeam = cloneDeep(res);
@@ -69,11 +68,16 @@ export class TeamService {
         }));
   }
 
+  /**
+   * 
+   * @param players 
+   * Sorts players by position before pushing the results to the relevant subscribers
+   */
   setPlayersByPosition(players: Player[]) {
-    let goalkeeper = players.filter((player) => player.position === Position[Position.Goalkeeper])
-    let defence = players.filter((player) => player.position === Position[Position.Defender])
-    let midfield = players.filter((player) => player.position === Position[Position.Midfield])
-    let forward = players.filter((player) => player.position === Position[Position.Forward])
+    let goalkeeper = players.filter((player) => player.position === Position[Position.Goalkeeper]);
+    let defence = players.filter((player) => player.position === Position[Position.Defender]);
+    let midfield = players.filter((player) => player.position === Position[Position.Midfield]);
+    let forward = players.filter((player) => player.position === Position[Position.Forward]);
     this.setPlayersInPosition(goalkeeper, defence, midfield, forward);
   }
 

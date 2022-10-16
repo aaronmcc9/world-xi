@@ -8,6 +8,8 @@ import { PlayersService } from '../players/players.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
+import { cloneDeep } from 'lodash';
+import { AlertService } from '../alert/alert.service';
 
 @Component({
   selector: 'app-team',
@@ -24,7 +26,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = false;
 
   //formation values
-  goalkeeper: Player[] = new Array<Player>(1);
+  goalkeeper: (Player | undefined)[] = new Array<Player>(1);
   defence: (Player | undefined)[] = new Array<Player>(4);
   midfield: (Player | undefined)[] = new Array<Player>(4);
   forwards: (Player | undefined)[] = new Array<Player>(2);
@@ -44,11 +46,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   playerToModify: Player | null = null;
   canSave: boolean = false;
 
-  //alerts  
-  alertVisible = false;
-  alertType: AlertType = AlertType.Warning;
-  alertMessage: string = '';
-
   //Cancel/ Reset
   revertAction = '';
 
@@ -63,7 +60,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   forwardsSubscription = new Subscription()
 
   constructor(private positionService: PositionService,
-    private teamService: TeamService, private playersService: PlayersService) { }
+    private teamService: TeamService, private playersService: PlayersService,
+    private alertService: AlertService) { }
 
   //#hooks
   ngOnInit(): void {
@@ -80,25 +78,32 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
-      // this.setCanSave(goalkeeper.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
-      this.goalkeeper = goalkeeper;
+      let newValue = cloneDeep(goalkeeper);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
+      this.goalkeeper = newValue;
     });
 
     this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
-      // this.setCanSave(defence.filter(Boolean).length - this.defence.filter(Boolean).length);
-      this.defence = defence;
+      let newValue = cloneDeep(defence);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.defence.filter(Boolean).length);
+      this.defence = newValue;
     });
 
     this.midfieldSubscription = this.teamService.teamMidfield.subscribe((midfield) => {
-      // this.setCanSave(midfield.filter(Boolean).length - this.midfield.filter(Boolean).length);
-      this.midfield = midfield;
+      let newValue = cloneDeep(midfield);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.midfield.filter(Boolean).length);
+      this.midfield = newValue;
     });
 
     this.forwardsSubscription = this.teamService.teamForward.subscribe((forwards) => {
-      // this.setCanSave(forwards.filter(Boolean).length - this.forwards.filter(Boolean).length);
-      this.forwards = forwards;
-    });
+      let newValue = cloneDeep(forwards);
 
+      this.setCanSave(newValue.filter(Boolean).length - this.forwards.filter(Boolean).length);
+      this.forwards = newValue;
+    });
     this.isLoading = true;
     this.teamService.fetchUserTeam().subscribe({
       next: (res: Team) => {
@@ -224,7 +229,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let indexesToFill = (formationValue - existingPlayersLength) - 1;
 
     if (indexesToFill < 0) {
-      this.toggleAlert("There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation", AlertType.Danger);
+      this.alertService.toggleAlert("There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation", AlertType.Danger);
       throw new Error('Player out of position exception');
     }
 
@@ -236,11 +241,11 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     return players;
   }
 
-  // private setCanSave(positionAmount: number) {
-  //   this.playersSelected = this.playersSelected + positionAmount;
-  //   console.log("this.playersSelected", this.playersSelected);
-  //   this.canSave = this.playersSelected === 11;
-  // }
+  private setCanSave(positionAmount: number) {
+    this.playersSelected = this.playersSelected + positionAmount;
+    this.canSave = this.playersSelected === 11;
+    console.log("this.playersSelected", this.playersSelected, this.canSave);
+  }
 
   // Resets values
   private Reset() {
@@ -256,7 +261,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   save() {
     let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
     if (!this.checkMaximumPlayersSelected(players)) {
-      this.toggleAlert("You must have 11 players to save a team", AlertType.Danger);
+      this.alertService.toggleAlert("You must have 11 players to save a team", AlertType.Danger);
       return;
     }
 
@@ -268,7 +273,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.isLoading = false;
-          this.toggleAlert("Your team has been successfully updated!", AlertType.Success);
+          this.alertService.toggleAlert("Your team has been successfully updated!", AlertType.Success);
         },
         error: (errorMessage: string) => {
           this.error = errorMessage;
@@ -278,6 +283,13 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleRevertModal(action: string) {
+    //if reset is clicked a 3 character string will be emitted
+    //set it to empty after resetting the formation to close the modal
+    if(action && action.length === 3){
+      this.setFormation(action);
+      action = '';
+    }
+
     this.revertAction = action;
   }
 
@@ -292,23 +304,5 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     return playersFull && this.playersSelected === 11
   }
 
-  private toggleAlert(message?: string, alertType?: AlertType) {
-    if (this.alertVisible) {
-      //close if open
-      this.alertMessage = "";
-      this.alertType = AlertType.None;
-      this.alertVisible = false;
-    }
-    else {
-      //open if closed
-      this.alertMessage = message ?? '';
-      this.alertType = alertType ?? AlertType.None;
-      this.alertVisible = true;
 
-      //closes alert
-      setTimeout(() => {
-        this.toggleAlert();
-      }, 7000)
-    }
-  }
 }

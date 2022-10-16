@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { cloneDeep } from 'lodash';
+import { Player } from 'src/app/players/player.model';
 import { TeamService } from '../team.service';
 
 @Component({
@@ -30,7 +31,7 @@ export class RevertTeamComponent implements OnInit {
   }
 
   confirm() {
-    this.action ?
+    this.action == 'Cancel' ?
       this.cancelChanges() :
       this.reset();
   }
@@ -41,17 +42,25 @@ export class RevertTeamComponent implements OnInit {
     //if a saved team doesn't exist, reset everyone
     if (!savedTeam)
       this.reset();
-
-    this.teamService.setPlayersByPosition(savedTeam['players']);
-    this.close();
+    else {
+      this.teamService.setPlayersByPosition(savedTeam['players']);
+      this.close('');
+    }
   }
 
   reset() {
     let savedFormation = this.teamService.savedTeam['formation'] ?
       this.teamService.savedTeam['formation'] : '442';
+
+    this.teamService.teamGoalkeeper.next(new Array<(Player | undefined)>(1))
+    this.teamService.teamDefence.next(new Array<(Player | undefined)>(+savedFormation[0]))
+    this.teamService.teamMidfield.next(new Array<(Player | undefined)>(+savedFormation[1]))
+    this.teamService.teamForward.next(new Array<(Player | undefined)>(+savedFormation[2]))
+
+    this.close(savedFormation);
   }
 
-  close() {
-    this.closeModal.emit('');
+  close(formation: string) {
+    this.closeModal.emit(formation);
   }
 }

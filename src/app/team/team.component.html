@@ -18,7 +18,7 @@
                         </select>
                     </div>
                     <div class="buttons">
-                        <button type="submit" (click)="save()" class="btn btn-success">Save</button>
+                        <button type="submit" [disabled]="!canSave" (click)="save()" class="btn btn-success">Save</button>
                         <button type="button" (click)="toggleRevertModal('Reset')" class="btn btn-warning">Reset</button>
                         <button type="button" (click)="toggleRevertModal('Cancel')" class="btn btn-danger">Cancel</button>
                     </div>
@@ -56,5 +56,5 @@
     </div>
 </div>
 
-<app-alert *ngIf="alertVisible" [alertType]="alertType" [message]="alertMessage"></app-alert>
+<app-alert></app-alert>
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

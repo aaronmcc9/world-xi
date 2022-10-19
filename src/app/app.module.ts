@@ -10,7 +10,7 @@ import { PlayersDetailComponent } from './players/players-detail/players-detail.
 import { AddPlayerComponent } from './players/add-player/add-player.component';
 import { TeamComponent } from './team/team.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ErrorComponent } from './error/error.component';
 import { PlayersService } from './players/players.service';
@@ -23,6 +23,12 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 import { AlertComponent } from './alert/alert.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RevertTeamComponent } from './team/revert-team/revert-team.component';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+
+export function HttpLoaderFactory(http: HttpClient){
+  return new TranslateHttpLoader(http,'./assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -49,7 +55,15 @@ import { RevertTeamComponent } from './team/revert-team/revert-team.component';
     ReactiveFormsModule,
     HttpClientModule,
     FontAwesomeModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'common-en',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [PlayersService,
   {provide: HTTP_INTERCEPTORS,

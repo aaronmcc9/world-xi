@@ -244,7 +244,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   private setCanSave(positionAmount: number) {
     this.playersSelected = this.playersSelected + positionAmount;
     this.canSave = this.playersSelected === 11;
-    console.log("this.playersSelected", this.playersSelected, this.canSave);
   }
 
   // Resets values

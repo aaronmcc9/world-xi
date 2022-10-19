@@ -9,25 +9,25 @@
 
             <div class="data-container">
                 <div class="form-group">
-                    <label class="display-text">Club: <span class="player-text">{{player.club}}</span></label>
+                    <label class="display-text">{{'CLUB' | translate}}: <span class="player-text">{{player.club}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">Country: <span class="player-text">{{player.country}}</span></label>
+                    <label class="display-text">{{'COUNTRY' | translate}}: <span class="player-text">{{player.country}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">Position: <span class="player-text">{{player.position}}</span></label>
+                    <label class="display-text">{{'POSITION' | translate}}: <span class="player-text">{{player.position}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">Age: <span class="player-text">{{player.age}}</span></label>
+                    <label class="display-text">{{'AGE' | translate}}: <span class="player-text">{{player.age}}</span></label>
                 </div>
             </div>
 
             <div class="data-container">
-                <button class="btn btn-primary float-right" type="button" routerLink="/team">Team Selection</button>
+                <button class="btn btn-primary float-right" type="button" routerLink="/team">{{'TEAM_SELECTION' | translate}}</button>
 
                 <div class="btn-data">
-                    <button class="btn btn-success" type="button" routerLink="../edit/{{player.id}}">Edit</button>
-                    <button class="btn btn-danger" (click)="onDeletePlayer()" type="button">Delete</button>
+                    <button class="btn btn-success" type="button" routerLink="../edit/{{player.id}}">{{'EDIT' | translate}}</button>
+                    <button class="btn btn-danger" (click)="onDeletePlayer()" type="button">{{'DELETE' | translate}}</button>
                 </div> 
             </div>
         </div>

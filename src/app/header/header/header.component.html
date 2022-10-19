@@ -4,18 +4,18 @@
             <button class="navbar-toggle" type="button" (click)="collapsed = !collapsed">
                 <span class="icon-bar" *ngFor="let iconBar of[1,2,3]"></span>
             </button>
-            <a class="navbar-brand">World XI</a>
+            <a class="navbar-brand">{{'WORLD_XI' | translate}}</a>
 
         </div>
 
         <div class="navbar-collapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
             <ul class="nav navbar-nav">
-                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">Players</a></li>
-                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">Team</a></li>
-                <li *ngIf="!isAuthenticated" routerLinkActive="active"><a routerLink="/auth">Login</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">{{'PLAYERS' | translate}}</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">{{'TEAM' | translate}}</a></li>
+                <li *ngIf="!isAuthenticated" routerLinkActive="active"><a routerLink="/auth">{{'LOGIN' | translate}}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li *ngIf="isAuthenticated"><a (click)="logout()">Logout</a></li>
+                <li *ngIf="isAuthenticated"><a (click)="logout()">{{'LOGOUT' | translate}}</a></li>
             </ul>
         </div>
     </div>

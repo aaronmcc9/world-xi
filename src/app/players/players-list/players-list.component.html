@@ -1,21 +1,21 @@
 <div class="row">
     <div class="col-xs-12 col-md-6 col-md-offset-3">
         <div>
-            <button class="btn btn-success" type="button" routerLink="/players/new">Add Player</button>
-            <h1>Available Players</h1>
+            <button class="btn btn-success" type="button" routerLink="/players/new">{{'ADD_PLAYER' | translate}}</button>
+            <h1>{{'AVAILABLE_PLAYERS' | translate}}</h1>
         </div>
 
-        <h3 *ngIf="players.length === 0">You have no players!</h3>
+        <h3 *ngIf="players.length === 0">{{'USER_NO_PLAYERS' | translate}}</h3>
 
         <table class="table table-bordered table-striped table-mg" *ngIf="players.length > 0">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Club</th>
-                    <th>Country</th>
-                    <th>Position</th>
-                    <th>Age</th>
-                    <th>Selected</th>
+                    <th>{{'NAME' | translate}}</th>
+                    <th>{{'CLUB' | translate}}</th>
+                    <th>{{'COUNTRY' | translate}}</th>
+                    <th>{{'POSITION' | translate}}</th>
+                    <th>{{'AGE' | translate}}</th>
+                    <th>{{'SELECTED' | translate}}</th>
                     <th></th>
                     <th></th>
 

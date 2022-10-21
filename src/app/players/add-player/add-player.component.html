@@ -1,54 +1,58 @@
-<div class="row">
-    <div class="right-nav">
-        <form [formGroup]="form" (ngSubmit)="editMode ? onUpdate() : onCreate()">
-
-            <app-error *ngIf="error" [message]="error"></app-error>
-
-            <div class="row">
-                <button *ngIf="!editMode" [disabled]="!form.valid" class="btn btn-success" type="submit">{{'ADD' | translate}}</button>
-                <button *ngIf="editMode" class="btn btn-success" type="submit">{{'WORLD_XI' | translate}}</button>
-                <button class="btn btn-default" type="button" [disabled]=!form.dirty (click)="onClear()">{{'CLEAR' | translate}}</button>
-                <button class="btn btn-danger" type="button" routerLink="/players">{{'CANCEL' | translate}}</button>
-            </div>
-
-            <h3>{{editMode ? ('EDIT_PLAYER' | translate) : ('CREATE_PLAYER' | translate)}}</h3>
-
-            <img *ngIf="form.value.imagePath != null && form.value.imagePath != ''" [src]="form.value.imagePath" />
-
-            <div class="col-xs-9">
-                <div class="form-group">
-                    <label for="firstName">{{'FIRST_NAME' | translate}}</label>
-                    <input type="text" formControlName="firstName" class="form-control">
+<div class="modify-container">
+    <div class="row">
+        <div class="right-nav">
+            <form [formGroup]="form" (ngSubmit)="editMode ? onUpdate() : onCreate()">
+    
+                <app-error *ngIf="error" [message]="error"></app-error>
+    
+                <div class="row">
+                    <button *ngIf="!editMode" [disabled]="!form.valid" class="btn btn-success" type="submit">{{'ADD' |
+                        translate}}</button>
+                    <button *ngIf="editMode" class="btn btn-success" type="submit">{{'UPDATE' | translate}}</button>
+                    <button class="btn btn-default" type="button" [disabled]=!form.dirty (click)="onClear()">{{'CLEAR' |
+                        translate}}</button>
+                    <button class="btn btn-danger" type="button" routerLink="/players">{{'CANCEL' | translate}}</button>
                 </div>
-                <div class="form-group">
-                    <label for="lastName">{{'LAST_NAME' | translate}}</label>
-                    <input type="text" formControlName="lastName" class="form-control">
+    
+                <h3>{{editMode ? ('EDIT_PLAYER' | translate) : ('CREATE_PLAYER' | translate)}}</h3>
+    
+                <img *ngIf="form.value.imagePath != null && form.value.imagePath != ''" [src]="form.value.imagePath" />
+    
+                <div class="col-xs-9">
+                    <div class="form-group">
+                        <label for="firstName">{{'FIRST_NAME' | translate}}</label>
+                        <input type="text" formControlName="firstName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">{{'LAST_NAME' | translate}}</label>
+                        <input type="text" formControlName="lastName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">{{'AGE' | translate}}</label>
+                        <input type="number" formControlName="age" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="position">{{'POSITION' | translate}}</label>
+                        <select type="text" formControlName="position" class="form-control">
+                            <option *ngFor="let pos of positionTypes">
+                                {{pos}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="club">{{'CLUB' | translate}}</label>
+                        <input type="text" formControlName="club" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="country">{{'COUNTRY' | translate}}</label>
+                        <input type="text" formControlName="country" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="imagePath">{{'IMAGE_SRC' | translate}}</label>
+                        <input type="text" formControlName="imagePath" class="form-control">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="age">{{'AGE' | translate}}</label>
-                    <input type="number" formControlName="age" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="position">{{'POSITION' | translate}}</label>
-                    <select type="text" formControlName="position" class="form-control">
-                        <option *ngFor="let pos of positionTypes">
-                            {{pos}}
-                        </option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="club">{{'CLUB' | translate}}</label>
-                    <input type="text" formControlName="club" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="country">{{'COUNTRY' | translate}}</label>
-                    <input type="text" formControlName="country" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="imagePath">{{'IMAGE_SRC' | translate}}</label>
-                    <input type="text" formControlName="imagePath" class="form-control">
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>

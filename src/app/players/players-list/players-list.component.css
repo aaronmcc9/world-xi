@@ -14,14 +14,14 @@
 }
 
 .table-img-container{
-    width: 15em;
+    width: 15rem;
     height: 15vh;
 }
 
 
 .table>tbody>tr>td {
     vertical-align: middle;
-    padding: 1.5em;
+    padding: 1.5rem;
 }
 
 table.table.table-bordered.table-striped.table-mg{

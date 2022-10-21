@@ -1,5 +1,9 @@
+.modify-container{
+    padding-left: 5rem;
+    overflow-y: auto;
+}
 img{
-    width: 30em;
+    width: 30rem;
     height: 26vh;
-    margin: 1em;
+    margin: 1rem;
 }

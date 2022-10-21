@@ -13,7 +13,7 @@
 }
 
 .form-controls {
-    width: 60em;
+    width: 85rem;
     height: 9vh;
     padding: 1em .2em;
     height: 10vh;
@@ -52,7 +52,7 @@
     height: 10vh;
     display: flex;
     justify-content: center;
-    padding: 2em 1em;
+    padding: 2rem 1rem;
 }
 
 .player-filter {

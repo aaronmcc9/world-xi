@@ -5,11 +5,13 @@
         <h3>Modify Player</h3>
     </div>
     <div class="body">
-            <p>Are you sure you want to {{action | lowercase}} {{player!.firstName}} {{player!.lastName}}</p>
-    
-            <div class="buttons">
-                <button type="button" class="btn btn-default" (click)="endModification()">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="submit()">{{action}}</button>
-            </div>
+        <p>{{"ARE_YOU_SURE_ACTION" | translate: {perform: action | lowercase, firstName: player!.firstName,
+            lastName: player!.lastName} }}
+        </p>
+
+        <div class="buttons">
+            <button type="button" class="btn btn-default" (click)="endModification()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="submit()">{{action}}</button>
+        </div>
     </div>
 </div>

@@ -9,18 +9,18 @@
     <div class="col-sm-8">
         <div class="img-container">
             <form [formGroup]="form">
-                <h2 *ngIf="!canSave" class="text-center">Please Select 11 Players</h2>
+                <h2 *ngIf="!canSave" class="text-center">{{'SELECT_XI' | translate}}</h2>
                 <div class="form-controls">
                     <div class="formation">
-                        <label class="formation-label">Formation</label>
+                        <label class="formation-label">{{'FORMATION' | translate}}</label>
                         <select formControlName="formation" name="formation" id="formation" class="formation-select">
                             <option *ngFor="let f of formationsList">{{f}}</option>
                         </select>
                     </div>
                     <div class="buttons">
-                        <button type="submit" [disabled]="!canSave" (click)="save()" class="btn btn-success">Save</button>
-                        <button type="button" (click)="toggleRevertModal('Reset')" class="btn btn-warning">Reset</button>
-                        <button type="button" (click)="toggleRevertModal('Cancel')" class="btn btn-danger">Cancel</button>
+                        <button type="submit" [disabled]="!canSave" (click)="save()" class="btn btn-success">{{'SAVE' | translate}}</button>
+                        <button type="button" (click)="toggleRevertModal('Reset')" class="btn btn-warning">{{'RESET' | translate}}</button>
+                        <button type="button" (click)="toggleRevertModal('Cancel')" class="btn btn-danger">{{'CANCEL' | translate}}</button>
                     </div>
                 </div>
             </form>
@@ -37,8 +37,8 @@
             <div class="player-filter-container">
                 <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
                     #filterValue class="player-filter col-xs-6">
-                    <option value="">-- All --</option>
-                    <option value="{{p}}" *ngFor="let p of positions">-- {{p}} --</option>
+                    <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
+                    <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: p} }}</option>
                 </select>
             </div>
 

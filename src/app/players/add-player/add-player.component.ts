@@ -1,6 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { AlertType } from 'src/app/alert/alert-type.enum';
+import { AlertService } from 'src/app/alert/alert.service';
 import { Position } from '../player-position';
 import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
@@ -22,7 +25,9 @@ export class AddPlayerComponent implements OnInit {
 
   constructor(private playerService: PlayersService,
     private activatedRoute: ActivatedRoute,
-    private router: Router) { }
+    private router: Router,
+    private alertService: AlertService,
+    private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
@@ -54,11 +59,11 @@ export class AddPlayerComponent implements OnInit {
           return player.id === this.id;
         })
 
-        if(playerToEdit){
+        if (playerToEdit) {
           this.player = playerToEdit;
           this.onSetForm();
-        } 
-        else{
+        }
+        else {
           this.onFetchPlayer(this.id);
         }
       }
@@ -75,14 +80,21 @@ export class AddPlayerComponent implements OnInit {
   onCreate() {
     this.isLoading = true;
 
+    let alertMessage = '';
     this.playerService.createPlayer(this.form.value)
       .subscribe({
         next: responseData => {
           this.isLoading = false;
+
+          alertMessage = this.translateService.instant('ALERT_PLAYER_ADDED');
+          this.alertService.toggleAlert(alertMessage, AlertType.Success)
         },
         error: errorMessage => {
-          this.error = errorMessage;
+          // this.error = errorMessage;
           this.isLoading = false;
+
+          alertMessage = this.translateService.instant('ALERT_PLAYER_ADD_FAILURE');
+          this.alertService.toggleAlert(alertMessage + errorMessage, AlertType.Danger)
         }
       })
 
@@ -91,16 +103,23 @@ export class AddPlayerComponent implements OnInit {
 
   onUpdate() {
     this.isLoading = true;
+    let alertMessage = '';
+
 
     this.playerService.updatePlayer({ ...this.form.value, id: this.player.id })
       .subscribe({
-        next: (res) => {
+        next: () => {
           this.isLoading = false;
+          alertMessage = this.translateService.instant('ALERT_PLAYER_UPDATED');
+          this.alertService.toggleAlert(alertMessage, AlertType.Success)
           this.router.navigate(['']);
         },
         error: (errorMessage: string) => {
           this.isLoading = false;
-          this.error = errorMessage;
+
+          alertMessage = this.translateService.instant('ALERT_PLAYER_UPDATE_FAILURE');
+          this.alertService.toggleAlert(alertMessage + errorMessage, AlertType.Danger)
+          // this.error = errorMessage;
         }
       });
   }

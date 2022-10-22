@@ -1,6 +1,13 @@
 .modify-container{
     padding-left: 5rem;
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.img-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 img{
     width: 30rem;

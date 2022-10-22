@@ -2,9 +2,9 @@
     <div class="row">
         <div class="right-nav">
             <form [formGroup]="form" (ngSubmit)="editMode ? onUpdate() : onCreate()">
-    
+
                 <app-error *ngIf="error" [message]="error"></app-error>
-    
+
                 <div class="row">
                     <button *ngIf="!editMode" [disabled]="!form.valid" class="btn btn-success" type="submit">{{'ADD' |
                         translate}}</button>
@@ -13,12 +13,16 @@
                         translate}}</button>
                     <button class="btn btn-danger" type="button" routerLink="/players">{{'CANCEL' | translate}}</button>
                 </div>
-    
+
                 <h3>{{editMode ? ('EDIT_PLAYER' | translate) : ('CREATE_PLAYER' | translate)}}</h3>
-    
-                <img *ngIf="form.value.imagePath != null && form.value.imagePath != ''" [src]="form.value.imagePath" />
-    
+
+
                 <div class="col-xs-9">
+                    <div class="img-container">
+                        <img *ngIf="form.value.imagePath != null && form.value.imagePath != ''"
+                        [src]="form.value.imagePath" />
+
+                    </div>
                     <div class="form-group">
                         <label for="firstName">{{'FIRST_NAME' | translate}}</label>
                         <input type="text" formControlName="firstName" class="form-control">
@@ -56,3 +60,4 @@
         </div>
     </div>
 </div>
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

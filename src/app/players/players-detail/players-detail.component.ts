@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertType } from 'src/app/alert/alert-type.enum';
+import { AlertService } from 'src/app/alert/alert.service';
 import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
 
@@ -13,11 +15,12 @@ export class PlayersDetailComponent implements OnInit {
   player: Player = <Player>{};
   error: string = '';
   isLoading = false;
+  deleteModalVisible = false;
 
 
   constructor(private activatedRoute: ActivatedRoute,
     private playersService: PlayersService,
-    private router: Router) { }
+    private alertService:AlertService) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(
@@ -42,29 +45,17 @@ export class PlayersDetailComponent implements OnInit {
             });
         }
         else {
-          this.error = "Unable to retrieve player ID. Please Try again."
+          this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
+          // this.error = "Unable to retrieve player ID. Please Try again."
         }
 
       }
     )
   }
 
-  onDeletePlayer() {
-    this.isLoading = true;
-
-    if (this.playerId) {
-      this.playersService.deletePlayer(this.playerId)
-        .subscribe({
-          next: res => {
-            this.isLoading = false;
-            this.router.navigate(['']);
-          },
-          error: errorMessage => {
-            this.isLoading = false;
-            this.error = errorMessage;
-          }
-        });
-    }
+  toggleDeletePlayer(open: boolean) {
+    this.isLoading = open;
+    this.deleteModalVisible = open
   }
 
 }

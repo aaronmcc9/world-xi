@@ -5,7 +5,7 @@
 
                 <app-error *ngIf="error" [message]="error"></app-error>
 
-                <div class="row">
+                <div class="row btn-container">
                     <button *ngIf="!editMode" [disabled]="!form.valid" class="btn btn-success" type="submit">{{'ADD' |
                         translate}}</button>
                     <button *ngIf="editMode" class="btn btn-success" type="submit">{{'UPDATE' | translate}}</button>

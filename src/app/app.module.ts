@@ -25,6 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RevertTeamComponent } from './team/revert-team/revert-team.component';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { DeletePlayerComponent } from './players/players-detail/delete-player/delete-player.component';
 
 export function HttpLoaderFactory(http: HttpClient){
   return new TranslateHttpLoader(http,'./assets/i18n/', '.json');
@@ -48,6 +49,7 @@ export function HttpLoaderFactory(http: HttpClient){
     LoadingSpinnerComponent,
     AlertComponent,
     RevertTeamComponent,
+    DeletePlayerComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { cloneDeep } from 'lodash';
 import { Player } from 'src/app/players/player.model';
 import { TeamService } from '../team.service';
@@ -16,17 +17,18 @@ export class RevertTeamComponent implements OnInit {
   body = '';
   error = ''
 
-  constructor(private teamService: TeamService) { }
+  constructor(private teamService: TeamService,
+      private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
-    if (this.action === "Cancel") {
-      this.title = "Cancel Changes";
-      this.body = "Are you sure you want to cancel your new changes?"
+    if (this.action === this.translateService.instant("CANCEL")) {
+      this.title = this.translateService.instant("CANCEL_CHANGES");
+      this.body = this.translateService.instant("CANCEL_CHANGES_CONFIRMATION")
     }
     else {
-      this.title = "Reset Team";
-      this.body = "Are you sure you want to reset your whole team?"
+      this.title = this.translateService.instant("RESET_TEAM");
+      this.body = this.translateService.instant("RESET_TEAM_CONFIRMATION");
     }
   }
 

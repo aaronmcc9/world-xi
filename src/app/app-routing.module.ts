@@ -14,7 +14,7 @@ const routes: Routes = [
     {path:':id', component: PlayersDetailComponent},
     {path:'edit/:id', component: AddPlayerComponent},
   ]},
-  {path:'team', component:TeamComponent},
+  {path:'team', component:TeamComponent, canActivate: [AuthGuard]},
   {path:'auth', component:AuthComponent},
 
 ];

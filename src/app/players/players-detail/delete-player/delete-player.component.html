@@ -1,0 +1,15 @@
+<div class="card">
+    <div class="header">
+        <h3>{{'DELETE_PLAYER' | translate}}</h3>
+    </div>
+    <div class="body">
+        <p>{{"ARE_YOU_SURE_ACTION" | translate: {perform: action | lowercase, firstName: player?.firstName,
+            lastName: player?.lastName} }}
+        </p>
+
+        <div class="buttons">
+            <button type="button" class="btn btn-default" (click)="close()">{{'BACK' | translate}}</button>
+            <button type="button" class="btn btn-danger" (click)="confirm()">{{'CONFIRM' | translate}}</button>
+        </div>
+    </div>
+</div>

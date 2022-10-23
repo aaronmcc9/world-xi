@@ -10,6 +10,7 @@ import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
 import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-team',
@@ -61,7 +62,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private positionService: PositionService,
     private teamService: TeamService, private playersService: PlayersService,
-    private alertService: AlertService) { }
+    private alertService: AlertService, private translateService: TranslateService) { }
 
   //#hooks
   ngOnInit(): void {
@@ -229,8 +230,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let indexesToFill = (formationValue - existingPlayersLength) - 1;
 
     if (indexesToFill < 0) {
-      this.alertService.toggleAlert("There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation", AlertType.Danger);
-      throw new Error('Player out of position exception');
+      this.alertService.toggleAlert('ALERT_TOO_MANY_PLAYERS', AlertType.Danger);
+      throw new Error(this.translateService.instant('EXCEPTION_PLAYER_OUT_OF_POSITION'));
     }
 
     existingPlayers.forEach((player) => {
@@ -260,7 +261,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   save() {
     let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
     if (!this.checkMaximumPlayersSelected(players)) {
-      this.alertService.toggleAlert("You must have 11 players to save a team", AlertType.Danger);
+      this.alertService.toggleAlert('ALERT_ELEVEN_PLAYERS_TO_SAVE', AlertType.Danger);
       return;
     }
 
@@ -272,7 +273,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.isLoading = false;
-          this.alertService.toggleAlert("Your team has been successfully updated!", AlertType.Success);
+          this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
         },
         error: (errorMessage: string) => {
           this.error = errorMessage;
@@ -284,7 +285,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleRevertModal(action: string) {
     //if reset is clicked a 3 character string will be emitted
     //set it to empty after resetting the formation to close the modal
-    if(action && action.length === 3){
+    if (action && action.length === 3) {
       this.setFormation(action);
       action = '';
     }

@@ -26,8 +26,7 @@ export class AddPlayerComponent implements OnInit {
   constructor(private playerService: PlayersService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private alertService: AlertService,
-    private translateService: TranslateService) { }
+    private alertService: AlertService) { }
 
   ngOnInit(): void {
 
@@ -83,18 +82,15 @@ export class AddPlayerComponent implements OnInit {
     let alertMessage = '';
     this.playerService.createPlayer(this.form.value)
       .subscribe({
-        next: responseData => {
+        next: () => {
           this.isLoading = false;
-
-          alertMessage = this.translateService.instant('ALERT_PLAYER_ADDED');
-          this.alertService.toggleAlert(alertMessage, AlertType.Success)
+          this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
         },
         error: errorMessage => {
           // this.error = errorMessage;
           this.isLoading = false;
 
-          alertMessage = this.translateService.instant('ALERT_PLAYER_ADD_FAILURE');
-          this.alertService.toggleAlert(alertMessage + errorMessage, AlertType.Danger)
+          this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)
         }
       })
 
@@ -110,15 +106,12 @@ export class AddPlayerComponent implements OnInit {
       .subscribe({
         next: () => {
           this.isLoading = false;
-          alertMessage = this.translateService.instant('ALERT_PLAYER_UPDATED');
-          this.alertService.toggleAlert(alertMessage, AlertType.Success)
+          this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
           this.router.navigate(['']);
         },
         error: (errorMessage: string) => {
           this.isLoading = false;
-
-          alertMessage = this.translateService.instant('ALERT_PLAYER_UPDATE_FAILURE');
-          this.alertService.toggleAlert(alertMessage + errorMessage, AlertType.Danger)
+          this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger, errorMessage)
           // this.error = errorMessage;
         }
       });
@@ -135,6 +128,7 @@ export class AddPlayerComponent implements OnInit {
         next: res => {
           this.player = res;
           this.onSetForm();
+          this.isLoading = false;
         },
         error: errorMessage => {
           this.isLoading = false;

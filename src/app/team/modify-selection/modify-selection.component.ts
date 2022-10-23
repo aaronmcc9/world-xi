@@ -134,8 +134,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     //player was unable to be added due to maximum reached for their position
     if (this.player != null) {
       this.changeSelectionStatus(); //revert initial selection change
-      this.alertService.toggleAlert("Please remove an existing player in the " + this.player.position + " position to complete the selection.",
-        AlertType.Danger);
+      this.alertService.toggleAlert('ALERT_REMOVE_PLAYER', AlertType.Danger, '', {'position': this.player.position.toLowerCase()});
     }
   }
 

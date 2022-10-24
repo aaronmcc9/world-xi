@@ -103,5 +103,7 @@
       }
     }
   },
-  "defaultProject": "world-xi"
+  "cli": {
+    "analytics": false
+  }
 }

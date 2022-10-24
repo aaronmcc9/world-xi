@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './auth/auth/auth.service';
-// import {Breakpoints} from '@angular/cdk/layout';
+import { MediaObserver} from '@angular/flex-layout';
+import { ColumnService } from './columns.service';
 
 @Component({
   selector: 'app-root',
@@ -9,10 +10,11 @@ import { AuthService } from './auth/auth/auth.service';
 })
 export class AppComponent implements OnInit {
 
-  // private responsive: BreakpointObserver
-  constructor(private authService: AuthService) { }
+  constructor(public authService: AuthService, public mediaObserver: MediaObserver,
+    private columnService: ColumnService) { }
 
   ngOnInit(): void {
     this.authService.autoLogin();
-  }
+    this.columnService.setColumns();
+ }
 }

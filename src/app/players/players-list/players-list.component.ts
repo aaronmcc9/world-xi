@@ -4,6 +4,8 @@ import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
 import { faCircleCheck, faXmark, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
+import { Input } from '@angular/core';
+import { ColumnService } from 'src/app/columns.service';
 
 @Component({
   selector: 'app-players-list',
@@ -21,14 +23,23 @@ export class PlayersListComponent implements OnInit, OnDestroy {
   absentIcon = faXmark;
   openIcon = faUpRightFromSquare
 
-  constructor(private playerService: PlayersService, private router: Router) { }
-  
+  @Input() cols = 2;
+  screenSize = ""
+
+  constructor(private playerService: PlayersService, private router: Router,
+    private columnService: ColumnService) { }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.isLoading = true;  
+    this.isLoading = true;
+
+    //tracks current screen size
+    this.columnService.screenSize.subscribe((screenSize) => {
+      this.screenSize = screenSize;
+    })
 
     this.subscription = this.playerService.playersChanged.subscribe(players => {
       return this.players = players;
@@ -36,11 +47,11 @@ export class PlayersListComponent implements OnInit, OnDestroy {
 
     this.playerService.fetchAllPlayers()
       .subscribe({
-        next: responseData => {
-          this.players = responseData;
+        next: (players: Player[]) => {
+          this.players = players;
           this.isLoading = false;
         },
-        error: errorMessage => {
+        error: (errorMessage: string) => {
           this.isLoading = false;
           this.error = errorMessage;
         }

@@ -2,6 +2,7 @@
 :host{
     position: fixed;
 }
+
 .table-mg{
     margin-top: 4em;
 }
@@ -38,3 +39,4 @@ table.table.table-bordered.table-striped.table-mg{
 ::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
+

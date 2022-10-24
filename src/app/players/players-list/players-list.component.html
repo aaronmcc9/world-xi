@@ -1,7 +1,8 @@
-<div class="row">
+<div class="row" >
     <div class="col-xs-12 col-md-6 col-md-offset-2">
         <div>
-            <button class="btn btn-success" type="button" routerLink="/players/new">{{'ADD_PLAYER' | translate}}</button>
+            <button class="btn btn-success" type="button" routerLink="/players/new">{{'ADD_PLAYER' |
+                translate}}</button>
             <h1>{{'AVAILABLE_PLAYERS' | translate}}</h1>
         </div>
 
@@ -11,11 +12,11 @@
             <thead>
                 <tr>
                     <th>{{'NAME' | translate}}</th>
-                    <th>{{'CLUB' | translate}}</th>
-                    <th>{{'COUNTRY' | translate}}</th>
+                    <th *ngIf="screenSize != 'xs'">{{'CLUB' | translate}}</th>
+                    <th *ngIf="screenSize != 'sm' && screenSize != 'xs'">{{'COUNTRY' | translate}}</th>
                     <th>{{'POSITION' | translate}}</th>
-                    <th>{{'AGE' | translate}}</th>
-                    <th>{{'SELECTED' | translate}}</th>
+                    <th *ngIf="screenSize != 'sm' && screenSize != 'xs'">{{'AGE' | translate}}</th>
+                    <th *ngIf="screenSize != 'xs'">{{'SELECTED' | translate}}</th>
                     <th></th>
                     <th></th>
 
@@ -24,14 +25,14 @@
             <tbody>
                 <tr *ngFor="let player of players">
                     <td>{{player.firstName}} {{player.lastName}}</td>
-                    <td>{{player.club}}</td>
-                    <td>{{player.country}}</td>
+                    <td *ngIf="screenSize != 'xs'">{{player.club}}</td>
+                    <td *ngIf="screenSize != 'sm' && screenSize != 'xs'">{{player.country}}</td>
                     <td>{{player.position}}</td>
-                    <td>{{player.age}}</td>
-                    <td *ngIf="player.isSelected" class="icon-center">
+                    <td *ngIf="screenSize != 'sm' && screenSize != 'xs'S">{{player.age}}</td>
+                    <td *ngIf="player.isSelected && screenSize != 'xs'" class="icon-center">
                         <fa-icon [icon]="selectedIcon"></fa-icon>
                     </td>
-                    <td *ngIf="!player.isSelected" class="icon-center">
+                    <td *ngIf="!player.isSelected&& screenSize != 'xs'" class="icon-center">
                         <fa-icon class="absent-colour" [icon]="absentIcon"></fa-icon>
                     </td>
                     <td><img class="table-img-container" src="{{player.imagePath}}" /></td>

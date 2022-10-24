@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
 import { Observable, Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { AuthResponseData, AuthService } from './auth.service';
 export class AuthComponent implements OnInit {
   error = '';
   isLogin = true;
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
 
   //icons
   ball = faFutbolBall;
@@ -22,9 +22,9 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.form = new FormGroup({
-      email: new FormControl('', [Validators.email, Validators.required, Validators.minLength(8)]),
-      password: new FormControl('', [Validators.required, Validators.minLength(5)])
+    this.form = new UntypedFormGroup({
+      email: new UntypedFormControl('', [Validators.email, Validators.required, Validators.minLength(8)]),
+      password: new UntypedFormControl('', [Validators.required, Validators.minLength(5)])
     });
   }
 

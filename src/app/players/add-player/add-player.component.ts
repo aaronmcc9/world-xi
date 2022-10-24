@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertType } from 'src/app/alert/alert-type.enum';
@@ -20,7 +20,7 @@ export class AddPlayerComponent implements OnInit {
   id: string = '';
   isLoading = false;
   error = '';
-  form: FormGroup = new FormGroup({});
+  form: UntypedFormGroup = new UntypedFormGroup({});
 
 
   constructor(private playerService: PlayersService,
@@ -30,14 +30,14 @@ export class AddPlayerComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.form = new FormGroup({
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-      age: new FormControl(16, [Validators.required, Validators.min(16)]),
-      position: new FormControl('', Validators.required),
-      club: new FormControl('', Validators.required),
-      country: new FormControl('', Validators.required),
-      imagePath: new FormControl('')
+    this.form = new UntypedFormGroup({
+      firstName: new UntypedFormControl('', Validators.required),
+      lastName: new UntypedFormControl('', Validators.required),
+      age: new UntypedFormControl(16, [Validators.required, Validators.min(16)]),
+      position: new UntypedFormControl('', Validators.required),
+      club: new UntypedFormControl('', Validators.required),
+      country: new UntypedFormControl('', Validators.required),
+      imagePath: new UntypedFormControl('')
     });
 
     this.activatedRoute.params.subscribe((params) => {

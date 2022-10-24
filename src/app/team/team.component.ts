@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { pairwise, Subscription, take } from 'rxjs';
@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  form = new FormGroup({});
+  form = new UntypedFormGroup({});
   formationsList: string[] = [];
   positions: string[] = [];
 
@@ -137,9 +137,9 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523'];
     this.positions = this.positionService.fetchPositions();
 
-    this.form = new FormGroup({
-      formation: new FormControl(''),
-      startingPlayersIds: new FormControl(null, [Validators.maxLength(11), Validators.minLength(11)])
+    this.form = new UntypedFormGroup({
+      formation: new UntypedFormControl(''),
+      startingPlayersIds: new UntypedFormControl(null, [Validators.maxLength(11), Validators.minLength(11)])
     });
 
     this.form.get('formation')

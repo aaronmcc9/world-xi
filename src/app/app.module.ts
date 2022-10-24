@@ -26,6 +26,8 @@ import { RevertTeamComponent } from './team/revert-team/revert-team.component';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { DeletePlayerComponent } from './players/players-detail/delete-player/delete-player.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatGridListModule} from '@angular/material/grid-list'
 
 export function HttpLoaderFactory(http: HttpClient){
   return new TranslateHttpLoader(http,'./assets/i18n/', '.json');
@@ -58,6 +60,8 @@ export function HttpLoaderFactory(http: HttpClient){
     HttpClientModule,
     FontAwesomeModule,
     BrowserAnimationsModule,
+    FlexLayoutModule,
+    MatGridListModule,
     TranslateModule.forRoot({
       defaultLanguage: 'common-en',
       loader: {

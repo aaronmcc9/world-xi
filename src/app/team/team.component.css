@@ -1,3 +1,6 @@
+.team-padding-top{
+    padding-top: 6rem;
+}
 .img-container {
     display: flex;
     justify-content: center;
@@ -6,10 +9,11 @@
 }
 
 .pitch {
-    width: 60em;
-    height: 70vh;
+    width: 84rem;
+    /* height: 50rem; */
     background-image: url(../../assets/images/pitch2.png);
-    background-size: 60em 70vh;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .form-controls {
@@ -21,9 +25,17 @@
     display: -webkit-box;
 }
 
+.form-controls-sm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .formation {
     display: flex;
     align-items: center;
+    padding: 1rem;
 }
 
 .formation-label {
@@ -33,12 +45,13 @@
 }
 
 .formation-select {
-    padding: 0.2em 0.6em;
+    padding: 0.2rem 0.6rem;
 }
 
 .buttons {
     display: flex;
     align-items: center;
+    padding: 1rem;
     margin-left: auto;
 }
 
@@ -49,7 +62,7 @@
 }
 
 .player-filter-container {
-    height: 10vh;
+    height: 7rem;
     display: flex;
     justify-content: center;
     padding: 2rem 1rem;

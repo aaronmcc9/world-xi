@@ -27,7 +27,7 @@ export class ColumnService {
             .pipe(map((change: MediaChange[]) => {
             
               this.screenSize.next(change[0].mqAlias);
-              console.log(this.screenSize);
+              console.log(change[0].mqAlias);
 
               return this.grid.get(change[0].mqAlias);
             }));

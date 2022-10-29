@@ -5,9 +5,6 @@
 .static{
     position: static;
 }
-.container-padding-top{
-    padding-top: 6rem;
-}
 
 .container-padding-top-none{
     padding-top: 0;

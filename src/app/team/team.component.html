@@ -1,59 +1,72 @@
 <app-modify-selection [defenceCount]="defence.length" [midfieldCount]="midfield.length" [forwardCount]="forwards.length"
     *ngIf="playerToModify"></app-modify-selection>
-<app-revert-team *ngIf="revertAction"
- [action]="revertAction"
- (closeModal)="toggleRevertModal($event)"></app-revert-team>
+<app-revert-team *ngIf="revertAction" [action]="revertAction" (closeModal)="toggleRevertModal($event)">
+</app-revert-team>
 <app-error *ngIf="error" [(message)]="error"></app-error>
 
-<div class="row">
-    <div class="col-sm-8">
-        <div class="img-container">
-            <form [formGroup]="form">
-                <h2 *ngIf="!canSave" class="text-center">{{'SELECT_XI' | translate}}</h2>
-                <div class="form-controls">
-                    <div class="formation">
-                        <label class="formation-label">{{'FORMATION' | translate}}</label>
-                        <select formControlName="formation" name="formation" id="formation" class="formation-select">
-                            <option *ngFor="let f of formationsList">{{f}}</option>
-                        </select>
-                    </div>
-                    <div class="buttons">
-                        <button type="submit" [disabled]="!canSave" (click)="save()" class="btn btn-success">{{'SAVE' | translate}}</button>
-                        <button type="button" (click)="toggleRevertModal('Reset')" class="btn btn-warning">{{'RESET' | translate}}</button>
-                        <button type="button" (click)="toggleRevertModal('Cancel')" class="btn btn-danger">{{'CANCEL' | translate}}</button>
+<div class="row team-padding-top">
+    <mat-grid-list rowHeight="66rem" [cols]="cols" gutterSize="0">
+        <mat-grid-tile [colspan]="pitchColspan">
+            <div class="col-sm-8">
+                <div class="img-container">
+                    <form [formGroup]="form">
+                        <h2 *ngIf="!canSave" class="text-center">{{'SELECT_XI' | translate}}</h2>
+                        <div [ngClass]="belowMediumSize ? 'form-controls-sm' : 'form-controls'">
+                            <div class="formation" [ngStyle]="{'padding': belowMediumSize ? '1rem' : '2rem'}">
+                                <label class="formation-label">{{'FORMATION' | translate}}</label>
+                                <select formControlName="formation" name="formation" id="formation"
+                                    class="formation-select">
+                                    <option *ngFor="let f of formationsList">{{f}}</option>
+                                </select>
+                            </div>
+                            <div class="buttons"
+                            [ngStyle]="{'margin-left': belowMediumSize ? '0' : 'auto'}">
+                                <button type="submit" [disabled]="!canSave" (click)="save()"
+                                    class="btn btn-success">{{'SAVE' | translate}}</button>
+                                <button type="button" (click)="toggleRevertModal('Reset')"
+                                    class="btn btn-warning">{{'RESET' | translate}}</button>
+                                <button type="button" (click)="toggleRevertModal('Cancel')"
+                                    class="btn btn-danger">{{'CANCEL' | translate}}</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="pitch">
+                        <app-formation-row [players]="goalkeeper"></app-formation-row>
+                        <app-formation-row [players]="defence"></app-formation-row>
+                        <app-formation-row [players]="midfield"></app-formation-row>
+                        <app-formation-row [players]="forwards"></app-formation-row>
                     </div>
                 </div>
-            </form>
-            <div class="pitch">
-                <app-formation-row [players]="goalkeeper"></app-formation-row>
-                <app-formation-row [players]="defence"></app-formation-row>
-                <app-formation-row [players]="midfield"></app-formation-row>
-                <app-formation-row [players]="forwards"></app-formation-row>
             </div>
-        </div>
-    </div>
-    <div class="col-sm-4 team-list">
-        <div class="col-sm-8">
-            <div class="player-filter-container">
-                <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
-                    #filterValue class="player-filter col-xs-6">
-                    <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
-                    <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: p} }}</option>
-                </select>
-            </div>
+        </mat-grid-tile>
+        <!-- </div> -->
+        <!-- <div class="col-sm-4 team-list"> -->
+        <mat-grid-tile>
+            <div class="col-sm-9">
+                <div class="player-filter-container">
+                    <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
+                        #filterValue class="player-filter col-xs-6">
+                        <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
+                        <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: p}
+                            }}</option>
+                    </select>
+                </div>
 
-            <app-team-list></app-team-list>
+                <app-team-list></app-team-list>
 
-            <div class="button-container">
-                <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
-                    <fa-icon [icon]="leftNav"></fa-icon>
-                </button>
-                <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="canPageRight">
-                    <fa-icon [icon]="rightNav"></fa-icon>
-                </button>
+                <div class="button-container">
+                    <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
+                        <fa-icon [icon]="leftNav"></fa-icon>
+                    </button>
+                    <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="canPageRight">
+                        <fa-icon [icon]="rightNav"></fa-icon>
+                    </button>
+                </div>
             </div>
-        </div>
-    </div>
+        </mat-grid-tile>
+
+        <!-- </div> -->
+    </mat-grid-list>
 </div>
 
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

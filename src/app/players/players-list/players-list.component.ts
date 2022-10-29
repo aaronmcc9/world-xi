@@ -39,7 +39,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
     //tracks current screen size
     this.columnService.screenSize.subscribe((screenSize) => {
       this.screenSize = screenSize;
-    })
+    });
 
     this.subscription = this.playerService.playersChanged.subscribe(players => {
       return this.players = players;

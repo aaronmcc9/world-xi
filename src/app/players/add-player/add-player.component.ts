@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Position } from '../player-position';
@@ -20,7 +19,7 @@ export class AddPlayerComponent implements OnInit {
   id: string = '';
   isLoading = false;
   error = '';
-  form: UntypedFormGroup = new UntypedFormGroup({});
+  form: FormGroup = new FormGroup({});
 
 
   constructor(private playerService: PlayersService,
@@ -30,14 +29,14 @@ export class AddPlayerComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.form = new UntypedFormGroup({
-      firstName: new UntypedFormControl('', Validators.required),
-      lastName: new UntypedFormControl('', Validators.required),
-      age: new UntypedFormControl(16, [Validators.required, Validators.min(16)]),
-      position: new UntypedFormControl('', Validators.required),
-      club: new UntypedFormControl('', Validators.required),
-      country: new UntypedFormControl('', Validators.required),
-      imagePath: new UntypedFormControl('')
+    this.form = new FormGroup({
+      firstName: new FormControl<string>('', Validators.required),
+      lastName: new FormControl<string>('', Validators.required),
+      age: new FormControl<number>(16, [Validators.required, Validators.min(16)]),
+      position: new FormControl<string>('', Validators.required),
+      club: new FormControl<string>('', Validators.required),
+      country: new FormControl<string>('', Validators.required),
+      imagePath: new FormControl<string>('')
     });
 
     this.activatedRoute.params.subscribe((params) => {
@@ -79,7 +78,6 @@ export class AddPlayerComponent implements OnInit {
   onCreate() {
     this.isLoading = true;
 
-    let alertMessage = '';
     this.playerService.createPlayer(this.form.value)
       .subscribe({
         next: () => {
@@ -99,8 +97,6 @@ export class AddPlayerComponent implements OnInit {
 
   onUpdate() {
     this.isLoading = true;
-    let alertMessage = '';
-
 
     this.playerService.updatePlayer({ ...this.form.value, id: this.player.id })
       .subscribe({

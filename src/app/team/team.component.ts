@@ -11,6 +11,7 @@ import { Team } from './team.model';
 import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ColumnService } from '../columns.service';
 
 @Component({
   selector: 'app-team',
@@ -55,14 +56,20 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   playerSubscription = new Subscription();
   playerModificationSubscription = new Subscription();
 
-  goalkeeperSubscription = new Subscription()
-  defenceSubscription = new Subscription()
-  midfieldSubscription = new Subscription()
-  forwardsSubscription = new Subscription()
+  goalkeeperSubscription = new Subscription();
+  defenceSubscription = new Subscription();
+  midfieldSubscription = new Subscription();
+  forwardsSubscription = new Subscription();
+
+  //screen information
+  cols: number = 3;
+  pitchColspan: number = 2;
+  belowMediumSize = false;
 
   constructor(private positionService: PositionService,
     private teamService: TeamService, private playersService: PlayersService,
-    private alertService: AlertService, private translateService: TranslateService) { }
+    private alertService: AlertService, private translateService: TranslateService,
+    private columnService: ColumnService) { }
 
   //#hooks
   ngOnInit(): void {
@@ -77,6 +84,22 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         this.playerCount = players.length;
         this.setMaxPage();
       });
+
+    let colObs = this.columnService.columnObs;
+
+    if (colObs) {
+      colObs.subscribe((cols) => {
+
+        this.cols = cols > 1 ? cols + 1 : cols;
+        this.pitchColspan = cols;
+
+      });
+    }
+
+    //tracks current screen size
+    this.columnService.screenSize.subscribe((screenSize) => {
+      this.belowMediumSize = screenSize == 'sm' || screenSize == 'xs';
+    });
 
     this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
       let newValue = cloneDeep(goalkeeper);

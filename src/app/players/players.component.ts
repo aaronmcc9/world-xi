@@ -1,7 +1,4 @@
-import { OnDestroy } from '@angular/core';
-import { Component, Input, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { ColumnService } from '../columns.service';
 
 @Component({
@@ -12,7 +9,6 @@ import { ColumnService } from '../columns.service';
 export class PlayersComponent implements OnInit {
 
   cols: number = 2;
-  // cols: Observable<any> | undefined;
   constructor(private columnService: ColumnService) { }
 
   ngOnInit(): void {

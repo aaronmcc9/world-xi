@@ -8,11 +8,11 @@ import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
 
 @Component({
-  selector: 'app-add-player',
-  templateUrl: './add-player.component.html',
-  styleUrls: ['./add-player.component.css']
+  selector: 'app-modify-player',
+  templateUrl: './modify-player.component.html',
+  styleUrls: ['./modify-player.component.css']
 })
-export class AddPlayerComponent implements OnInit {
+export class ModifyPlayerComponent implements OnInit {
   editMode = false;
   player: Player = <Player>{}
   positionTypes: string[] = []
@@ -85,7 +85,6 @@ export class AddPlayerComponent implements OnInit {
           this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
         },
         error: errorMessage => {
-          // this.error = errorMessage;
           this.isLoading = false;
 
           this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)

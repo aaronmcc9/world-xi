@@ -19,3 +19,10 @@ button{
 .disabled{
     cursor: not-allowed;
 }
+
+.required::after {
+    content: '*';
+    color: #fcca3d;
+    position: absolute;
+    margin-left: 2px;
+}

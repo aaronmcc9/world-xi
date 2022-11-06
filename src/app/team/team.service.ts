@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, catchError, Subject, tap, throwError } from "rxjs";
 import { AuthService } from "../auth/auth/auth.service";
@@ -51,7 +51,7 @@ export class TeamService {
     let userId = this.authService.getCurrentUserId();
 
     return this.http.get<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json')
-      .pipe(catchError((error) => throwError(error)),
+      .pipe(catchError((error: HttpErrorResponse) =>  throwError(error)),
         tap((res: Team) => {
           if (res) {
             let players = <Player[]>Object.values(res['players']);

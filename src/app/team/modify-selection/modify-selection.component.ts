@@ -83,6 +83,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
           : SelectionAction[SelectionAction.Select];
 
         this.playersInPositionCount = this.forwardCount;
+        console.log(this.teamService.teamForward);
         this.playersListToModifySubscription = this.teamService.teamForward;
         break;
     }
@@ -110,6 +111,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
 
   private modifyPlayer() {
     let playersInPosition = this.playersListToModifySubscription.getValue()
+    console.log("Ji", playersInPosition);
     if (this.action == SelectionAction[SelectionAction.Select]) {
 
       //filter out empty values

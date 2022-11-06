@@ -144,7 +144,9 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
         this.canSave = false;
       },
       error: (errorMessage: string) => {
-        this.error = errorMessage;
+        console.log(errorMessage);
+       
+        this.alertService.toggleAlert('ALERT_TEAM_FETCH_FAILURE', AlertType.Danger, errorMessage)
         this.isLoading = false;
 
       }
@@ -176,10 +178,9 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
           let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +next[2]);
 
           // assign values after incase of formation error
-          this.defence = defence;
-          this.midfield = midfield;
-          this.forwards = forwards;
-
+          this.teamService.teamDefence.next(defence);
+          this.teamService.teamMidfield.next(midfield);
+          this.teamService.teamForward.next(forwards);
         }
         catch {
           this.setFormation(prev);
@@ -245,11 +246,14 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     //remove empties
     let existingPlayersLength = existingPlayers.filter(Boolean).length
 
+    //players match existing formation cpunt for that position - return
     if (existingPlayersLength === formationValue) {
       return existingPlayers.filter(Boolean);
     }
 
+    //new empty array with new desired value
     let players = new Array<Player>(formationValue);
+    //how much players can we fill / how much to be undefined
     let indexesToFill = (formationValue - existingPlayersLength) - 1;
 
     if (indexesToFill < 0) {
@@ -257,6 +261,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       throw new Error(this.translateService.instant('EXCEPTION_PLAYER_OUT_OF_POSITION'));
     }
 
+    //add the existing players into the array, the rest will fill as undefined
     existingPlayers.forEach((player) => {
       players.splice(indexesToFill, 1, player!);
       indexesToFill--;

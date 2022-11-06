@@ -1,16 +1,16 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../auth/auth/auth.guard";
-import { AddPlayerComponent } from "./add-player/add-player.component";
+import {  ModifyPlayerComponent } from "./add-player/modify-player.component";
 import { PlayersDetailComponent } from "./players-detail/players-detail.component";
 import { PlayersComponent } from "./players.component";
 
 
 const routes: Routes = [
     {path:'players', component:PlayersComponent, canActivate: [AuthGuard], children:[
-      {path:'new', component: AddPlayerComponent},
+      {path:'new', component: ModifyPlayerComponent},
       {path:':id', component: PlayersDetailComponent},
-      {path:'edit/:id', component: AddPlayerComponent},
+      {path:'edit/:id', component: ModifyPlayerComponent},
     ]},
   ];
 

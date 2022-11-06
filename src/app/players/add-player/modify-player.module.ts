@@ -3,11 +3,11 @@ import { NgModule } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { AppCommonModule } from "src/app/app-common.module";
 import { PlayersRoutingModule } from "../players-routing.module";
-import { AddPlayerComponent } from "./add-player.component";
+import { ModifyPlayerComponent } from "./modify-player.component";
 
 @NgModule({
     declarations: [
-        AddPlayerComponent
+        ModifyPlayerComponent
     ],
     imports: [
         AppCommonModule,
@@ -16,7 +16,7 @@ import { AddPlayerComponent } from "./add-player.component";
         PlayersRoutingModule
     ],
     exports: [
-        AddPlayerComponent
+        ModifyPlayerComponent
     ]
 })
 

@@ -9,3 +9,24 @@
 .container-padding-top-none{
     padding-top: 0;
 }
+
+.mat-grid-list{
+    padding-bottom: 0!important;
+}
+.mat-grid-list .mat-grid-tile {
+    overflow: visible;
+   }
+
+.tile-padding-lg{
+    padding-top: 60rem !important;
+}
+
+.tile-padding{
+    padding-top: 75rem !important;
+}
+
+.bottom-tile-padding{
+    padding-top: 80rem !important;
+    margin-top: 60rem !important;
+
+}

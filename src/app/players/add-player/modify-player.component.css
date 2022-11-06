@@ -1,23 +1,37 @@
-.modify-container{
+.modify-container {
     margin-top: 1em;
     padding-left: 5rem;
     overflow-y: auto;
     overflow-x: hidden;
-    width:50rem
+    width: 50rem
 }
 
-/* .btn-container{
-    position: fixed;
-    z-index: 999;
-} */
+.btn-flex-center{
+    display: flex;
+    justify-content: center;
+}
 
-.img-container{
+.btn-flex-left{
+    display: flex;
+    justify-content: left;
+}
+
+.img-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-img{
+
+img {
     width: 30rem;
-    height: 26vh;
+    height: 25rem;
     margin: 1rem;
+}
+
+.mb-row {
+    margin-bottom: 1rem;
+}
+
+.p-1{
+    padding: 1rem;
 }

@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
+import { ColumnService } from 'src/app/columns.service';
 import { Position } from '../player-position';
 import { Player } from '../player.model';
 import { PlayersService } from '../players.service';
@@ -20,14 +21,19 @@ export class ModifyPlayerComponent implements OnInit {
   isLoading = false;
   error = '';
   form: FormGroup = new FormGroup({});
-
+  cols: number = 2;
 
   constructor(private playerService: PlayersService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private alertService: AlertService) { }
+    private alertService: AlertService,
+    private columnService: ColumnService) { }
 
   ngOnInit(): void {
+
+    this.columnService.columnObs?.subscribe((cols) => {
+      this.cols = cols;
+    })
 
     this.form = new FormGroup({
       firstName: new FormControl<string>('', Validators.required),

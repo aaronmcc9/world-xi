@@ -5,12 +5,12 @@
 <app-error *ngIf="error" [(message)]="error"></app-error>
 
 <div class="row team-padding-top">
-    <mat-grid-list rowHeight="75rem" [cols]="cols" gutterSize="0">
+    <mat-grid-list rowHeight="1:1" [cols]="cols" gutterSize="0">
         <mat-grid-tile class="tile" [colspan]="pitchColspan">
-            <div class="col-sm-8">
+            <div class="col-xs-8">
                 <div class="img-container">
                     <form [formGroup]="form">
-                        <h2 *ngIf="!canSave" class="text-center">{{'SELECT_XI' | translate}}</h2>
+                        <h2 *ngIf="this.playersSelected != 11" class="text-center">{{'SELECT_XI' | translate}}</h2>
                         <div [ngClass]="belowMediumSize ? 'form-controls-sm' : 'form-controls'">
                             <div class="formation" [ngStyle]="{'padding': belowMediumSize ? '1rem' : '2rem'}">
                                 <label class="formation-label">{{'FORMATION' | translate}}</label>
@@ -25,7 +25,7 @@
                                     class="btn btn-success">{{'SAVE' | translate}}</button>
                                 <button type="button" (click)="toggleRevertModal('Reset')"
                                     class="btn btn-warning">{{'RESET' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal('Cancel')"
+                                <button type="button" (click)="toggleRevertModal('Cancel')" [disabled]="!form.dirty"
                                     class="btn btn-danger">{{'CANCEL' | translate}}</button>
                             </div>
                         </div>
@@ -39,10 +39,8 @@
                 </div>
             </div>
         </mat-grid-tile>
-        <!-- </div> -->
-        <!-- <div class="col-sm-4 team-list"> -->
-        <mat-grid-tile>
-            <div class="col-sm-9">
+        <mat-grid-tile [ngClass]="cols > 1 ? '' :'bottom-tile-padding'">
+            <div class="col-xs-9">
                 <div class="player-filter-container">
                     <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
                         #filterValue class="player-filter col-xs-6">
@@ -64,8 +62,6 @@
                 </div>
             </div>
         </mat-grid-tile>
-
-        <!-- </div> -->
     </mat-grid-list>
 </div>
 

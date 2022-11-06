@@ -4,7 +4,7 @@
 }
 
 .table-mg{
-    margin-top: 4em;
+    margin-top: 4rem;
 }
 .icon-center{
     text-align: center;
@@ -20,7 +20,7 @@
 
 .table-img-container{
     width: 15rem;
-    height: 15vh;
+    height: 15rem;
 }
 
 
@@ -33,7 +33,7 @@ table.table.table-bordered.table-striped.table-mg{
     display:table-caption;
     overflow-y:auto;
     overflow-x:hidden;
-    height: 62.5vh;
+    height: 45rem;
 }
 
 ::-webkit-scrollbar { 

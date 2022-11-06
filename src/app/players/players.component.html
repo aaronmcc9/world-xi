@@ -1,9 +1,9 @@
 <mat-grid-list [ngClass]="cols == 2 ? 'container-padding-top' : 'container-padding-top-none'" 
-    rowHeight="1:1" [cols]="cols" gutterSize="20rem">
-    <mat-grid-tile>
-        <app-players-list [cols]="cols" [ngClass]="cols == 2 ? 'fixed' : 'static'"></app-players-list>
+    rowHeight="1:1" [cols]="cols" gutterSize="25rem">
+    <mat-grid-tile [ngClass]="cols == 2 ? 'tile-padding-lg' :'tile-padding'">
+        <app-players-list [cols]="cols" [ngClass]="cols == 2 && isFixed ? 'fixed' : 'static'"></app-players-list>
     </mat-grid-tile>
-    <mat-grid-tile>
+    <mat-grid-tile [ngClass]="cols == 2 ? 'tile-padding-lg' :'bottom-tile-padding'" id="bottom-tile" class="mt-1">
         <router-outlet></router-outlet>
     </mat-grid-tile>
 </mat-grid-list>

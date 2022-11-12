@@ -33,10 +33,15 @@ table.table.table-bordered.table-striped.table-mg{
     display:table-caption;
     overflow-y:auto;
     overflow-x:hidden;
-    height: 45rem;
+    height: 55rem;
 }
 
 ::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
 
+@media screen and (max-width: 1550px) {
+    table.table.table-bordered.table-striped.table-mg{
+        height: 45rem;
+    }
+}

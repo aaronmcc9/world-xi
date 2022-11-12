@@ -25,7 +25,7 @@
                                     class="btn btn-success">{{'SAVE' | translate}}</button>
                                 <button type="button" (click)="toggleRevertModal('Reset')"
                                     class="btn btn-warning">{{'RESET' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal('Cancel')" [disabled]="!form.dirty"
+                                <button type="button" (click)="toggleRevertModal('Cancel')" [disabled]="!canCancel"
                                     class="btn btn-danger">{{'CANCEL' | translate}}</button>
                             </div>
                         </div>

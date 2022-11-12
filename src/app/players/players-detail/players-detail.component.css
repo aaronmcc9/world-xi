@@ -1,4 +1,4 @@
-.right-nav{
+.d-flex-justify-center{
     display: flex;
     justify-content: center;
 }
@@ -8,8 +8,8 @@ h2{
 }
 
 img{
-    width: 40rem;
-    height: 20rem;
+    width: 45rem;
+    height: 30rem;
     margin: 1em 0;
 }
 

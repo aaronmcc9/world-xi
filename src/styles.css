@@ -5,7 +5,7 @@ body{
 }
 
 .container-padding-top{
-    padding-top: 9rem;
+    padding-top: 6rem;
 }
 
 button{
@@ -25,4 +25,8 @@ button{
     color: #fcca3d;
     position: absolute;
     margin-left: 2px;
+}
+
+.mat-grid-list .mat-grid-tile {
+    padding-top: 80rem !important;
 }

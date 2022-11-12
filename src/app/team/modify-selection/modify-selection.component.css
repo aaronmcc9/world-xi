@@ -11,7 +11,8 @@
 .header {
     background-color: #339BFF;
     color: white;
-    padding: 0.1em 1em;
+    padding: 0.1em .5rem;
+    text-align: center;
 }
 
 .body {
@@ -22,11 +23,17 @@
 p {
     padding: 0 2em;
     text-align: center;
-    font-size: 1.2em;
+    font-size: 1.5rem;
 }
 
 .buttons {
     padding-top: 1.2em;
     display: flex;
     justify-content: center;
+}
+
+@media screen and (max-width: 650px) {
+    p {
+        padding: 0;
+    }
 }

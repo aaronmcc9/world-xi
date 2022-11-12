@@ -1,8 +1,8 @@
 <app-delete-player *ngIf="deleteModalVisible"
  (closeModal)="toggleDeletePlayer($event)" [player]="player"></app-delete-player>
  
- <div class="row">
-    <div class="col-xs-9 right-nav">
+ <div class="row d-flex-justify-center">
+    <div class="col-xs-9 d-flex-justify-center">
 
         <app-error *ngIf="error && !isLoading" [(message)]=" error"></app-error>
         <div *ngIf="!error && !isLoading">

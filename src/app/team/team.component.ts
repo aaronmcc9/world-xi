@@ -53,6 +53,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //Cancel/ Reset
   revertAction = '';
+  canCancel = false;
 
   //subscriptions  
   pageSubscription = new Subscription();
@@ -159,6 +160,14 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerCount = this.playersService.players.length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
+      console.log(this.canCancel, player, this.playerToModify, this.playersSelected);
+
+      //if there was a player
+      // if (this.playerToModify && !player) {
+
+      //   this.canCancel = true;
+      // }
+
       this.playerToModify = player;
     })
 

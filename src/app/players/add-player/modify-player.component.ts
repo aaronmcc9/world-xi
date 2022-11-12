@@ -39,7 +39,7 @@ export class ModifyPlayerComponent implements OnInit {
       firstName: new FormControl<string>('', Validators.required),
       lastName: new FormControl<string>('', Validators.required),
       age: new FormControl<number>(16, [Validators.required, Validators.min(16)]),
-      position: new FormControl<string>('', Validators.required),
+      position: new FormControl<string>(Position[Position.Goalkeeper], Validators.required),
       club: new FormControl<string>('', Validators.required),
       country: new FormControl<string>('', Validators.required),
       imagePath: new FormControl<string>('')

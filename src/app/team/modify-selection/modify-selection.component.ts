@@ -92,7 +92,10 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     this.playerToModifySubscription.unsubscribe();
   }
 
-  endModification() {
+  endModification(allowCancel: boolean) {
+    if(allowCancel)
+      this.teamService.canCancelChanges = true;
+      
     this.teamService.playerToModify.next(null);
   }
 
@@ -121,12 +124,12 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
           playersInPosition[0] = this.player! :
           playersInPosition = this.addPlayer(playersInPosition, this.playersInPositionCount - 1);
 
-        this.endModification();
+        this.endModification(true);
       }
     }
     else {
       playersInPosition = this.removePlayer(playersInPosition);
-      this.endModification();
+      this.endModification(true);
     }
 
     this.playersListToModifySubscription.next(playersInPosition);
@@ -134,7 +137,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     //player was unable to be added due to maximum reached for their position
     if (this.player != null) {
       this.changeSelectionStatus(); //revert initial selection change
-      this.alertService.toggleAlert('ALERT_REMOVE_PLAYER', AlertType.Danger, '', {'position': this.player.position.toLowerCase()});
+      this.alertService.toggleAlert('ALERT_REMOVE_PLAYER', AlertType.Danger, '', { 'position': this.player.position.toLowerCase() });
     }
   }
 

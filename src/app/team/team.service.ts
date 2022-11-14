@@ -5,14 +5,17 @@ import { AuthService } from "../auth/auth/auth.service";
 import { Position } from "../players/player-position";
 import { Player } from "../players/player.model";
 import { Team } from "./team.model";
-import {__, cloneDeep } from "lodash";
+import { __, cloneDeep } from "lodash";
+import { AlertService } from "../alert/alert.service";
+import { AlertType } from "../alert/alert-type.enum";
 
 @Injectable({
   providedIn: "root"
 })
 export class TeamService {
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient, private authService: AuthService,
+    private alertService: AlertService) { }
 
   page = new BehaviorSubject<number>(1);
   playerToModify = new BehaviorSubject<Player | null>(null);
@@ -23,6 +26,7 @@ export class TeamService {
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 
   savedTeam = new Team([], '');
+  canCancelChanges = false;
 
   /**
    * 
@@ -34,12 +38,14 @@ export class TeamService {
     let userId = this.authService.getCurrentUserId();
 
     if (userId == undefined)
-      throwError("User is logged out. Please logout to peform this operation")
+      throwError("User is login out. Please logout to peform this operation")
 
     return this.http.put<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json', team)
       .pipe(catchError((error) => throwError(error)),
-      tap((res) => {this.savedTeam = this.savedTeam = cloneDeep(res);
-      }));
+        tap((res) => {
+          this.savedTeam = this.savedTeam = cloneDeep(res);
+          this.canCancelChanges = false;
+        }));
   }
 
 
@@ -48,10 +54,14 @@ export class TeamService {
  * @returns The users saved team should the have one
  */
   fetchUserTeam() {
+
     let userId = this.authService.getCurrentUserId();
 
+    if (userId == undefined)
+      throwError("User is logged out. Please login to peform this operation");
+
     return this.http.get<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json')
-      .pipe(catchError((error: HttpErrorResponse) =>  throwError(error)),
+      .pipe(catchError((error: HttpErrorResponse) => throwError(error)),
         tap((res: Team) => {
           if (res) {
             let players = <Player[]>Object.values(res['players']);
@@ -63,9 +73,38 @@ export class TeamService {
             }
           }
           else {
+            //we do not have the players so create a an array of undefined players to populate UI
             this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
           }
         }));
+  }
+
+  /**
+ * 
+ * @returns The users saved team should the have one
+ */
+  deleteTeam() {
+
+    let userId = this.authService.getCurrentUserId();
+
+    if (userId == undefined)
+      throwError("User is logged out. Please login to peform this operation");
+
+    this.http.delete('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json',)
+      .subscribe({
+        next: () => {
+          let formation = this.savedTeam['formation'];
+
+          formation ?
+            this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation[0]), new Array<Player>(+formation[1]), new Array<Player>(+formation[2])) :
+            this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
+
+          this.alertService.toggleAlert('ALERT_TEAM_DELETE_SUCCESS', AlertType.Success);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.alertService.toggleAlert('ALERT_TEAM_DELETE_FAILURE', AlertType.Danger, error.message);
+        }
+      });
   }
 
   /**
@@ -81,15 +120,13 @@ export class TeamService {
     this.setPlayersInPosition(goalkeeper, defence, midfield, forward);
   }
 
-  private setSelectionStatus(){
-
-  }
-
-  private setPlayersInPosition(goalkeeper: Player[], defence: Player[], midfield: Player[],
+  setPlayersInPosition(goalkeeper: Player[], defence: Player[], midfield: Player[],
     forwards: Player[]) {
     this.teamGoalkeeper.next(goalkeeper);
     this.teamDefence.next(defence);
     this.teamMidfield.next(midfield);
     this.teamForward.next(forwards);
+
+    this.canCancelChanges = false;
   }
 }

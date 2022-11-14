@@ -160,15 +160,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerCount = this.playersService.players.length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
-      console.log(this.canCancel, player, this.playerToModify, this.playersSelected);
-
-      //if there was a player
-      // if (this.playerToModify && !player) {
-
-      //   this.canCancel = true;
-      // }
-
       this.playerToModify = player;
+      this.canCancel = this.teamService.canCancelChanges;
     })
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523'];
@@ -312,6 +305,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.isLoading = false;
+          this.canSave = false;
+          this.canCancel = false;
           this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
         },
         error: (errorMessage: string) => {
@@ -322,13 +317,16 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleRevertModal(action: string) {
-    //if reset is clicked a 3 character string will be emitted
+    //if reset is clicked a 3 character formation string will be emitted
     //set it to empty after resetting the formation to close the modal
     if (action && action.length === 3) {
       this.setFormation(action);
+      this.canSave = true;
       action = '';
     }
 
+    //in the event this value has been altered change it
+    this.canCancel = this.teamService.canCancelChanges;
     this.revertAction = action;
   }
 

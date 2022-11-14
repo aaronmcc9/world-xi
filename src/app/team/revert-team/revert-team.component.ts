@@ -18,7 +18,7 @@ export class RevertTeamComponent implements OnInit {
   error = ''
 
   constructor(private teamService: TeamService,
-      private translateService: TranslateService) { }
+    private translateService: TranslateService) { }
 
   ngOnInit(): void {
 
@@ -46,23 +46,28 @@ export class RevertTeamComponent implements OnInit {
       this.reset();
     else {
       this.teamService.setPlayersByPosition(savedTeam['players']);
-      this.close('');
+      this.close('', false);
     }
   }
 
   reset() {
-    let savedFormation = this.teamService.savedTeam['formation'] ?
-      this.teamService.savedTeam['formation'] : '442';
+    let savedTeam = this.teamService.savedTeam;
+    let formation = savedTeam['formation'];
 
-    this.teamService.teamGoalkeeper.next(new Array<(Player | undefined)>(1))
-    this.teamService.teamDefence.next(new Array<(Player | undefined)>(+savedFormation[0]))
-    this.teamService.teamMidfield.next(new Array<(Player | undefined)>(+savedFormation[1]))
-    this.teamService.teamForward.next(new Array<(Player | undefined)>(+savedFormation[2]))
-
-    this.close(savedFormation);
+    if(savedTeam['players'].length === 11){
+      this.teamService.deleteTeam();
+    }
+    else{
+      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2)); 
+    }
+    
+    this.close(formation, true);
   }
 
-  close(formation: string) {
+  close(formation: string, allowCancel: boolean) {
+    if(!allowCancel || formation)
+      this.teamService.canCancelChanges = allowCancel;
+
     this.closeModal.emit(formation);
   }
 }

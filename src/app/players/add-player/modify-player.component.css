@@ -1,6 +1,6 @@
 .modify-container {
     margin-top: 1em;
-    padding-left: 5rem;
+    padding: 0 5rem;
     overflow-y: auto;
     overflow-x: hidden;
     width: 50rem

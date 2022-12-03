@@ -51,7 +51,8 @@ export class PlayersListComponent implements OnInit, OnDestroy {
           this.players = players;
           this.isLoading = false;
         },
-        error: (errorMessage: string) => {
+        error: (errorMessage) => {
+          console.log("Here", errorMessage);
           this.isLoading = false;
           this.error = errorMessage;
         }

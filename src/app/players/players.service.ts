@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { ThisReceiver } from "@angular/compiler";
 import { Injectable } from "@angular/core";
 import { catchError, map, Subject, tap, throwError } from "rxjs";
+import { ServiceResponse } from "../service-response.model";
 import { Player } from "./player.model";
 
 @Injectable({
@@ -26,17 +27,31 @@ export class PlayersService {
                 }));
     }
 
-    fetchAllPlayers() {
-        return this.http.get<{ [key: string]: Player }>('https://world-xi-app-default-rtdb.firebaseio.com/players.json')
-            .pipe(catchError(errorRes => { return throwError(errorRes.error.error) }),
-                map(res => {
-                    let players: Player[] = [];
+    // fetchAllPlayers() {
+    //     return this.http.get<{ [key: string]: Player }>('https://world-xi-app-default-rtdb.firebaseio.com/players.json')
+    //         .pipe(catchError(errorRes => { return throwError(errorRes.error.error) }),
+    //             map(res => {
+    //                 let players: Player[] = [];
 
-                    for (let key in res) {
-                        if (res.hasOwnProperty(key)) {
-                            players.push({ ...res[key], id: key });
-                        }
-                    }
+    //                 for (let key in res) {
+    //                     if (res.hasOwnProperty(key)) {
+    //                         players.push({ ...res[key], id: key });
+    //                     }
+    //                 }
+                    
+    //                 this.players = players;
+    //                 this.playersChanged.next(this.players.slice());
+                    
+    //                 return players.slice();
+    //             }));
+    // }
+
+    fetchAllPlayers() {
+        return this.http.get<ServiceResponse>('https://localhost:7258/api/Player')
+            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
+                map((res:ServiceResponse) => {
+                    // let players: Player[] = [];
+                    let players: Player[] = res.data;
                     
                     this.players = players;
                     this.playersChanged.next(this.players.slice());

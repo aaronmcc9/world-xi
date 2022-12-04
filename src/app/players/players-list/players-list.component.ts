@@ -48,6 +48,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
     this.playerService.fetchAllPlayers()
       .subscribe({
         next: (players: Player[]) => {
+          console.log(players);
           this.players = players;
           this.isLoading = false;
         },

@@ -17,7 +17,7 @@ export class ModifyPlayerComponent implements OnInit {
   editMode = false;
   player: Player = <Player>{}
   positionTypes: string[] = []
-  id: string = '';
+  id: number = 0;
   isLoading = false;
   error = '';
   form: FormGroup = new FormGroup({});
@@ -83,7 +83,7 @@ export class ModifyPlayerComponent implements OnInit {
 
   onCreate() {
     this.isLoading = true;
-
+    
     this.playerService.createPlayer(this.form.value)
       .subscribe({
         next: () => {
@@ -91,6 +91,7 @@ export class ModifyPlayerComponent implements OnInit {
           this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
         },
         error: errorMessage => {
+          console.log(errorMessage);
           this.isLoading = false;
 
           this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)
@@ -122,7 +123,7 @@ export class ModifyPlayerComponent implements OnInit {
     this.form.reset();
   }
 
-  onFetchPlayer(id: string) {
+  onFetchPlayer(id: number) {
     this.isLoading = true;
     this.playerService.fetchPlayerById(id)
       .subscribe({

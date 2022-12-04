@@ -54,8 +54,14 @@ namespace api.Services.PlayerService
       {
         var player = this.Query()
             .Where(p => p.id == id)
-            .ToListAsync();
-        
+            .FirstOrDefault();
+
+        if (player == null)
+        {
+          response.Success = false;
+          response.Message = "Could not find Player!";
+          return response;
+        }
         response.Data = this._mapper.Map<PlayerDto>(player);
       }
       catch (Exception e)
@@ -64,6 +70,47 @@ namespace api.Services.PlayerService
         response.Message = e.Message;
       }
 
+      return response;
+    }
+
+    public async Task<ServiceResponse<List<PlayerDto>>> InsertPlayer(PlayerDto newPlayer)
+    {
+      var response = new ServiceResponse<List<PlayerDto>>();
+      
+      try{
+        var player = this._mapper.Map<Player>(newPlayer);
+        this._dataContext.Players.Add(player);
+        await this._dataContext.SaveChangesAsync();
+
+        response.Data = await this.Query()
+          .Select(p => this._mapper.Map<PlayerDto>(p))
+          .ToListAsync();
+      }
+      catch(Exception e){
+        response.Success = false;
+        response.Message = e.Message;
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<List<PlayerDto>>> UpdatePlayer(PlayerDto playerToUpdate)
+    {
+      var response = new ServiceResponse<List<PlayerDto>>();
+      
+      try{
+        var player = this._mapper.Map<Player>(playerToUpdate);
+        this._dataContext.Players.Update(player);
+        await this._dataContext.SaveChangesAsync();
+
+        response.Data = await this.Query()
+          .Select(p => this._mapper.Map<PlayerDto>(p))
+          .ToListAsync();
+      }
+      catch(Exception e){
+        response.Success = false;
+        response.Message = e.Message;
+      }
 
       return response;
     }

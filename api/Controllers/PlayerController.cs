@@ -23,7 +23,7 @@ namespace api.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PlayerDto>>> FetchAllPlayers()
+    public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> FetchAllPlayers()
     {
         return Ok(await this._playerService.FetchAllPlayers());   
     }
@@ -37,6 +37,18 @@ namespace api.Controllers
             return NotFound(response);
 
         return Ok(response);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> InsertPlayer(PlayerDto newPlayer)
+    {
+      return Ok(await this._playerService.InsertPlayer(newPlayer));
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> UpdatePlayer(PlayerDto playerToUpdate)
+    {
+      return Ok(await this._playerService.UpdatePlayer(playerToUpdate));
     }
   }
 }

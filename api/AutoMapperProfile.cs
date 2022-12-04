@@ -12,6 +12,7 @@ namespace api
         public AutoMapperProfile()
         {
             CreateMap<Player, PlayerDto>();
+            CreateMap<PlayerDto, Player>();
         }
     }
 }

@@ -8,6 +8,9 @@ namespace api.Dto.Player
 {
     public class PlayerDto
     {
+        [DataMember(Name =("id"))]
+        public int Id { get; set; }
+
         [DataMember(Name =("firstName"))]
         public string FirstName { get; set; } = string.Empty;
         

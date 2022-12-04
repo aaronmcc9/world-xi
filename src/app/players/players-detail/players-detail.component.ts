@@ -11,7 +11,7 @@ import { PlayersService } from '../players.service';
   styleUrls: ['./players-detail.component.css']
 })
 export class PlayersDetailComponent implements OnInit {
-  playerId: string = '';
+  playerId: number = 0;
   player: Player = <Player>{};
   error: string = '';
   isLoading = false;
@@ -26,7 +26,7 @@ export class PlayersDetailComponent implements OnInit {
     this.activatedRoute.params.subscribe(
       (params) => {
 
-        this.playerId = params['id'];
+        this.playerId = +params['id'];
 
         if (this.playerId) {
           this.isLoading = true;

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Player } from '../player.model';
-import { PlayersService } from '../players.service';
+import { PlayersApiService } from '../players-api.service';
 
 @Component({
   selector: 'app-players-detail',
@@ -19,8 +19,8 @@ export class PlayersDetailComponent implements OnInit {
 
 
   constructor(private activatedRoute: ActivatedRoute,
-    private playersService: PlayersService,
-    private alertService:AlertService) { }
+    private playersApiService: PlayersApiService,
+    private alertService: AlertService) { }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(
@@ -31,7 +31,7 @@ export class PlayersDetailComponent implements OnInit {
         if (this.playerId) {
           this.isLoading = true;
 
-          this.playersService.fetchPlayerById(this.playerId)
+          this.playersApiService.fetchPlayerById(this.playerId)
             .subscribe({
               next: playerRes => {
                 this.player = playerRes;

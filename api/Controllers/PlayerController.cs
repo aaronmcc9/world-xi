@@ -25,30 +25,40 @@ namespace api.Controllers
     [HttpGet]
     public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> FetchAllPlayers()
     {
-        return Ok(await this._playerService.FetchAllPlayers());   
+      return Ok(await this._playerService.FetchAllPlayers());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ServiceResponse<PlayerDto>>> FetchPlayerById(int id)
     {
-        var response = await this._playerService.FetchPlayerById(id);
+      var response = await this._playerService.FetchPlayerById(id);
 
-        if(response.Data == null)
-            return NotFound(response);
+      if (response.Data == null)
+        return NotFound(response);
 
-        return Ok(response);
+      return Ok(response);
     }
 
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> InsertPlayer(PlayerDto newPlayer)
     {
-      return Ok(await this._playerService.InsertPlayer(newPlayer));
+      var response = await this._playerService.InsertPlayer(newPlayer);
+      return Ok(response);
     }
 
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> UpdatePlayer(PlayerDto playerToUpdate)
     {
       return Ok(await this._playerService.UpdatePlayer(playerToUpdate));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> DeletePlayer(int id)
+    {
+      if (id == 0)
+        return NotFound("Player not found");
+
+      return Ok(await this._playerService.DeletePlayer(id));
     }
   }
 }

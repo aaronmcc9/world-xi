@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Position } from 'src/app/players/player-position';
 import { Player } from 'src/app/players/player.model';
-import { PlayersService } from 'src/app/players/players.service';
+import { PlayersApiService } from 'src/app/players/players-api.service';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { PositionService } from 'src/app/players/position.service';
 import { Subscription } from 'rxjs';
@@ -30,12 +30,12 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   //icons
   selectIcon = faUpRightFromSquare
 
-  constructor(private playersService: PlayersService, private positionService: PositionService,
+  constructor(private playersApiService: PlayersApiService, private positionService: PositionService,
     private teamService: TeamService) { }
 
   ngOnInit(): void {
 
-    this.players = this.playersService.players
+    this.players = this.playersApiService.players
       .filter(p => {
         return p.position == this.position;
       });
@@ -71,7 +71,7 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   fetchPlayers() {
     this.loading = true;
 
-    this.playersService.fetchAllPlayers()
+    this.playersApiService.fetchAllPlayers()
       .subscribe({
         next: players => {
 

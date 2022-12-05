@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Player } from '../player.model';
-import { PlayersService } from '../players.service';
+import { PlayersApiService } from '../players-api.service';
 import { faCircleCheck, faXmark, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { Input } from '@angular/core';
@@ -26,7 +26,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
   @Input() cols = 2;
   screenSize = ""
 
-  constructor(private playerService: PlayersService, private router: Router,
+  constructor(private playersApiService: PlayersApiService, private router: Router,
     private columnService: ColumnService) { }
 
   ngOnDestroy(): void {
@@ -41,11 +41,11 @@ export class PlayersListComponent implements OnInit, OnDestroy {
       this.screenSize = screenSize;
     });
 
-    this.subscription = this.playerService.playersChanged.subscribe(players => {
+    this.subscription = this.playersApiService.playersChanged.subscribe(players => {
       return this.players = players;
     })
 
-    this.playerService.fetchAllPlayers()
+    this.playersApiService.fetchAllPlayers()
       .subscribe({
         next: (players: Player[]) => {
           console.log(players);

@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Player } from '../../player.model';
-import { PlayersService } from '../../players.service';
+import { PlayersApiService } from '../../players-api.service';
 
 @Component({
   selector: 'app-delete-player',
@@ -16,7 +16,7 @@ export class DeletePlayerComponent implements OnInit {
   @Input() player: Player | null = null;
   @Output() closeModal = new EventEmitter<boolean>();
 
-  constructor(private playerService:PlayersService, private translateService:TranslateService,
+  constructor(private playersApiService:PlayersApiService, private translateService:TranslateService,
     private router: Router, private alertService: AlertService
     ) { }
   action = this.translateService.instant('DELETE');
@@ -26,7 +26,7 @@ export class DeletePlayerComponent implements OnInit {
   }
 
   confirm(){
-     this.playerService.deletePlayer(this.player?.id!)
+     this.playersApiService.deletePlayer(this.player?.id!)
         .subscribe({
           next: () => {
             this.alertService.toggleAlert('PLAYER_DELETED', AlertType.Info, '', 

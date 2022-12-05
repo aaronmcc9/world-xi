@@ -6,7 +6,7 @@ import { AlertService } from 'src/app/alert/alert.service';
 import { ColumnService } from 'src/app/columns.service';
 import { Position } from '../player-position';
 import { Player } from '../player.model';
-import { PlayersService } from '../players.service';
+import { PlayersApiService } from '../players-api.service';
 
 @Component({
   selector: 'app-modify-player',
@@ -16,14 +16,17 @@ import { PlayersService } from '../players.service';
 export class ModifyPlayerComponent implements OnInit {
   editMode = false;
   player: Player = <Player>{}
-  positionTypes: string[] = []
+  positionTypes: string[] = [];
+  positions = Object.values(Position)
+    .filter(p => typeof p === 'number');
+
   id: number = 0;
   isLoading = false;
   error = '';
   form: FormGroup = new FormGroup({});
   cols: number = 2;
 
-  constructor(private playerService: PlayersService,
+  constructor(private playersApiService: PlayersApiService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
@@ -39,7 +42,7 @@ export class ModifyPlayerComponent implements OnInit {
       firstName: new FormControl<string>('', Validators.required),
       lastName: new FormControl<string>('', Validators.required),
       age: new FormControl<number>(16, [Validators.required, Validators.min(16)]),
-      position: new FormControl<string>(Position[Position.Goalkeeper], Validators.required),
+      position: new FormControl<Position>(Position.Goalkeeper, Validators.required),
       club: new FormControl<string>('', Validators.required),
       country: new FormControl<string>('', Validators.required),
       imagePath: new FormControl<string>('')
@@ -49,7 +52,7 @@ export class ModifyPlayerComponent implements OnInit {
       this.id = params['id'];
     })
 
-    this.positionTypes = <string[]>Object.values(Position)
+    this.positionTypes = Object.keys(Position)
       .filter(p => {
         return typeof p === 'string';
       })
@@ -57,9 +60,9 @@ export class ModifyPlayerComponent implements OnInit {
     if (this.id) {
       this.editMode = true;
 
-      if (this.playerService.players != null && this.playerService.players.length > 0) {
+      if (this.playersApiService.players != null && this.playersApiService.players.length > 0) {
 
-        const playerToEdit = this.playerService.players.find((player) => {
+        const playerToEdit = this.playersApiService.players.find((player) => {
           return player.id === this.id;
         })
 
@@ -84,7 +87,7 @@ export class ModifyPlayerComponent implements OnInit {
   onCreate() {
     this.isLoading = true;
     
-    this.playerService.createPlayer(this.form.value)
+    this.playersApiService.createPlayer(this.form.value)
       .subscribe({
         next: () => {
           this.isLoading = false;
@@ -104,7 +107,7 @@ export class ModifyPlayerComponent implements OnInit {
   onUpdate() {
     this.isLoading = true;
 
-    this.playerService.updatePlayer({ ...this.form.value, id: this.player.id })
+    this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id })
       .subscribe({
         next: () => {
           this.isLoading = false;
@@ -125,7 +128,7 @@ export class ModifyPlayerComponent implements OnInit {
 
   onFetchPlayer(id: number) {
     this.isLoading = true;
-    this.playerService.fetchPlayerById(id)
+    this.playersApiService.fetchPlayerById(id)
       .subscribe({
         next: res => {
           this.player = res;
@@ -150,5 +153,9 @@ export class ModifyPlayerComponent implements OnInit {
       country: this.player ? this.player.country : '',
       imagePath: this.player ? this.player.imagePath : ''
     });
+  }
+
+  getPosition(position: string | Position): string {
+    return Position[+position];
   }
 }

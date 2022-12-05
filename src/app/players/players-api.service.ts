@@ -8,7 +8,7 @@ import { Player } from "./player.model";
     providedIn: 'root'
 })
 
-export class PlayersService {
+export class PlayersApiService {
     players: Player[] = [];
     playersChanged = new Subject<Player[]>();
 
@@ -17,7 +17,7 @@ export class PlayersService {
     constructor(private http: HttpClient) { }
 
     createPlayer(player: Player) {
-        
+        console.log(player);
         return this.http.post<ServiceResponse>(this.url,
             player)
             .pipe(catchError((errorRes: ServiceResponse) => {
@@ -45,36 +45,33 @@ export class PlayersService {
     }
 
     fetchPlayerById(id: number) {
-        console.log("hello,", this.url + id);
         return this.http.get<ServiceResponse>(this.url + id)
-            .pipe(catchError((errorRes:ServiceResponse) => {
+            .pipe(catchError((errorRes: ServiceResponse) => {
                 return throwError(errorRes.message)
             }),
-                map((res:ServiceResponse) => {
+                map((res: ServiceResponse) => {
 
                     return { ...res.data, id: id };
                 }));
     }
 
     deletePlayer(id: number) {
-        return this.http.delete<Player>('https://world-xi-app-default-rtdb.firebaseio.com/players/' + id + ".json")
-            .pipe(catchError(errorRes => { return throwError(errorRes.message) }),
-                tap(res => {
+        return this.http.delete<ServiceResponse>(this.url + id)
+            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
+                tap((res:ServiceResponse) => {
 
-                    this.players = this.players.filter(player => {
-                        return player.id != id;
-                    });
-
+                    this.players = res.data;
                     this.playersChanged.next(this.players.slice())
                 })
             );
     }
 
     updatePlayer(player: Player) {
+        console.log(player);
+
         return this.http.put<ServiceResponse>(this.url, player)
-            .pipe(catchError((errorRes: ServiceResponse) => 
-                { return throwError(errorRes.message) }),
-                tap((res:ServiceResponse) => {
+            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
+                tap((res: ServiceResponse) => {
                     this.playersChanged.next(res.data);
                 }));
     }

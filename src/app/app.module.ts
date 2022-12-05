@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { PlayersService } from './players/players.service';
+import { PlayersApiService } from './players/players-api.service';
 import { AuthInterceptorService } from './auth/auth/auth.interceptor.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -45,7 +45,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     AppRoutingModule
   ],
-  providers: [PlayersService,
+  providers: [PlayersApiService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,

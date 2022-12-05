@@ -13,6 +13,7 @@ namespace api.Services.PlayerService
         Task<ServiceResponse<PlayerDto>> FetchPlayerById(int id);
         Task<ServiceResponse<List<PlayerDto>>> InsertPlayer(PlayerDto player);
         Task<ServiceResponse<List<PlayerDto>>> UpdatePlayer(PlayerDto player);
+        Task<ServiceResponse<List<PlayerDto>>> DeletePlayer(int id);
 
     }
 }

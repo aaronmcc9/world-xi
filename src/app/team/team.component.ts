@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
-import { PlayersService } from '../players/players.service';
+import { PlayersApiService} from '../players/players-api.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
@@ -71,7 +71,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   belowMediumSize = false;
 
   constructor(private positionService: PositionService,
-    private teamService: TeamService, private playersService: PlayersService,
+    private teamService: TeamService, private playersApiService: PlayersApiService,
     private alertService: AlertService, private translateService: TranslateService,
     private columnService: ColumnService) { }
 
@@ -81,7 +81,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playersPage = page;
     })
 
-    this.playerSubscription = this.playersService.playersChanged
+    this.playerSubscription = this.playersApiService.playersChanged
       .pipe((take(1)))
       .subscribe((players: Player[]) => {
 
@@ -157,7 +157,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     if (this.playerCount === 0)
-      this.playerCount = this.playersService.players.length;
+      this.playerCount = this.playersApiService.players.length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
@@ -232,7 +232,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let currentPosition = this.positionService.teamListPosition.getValue();
 
     this.maxPage = currentPosition === '' ? this.playerCount / 16 :
-      this.playersService.getPlayerCountByPosition(currentPosition) / 16;
+      this.playersApiService.getPlayerCountByPosition(currentPosition) / 16;
 
     this.checkPageRight();
   }

@@ -76,8 +76,9 @@ namespace api.Services.PlayerService
     public async Task<ServiceResponse<List<PlayerDto>>> InsertPlayer(PlayerDto newPlayer)
     {
       var response = new ServiceResponse<List<PlayerDto>>();
-      
-      try{
+
+      try
+      {
         var player = this._mapper.Map<Player>(newPlayer);
         this._dataContext.Players.Add(player);
         await this._dataContext.SaveChangesAsync();
@@ -86,7 +87,8 @@ namespace api.Services.PlayerService
           .Select(p => this._mapper.Map<PlayerDto>(p))
           .ToListAsync();
       }
-      catch(Exception e){
+      catch (Exception e)
+      {
         response.Success = false;
         response.Message = e.Message;
       }
@@ -97,8 +99,9 @@ namespace api.Services.PlayerService
     public async Task<ServiceResponse<List<PlayerDto>>> UpdatePlayer(PlayerDto playerToUpdate)
     {
       var response = new ServiceResponse<List<PlayerDto>>();
-      
-      try{
+
+      try
+      {
         var player = this._mapper.Map<Player>(playerToUpdate);
         this._dataContext.Players.Update(player);
         await this._dataContext.SaveChangesAsync();
@@ -107,7 +110,42 @@ namespace api.Services.PlayerService
           .Select(p => this._mapper.Map<PlayerDto>(p))
           .ToListAsync();
       }
-      catch(Exception e){
+      catch (Exception e)
+      {
+        response.Success = false;
+        response.Message = e.Message;
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<List<PlayerDto>>> DeletePlayer(int id)
+    {
+      var response = new ServiceResponse<List<PlayerDto>>();
+
+      try
+      {
+        var playerToDelete = this.Query()
+          .Where(p => p.id == id)
+          .FirstOrDefault();
+
+        if (playerToDelete == null)
+        {
+          response.Success = false;
+          response.Message = "Player not found";
+          return response;
+        }
+
+        var player = this._mapper.Map<Player>(playerToDelete);
+        this._dataContext.Players.Remove(player);
+        await this._dataContext.SaveChangesAsync();
+
+        response.Data = await this.Query()
+          .Select(p => this._mapper.Map<PlayerDto>(p))
+          .ToListAsync();
+      }
+      catch (Exception e)
+      {
         response.Success = false;
         response.Message = e.Message;
       }

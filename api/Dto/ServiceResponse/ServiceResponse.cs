@@ -15,6 +15,6 @@ namespace api.Dto
     public string Message { get; set; } = string.Empty;
 
     [DataMember(Name="success")]
-    public bool Success { get; set; } = false;
+    public bool Success { get; set; } = true;
   }
 }

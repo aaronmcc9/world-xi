@@ -3,18 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using api.Dto;
+using api.Services.AuthService;
+using api.Dto.User;
+using api.Models;
 
 namespace api.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class AuthController: ControllerBase
+  [ApiController]
+  [Route("api/[controller]")]
+  public class AuthController : ControllerBase
+  {
+    private readonly IAuthService _authService;
+    public AuthController(IAuthService authService)
     {
-        public AuthController()
-        {
-            
-        }
-
-        
+      this._authService = authService;
     }
+
+    [HttpPost("register")]
+    public async Task<ActionResult<ServiceResponse<UserDto>>> Register(UserRequestDto user)
+    {
+      var response = await this._authService.Register(new User { Email = user.Email }, user.Password);
+
+      if (!response.Success)
+        return BadRequest(response);
+
+      return Ok(response);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<ServiceResponse<UserDto>>> Login(UserRequestDto user)
+    {
+      var response = await this._authService.Login(user.Email, user.Password);
+
+      if (!response.Success)
+        return BadRequest(response);
+
+      return Ok(response);
+    }
+
+
+  }
 }

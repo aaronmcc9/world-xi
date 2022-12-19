@@ -4,7 +4,7 @@ import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
-import { PlayersApiService} from '../players/players-api.service';
+import { PlayersApiService } from '../players/players-api.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
@@ -12,6 +12,7 @@ import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
+import { ServiceResponse } from '../service-response.model';
 
 @Component({
   selector: 'app-team',
@@ -21,6 +22,7 @@ import { ColumnService } from '../columns.service';
 export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   form = new FormGroup({
+    teamName: new FormControl<string>(''),
     formation: new FormControl<string>('442')
   });
 
@@ -134,14 +136,12 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.isLoading = true;
     this.teamService.fetchUserTeam().subscribe({
-      next: (res: Team) => {
-        if (res) {
-          if (res['formation']) {
-            this.setFormation(res['formation']);
-          }
-          if (res['players']) {
-            this.playerCount = res['players'].length;
-          }
+      next: (res: ServiceResponse) => {
+        console.log(res);
+        if (res.data) {
+          this.form.controls['teamName'].setValue(res.data.teamName, { onlySelf: true });
+          this.setFormation(res.data['formation']);
+          this.playerCount = res.data['players'].length;
         }
 
         this.isLoading = false;
@@ -291,29 +291,34 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   save() {
-    let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
-    if (!this.checkMaximumPlayersSelected(players)) {
-      this.alertService.toggleAlert('ALERT_ELEVEN_PLAYERS_TO_SAVE', AlertType.Danger);
+
+    if (!this.form.valid) {
+      this.form.markAsDirty();
       return;
     }
 
-    let formation = this.form.controls['formation'].value;
-    let team = new Team(<Player[]>players, formation!)
+    let team = this.getDto();
+
+    if (!team)
+      return;
+
+    let teamAction = team.id > 0 ?
+      this.teamService.updateTeam(team) :
+      this.teamService.createTeam(team);
 
     this.isLoading = true;
-    this.teamService.saveUserTeam(team)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.canSave = false;
-          this.canCancel = false;
-          this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
-        },
-        error: (errorMessage: string) => {
-          this.error = errorMessage;
-          this.isLoading = false;
-        }
-      });
+    teamAction.subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.canSave = false;
+        this.canCancel = false;
+        this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
+      },
+      error: (errorMessage: string) => {
+        this.error = errorMessage;
+        this.isLoading = false;
+      }
+    });
   }
 
   toggleRevertModal(action: string) {
@@ -341,5 +346,21 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     return playersFull && this.playersSelected === 11
   }
 
+  private getDto(): Team {
+    let formValue = this.form.getRawValue();
+    let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
+
+    if (!this.checkMaximumPlayersSelected(players)) {
+      this.alertService.toggleAlert('ALERT_ELEVEN_PLAYERS_TO_SAVE', AlertType.Danger);
+      throw Error("Invalid Operation");
+    }
+
+    return {
+      id: this.teamService.savedTeam.id,
+      teamName: formValue.teamName,
+      formation: formValue.formation,
+      players: players
+    } as Team;
+  }
 
 }

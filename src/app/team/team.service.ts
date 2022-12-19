@@ -29,7 +29,7 @@ export class TeamService {
   teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 
-  savedTeam = new Team([], '');
+  savedTeam = new Team(0, '', [], '442');
   canCancelChanges = false;
 
   /**
@@ -56,7 +56,7 @@ export class TeamService {
     return this.http.put<ServiceResponse>(this.url, team)
       .pipe(catchError((errorRes: ServiceResponse) => throwError(errorRes)),
         tap((res: ServiceResponse) => {
-          this.savedTeam = this.savedTeam = cloneDeep(res.data);
+          this.savedTeam = cloneDeep(res.data);
           this.canCancelChanges = false;
         }));
   }
@@ -77,6 +77,7 @@ export class TeamService {
     return this.http.get<ServiceResponse>(this.url)
       .pipe(catchError((errorRes: ServiceResponse) => throwError(errorRes.message)),
         tap((res: ServiceResponse) => {
+          console.log(res.data);
           //to keep record before user makes changes
           this.savedTeam = cloneDeep(res.data);
           this.setPlayersByPosition(res.data.players);

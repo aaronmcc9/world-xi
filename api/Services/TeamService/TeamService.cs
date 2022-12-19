@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.Team;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Services.TeamService
 {
   public class TeamService : ITeamService
   {
     private readonly DataContext _dataContext;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public TeamService(DataContext dataContext, IMapper mapper)
+
+    public TeamService(DataContext dataContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
     {
       this._dataContext = dataContext;
       this._mapper = mapper;
+      this._httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<ServiceResponse<TeamDto>> FetchTeam()
@@ -24,6 +29,31 @@ namespace api.Services.TeamService
       var response = new ServiceResponse<TeamDto>();
       try
       {
+        var userId = this.GetUserId();
+
+        if (await this.CheckTeamExists(userId))
+        {
+          response.Success = true;
+          response.Message = "No team saved for the user";
+          response.Data = new TeamDto();
+          response.Data.UserId = userId;
+
+          return response;
+        }
+
+        var savedTeam = this._dataContext.Team.
+          FirstOrDefaultAsync(t => t.UserId == userId);
+
+        if (savedTeam == null)
+        {
+          response.Success = false;
+          response.Message = "An error occured fetching the user team";
+        }
+
+        var team = this._mapper.Map<TeamDto>(savedTeam);
+
+        response.Success = true;
+        response.Data = team;
 
       }
       catch (Exception e)
@@ -40,7 +70,7 @@ namespace api.Services.TeamService
       var response = new ServiceResponse<TeamDto>();
       try
       {
-        
+
       }
       catch (Exception e)
       {
@@ -82,5 +112,14 @@ namespace api.Services.TeamService
 
       return response;
     }
+
+    private async Task<bool> CheckTeamExists(int userId)
+    {
+      return await this._dataContext.Team
+        .AnyAsync(t => t.UserId == userId);
+    }
+
+    private int GetUserId() => int.Parse(this._httpContextAccessor.HttpContext.User
+      .FindFirstValue(ClaimTypes.NameIdentifier));
   }
 }

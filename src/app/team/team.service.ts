@@ -38,9 +38,9 @@ export class TeamService {
    * @returns Saves team for specific user and returns errors if any
    */
   createTeam(team: Team) {
-    return this.http.post<ServiceResponse>(this.url, team)
-      .pipe(catchError(((errorRes: ServiceResponse) => throwError(errorRes))),
-        tap((res: ServiceResponse) => {
+    return this.http.post<ServiceResponse<Team>>(this.url, team)
+      .pipe(catchError(((errorRes: ServiceResponse<Team>) => throwError(errorRes))),
+        tap((res: ServiceResponse<Team>) => {
           this.savedTeam = this.savedTeam = cloneDeep(res.data);
           this.canCancelChanges = false;
         }));
@@ -53,9 +53,9 @@ export class TeamService {
    */
   updateTeam(team: Team) {
 
-    return this.http.put<ServiceResponse>(this.url, team)
-      .pipe(catchError((errorRes: ServiceResponse) => throwError(errorRes)),
-        tap((res: ServiceResponse) => {
+    return this.http.put<ServiceResponse<Team>>(this.url, team)
+      .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes)),
+        tap((res: ServiceResponse<Team>) => {
           this.savedTeam = cloneDeep(res.data);
           this.canCancelChanges = false;
         }));
@@ -69,14 +69,9 @@ export class TeamService {
  */
   fetchUserTeam() {
 
-    let userId = this.authService.getCurrentUserId();
-
-    if (userId == undefined)
-      throwError("User is logged out. Please login to peform this operation");
-
-    return this.http.get<ServiceResponse>(this.url)
-      .pipe(catchError((errorRes: ServiceResponse) => throwError(errorRes.message)),
-        tap((res: ServiceResponse) => {
+    return this.http.get<ServiceResponse<Team>>(this.url)
+      .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes.message)),
+        tap((res: ServiceResponse<Team>) => {
           console.log(res.data);
           //to keep record before user makes changes
           this.savedTeam = cloneDeep(res.data);

@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Player } from '../../player.model';
-import { PlayersApiService } from '../../players-api.service';
+import { PlayersApiService } from '../../../api/players/players-api.service';
 
 @Component({
   selector: 'app-delete-player',

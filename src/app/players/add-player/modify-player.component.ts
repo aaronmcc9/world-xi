@@ -6,7 +6,9 @@ import { AlertService } from 'src/app/alert/alert.service';
 import { ColumnService } from 'src/app/columns.service';
 import { Position } from '../player-position';
 import { Player } from '../player.model';
-import { PlayersApiService } from '../players-api.service';
+import { PlayersApiService } from '../../api/players/players-api.service';
+import { ServiceResponse } from 'src/app/service-response.model';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-modify-player',
@@ -32,7 +34,7 @@ export class ModifyPlayerComponent implements OnInit {
     private alertService: AlertService,
     private columnService: ColumnService) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     this.columnService.columnObs?.subscribe((cols) => {
       this.cols = cols;
@@ -62,84 +64,139 @@ export class ModifyPlayerComponent implements OnInit {
 
       if (this.playersApiService.players != null && this.playersApiService.players.length > 0) {
 
-        const playerToEdit = this.playersApiService.players.find((player) => {
-          return player.id === this.id;
-        })
+        await this.onFetchPlayer(this.id);
+        //   const playerToEdit = this.playersApiService.players.find((player) => {
+        //     return player.id === this.id;
+        //   })
 
-        if (playerToEdit) {
-          this.player = playerToEdit;
-          this.onSetForm();
-        }
-        else {
-          this.onFetchPlayer(this.id);
-        }
+        //   if (playerToEdit) {
+        //     this.player = playerToEdit;
+        //     this.onSetForm();
+        //   }
+        //   else {
+        //     this.onFetchPlayer(this.id);
+        //   }
+        // }
+        // else {
+        //   this.onFetchPlayer(this.id);
+        // }
       }
+
       else {
-        this.onFetchPlayer(this.id);
+        this.editMode = false;
       }
-    }
-
-    else {
-      this.editMode = false;
     }
   }
 
-  onCreate() {
-    this.isLoading = true;
-    
-    this.playersApiService.createPlayer(this.form.value)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
-        },
-        error: errorMessage => {
-          console.log(errorMessage);
-          this.isLoading = false;
+  async onSubmit() {
+    if (!this.form.valid) {
+      this.form.markAsDirty();
+      return;
+    }
 
-          this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)
-        }
-      })
+    if (this.editMode)
+      await this.onUpdate();
+    else
+      await this.onCreate()
 
     this.onClear();
   }
 
-  onUpdate() {
+  async onCreate() {
     this.isLoading = true;
 
-    this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id })
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
-          this.router.navigate(['']);
-        },
-        error: (errorMessage: string) => {
-          this.isLoading = false;
-          this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger, errorMessage)
-          // this.error = errorMessage;
-        }
-      });
+    try {
+      let result = await lastValueFrom(this.playersApiService.createPlayer(this.form.value));
+      this.isLoading = false;
+      this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
+
+      if (result.data) {
+        //latest fetch of players to notify existing sets
+        this.playersApiService.playersChanged.next(result.data);
+        this.router.navigate(['']);
+      }
+      else {
+        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
+      }
+    }
+    catch (e) {
+      this.isLoading = false;
+      this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
+    }
+
+    // this.playersApiService.createPlayer(this.form.value)
+    //   .subscribe({
+    //     next: () => {
+    //       this.isLoading = false;
+    //       this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
+    //     },
+    //     error: errorMessage => {
+    //       console.log(errorMessage);
+    //       this.isLoading = false;
+    //       this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)
+    //     }
+    //   })
+  }
+
+  async onUpdate() {
+    this.isLoading = true;
+
+    try{
+      const result = await lastValueFrom(this.playersApiService.updatePlayer({...this.form.value, id: this.player.id}));
+      this.isLoading = false;
+      this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
+
+      if (result.data) {
+        //latest fetch of players to notify existing sets
+        this.playersApiService.playersChanged.next(result.data);
+        this.router.navigate(['']);
+      }
+      else {
+        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
+      }
+    }
+    catch(e){
+      this.isLoading = false;
+      this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger)
+    }
+
+    // this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id })
+    //   .subscribe({
+    //     next: () => {
+    //       this.isLoading = false;
+    //       this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
+    //       this.router.navigate(['']);
+    //     },
+    //     error: (errorMessage: string) => {
+    //       this.isLoading = false;
+    //       this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger, errorMessage)
+    //       // this.error = errorMessage;
+    //     }
+    //   });
   }
 
   onClear() {
     this.form.reset();
   }
 
-  onFetchPlayer(id: number) {
+  async onFetchPlayer(id: number) {
     this.isLoading = true;
-    this.playersApiService.fetchPlayerById(id)
-      .subscribe({
-        next: res => {
-          this.player = res;
-          this.onSetForm();
-          this.isLoading = false;
-        },
-        error: errorMessage => {
-          this.isLoading = false;
-          this.error = errorMessage;
-        }
-      });
+    try {
+      const result = await lastValueFrom(this.playersApiService.fetchPlayerById(id));
+      this.isLoading = false;
+
+      if (result.data) {
+        this.player = result.data;
+        this.onSetForm();
+      } else {
+        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Warning, result.message)
+      }
+    }
+    catch (e) {
+      console.log(e);
+      this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
+      this.isLoading = false;
+    }
   }
 
   onSetForm() {

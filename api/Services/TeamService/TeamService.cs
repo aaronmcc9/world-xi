@@ -31,8 +31,9 @@ namespace api.Services.TeamService
       {
         var userId = this.GetUserId();
 
-        if (await this.CheckTeamExists(userId))
+        if (!await this.CheckTeamExists(userId))
         {
+          //true to signal no error has occurred
           response.Success = true;
           response.Message = "No team saved for the user";
           response.Data = new TeamDto();
@@ -119,7 +120,13 @@ namespace api.Services.TeamService
         .AnyAsync(t => t.UserId == userId);
     }
 
-    private int GetUserId() => int.Parse(this._httpContextAccessor.HttpContext.User
-      .FindFirstValue(ClaimTypes.NameIdentifier));
+    private int GetUserId()
+    {
+      var user = this._httpContextAccessor?.HttpContext?.User?
+        .FindFirstValue(ClaimTypes.NameIdentifier);
+
+      var x = int.Parse(user);
+      return x;
+    }
   }
 }

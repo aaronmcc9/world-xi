@@ -1,11 +1,13 @@
 import { Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Position } from 'src/app/players/player-position';
 import { Player } from 'src/app/players/player.model';
-import { PlayersApiService } from 'src/app/players/players-api.service';
+import { PlayersApiService } from 'src/app/api/players/players-api.service';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { PositionService } from 'src/app/players/position.service';
-import { Subscription } from 'rxjs';
+import { lastValueFrom, Subscription } from 'rxjs';
 import { TeamService } from '../../team.service';
+import { AlertService } from 'src/app/alert/alert.service';
+import { AlertType } from 'src/app/alert/alert-type.enum';
 
 @Component({
   selector: 'app-players-in-position',
@@ -18,10 +20,10 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   pageSubscription = new Subscription();
   playerToModifySubscription = new Subscription();
   playerToModify: Player | null = null;
-  
+
   players: Player[] = [];
   error = '';
-  loading = false;
+  isLoading = false;
 
   playerLimit = 4;
   page = 1;
@@ -31,12 +33,12 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   selectIcon = faUpRightFromSquare
 
   constructor(private playersApiService: PlayersApiService, private positionService: PositionService,
-    private teamService: TeamService) { }
+    private teamService: TeamService, private alertService: AlertService) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     this.players = this.playersApiService.players
-      .filter(p => {
+      .filter((p: Player) => {
         return p.position == this.position;
       });
 
@@ -68,24 +70,40 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
     this.playerToModifySubscription.unsubscribe();
   };
 
-  fetchPlayers() {
-    this.loading = true;
+  async fetchPlayers() {
+    this.isLoading = true;
 
-    this.playersApiService.fetchAllPlayers()
-      .subscribe({
-        next: players => {
+    try {
+      const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
 
-          this.players = players.filter(p => {
-            return p.position == this.position;
-          });
+      if (result.data) {
+        this.players = result.data.filter((p: Player) => {
+          return p.position == this.position;
+        });
+      }
 
-          this.loading = false;
-        },
-        error: message => {
-          this.error = message;
-          this.loading = false;
-        }
-      });
+      this.isLoading = false;
+    }
+    catch(e) {
+      this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger)
+      this.isLoading = false;
+    }
+
+    // this.playersApiService.fetchAllPlayers()
+    //   .subscribe({
+    //     next: players => {
+
+    //       this.players = players.filter((p: Player) => {
+    //         return p.position == this.position;
+    //       });
+
+    //       this.loading = false;
+    //     },
+    //     error: message => {
+    //       this.error = message;
+    //       this.loading = false;
+    //     }
+    //   });
   }
 
   modifyPlayer(player: Player) {

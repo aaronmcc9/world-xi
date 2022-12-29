@@ -9,26 +9,32 @@ import { User } from "./user.model";
 })
 export class AuthInterceptorService implements HttpInterceptor {
 
-    constructor(private authService: AuthService){}
+    constructor(private authService: AuthService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-        return this.authService.user.pipe(
-            take(1),
-            exhaustMap((user: User | null) => {
-                
-                if(!user){
-                    return next.handle(req)
-                }
-
-                const modifiedRequest = req.clone({
-                    params: new HttpParams()
-                        .set('auth', user.authToken)
-                })
-
-                return next.handle(modifiedRequest);
+        const token = localStorage.getItem("token");
+        if (token) {
+            req = req.clone({
+                setHeaders: { Authorization: `Bearer ${token}` }
             })
-        )
+        }
+            return next.handle(req);
     }
+    // return this.authService.user.pipe(
+    //     take(1),
+    //     exhaustMap((user: User | null) => {
 
+    //         if(!user){
+    //             return next.handle(req)
+    //         }
+
+    //         const modifiedRequest = req.clone({
+    //             params: new HttpParams()
+    //                 .set('auth', user.authToken)
+    //         })
+
+    //         return next.handle(modifiedRequest);
+    //     })
+    // )
 }

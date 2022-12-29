@@ -14,7 +14,6 @@ export class AppComponent implements OnInit {
     private columnService: ColumnService) { }
 
   ngOnInit(): void {
-    //this.authService.autoLogin();
     this.columnService.setColumns();
  }
 }

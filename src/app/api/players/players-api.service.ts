@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { catchError, map, Subject, tap, throwError } from "rxjs";
-import { ServiceResponse } from "../service-response.model";
-import { Player } from "./player.model";
+import { catchError, map, Observable, Subject, tap, throwError } from "rxjs";
+import { ServiceResponse } from "../../service-response.model";
+import { Player } from "../../players/player.model";
 
 @Injectable({
     providedIn: 'root'
@@ -16,64 +16,25 @@ export class PlayersApiService {
 
     constructor(private http: HttpClient) { }
 
-    createPlayer(player: Player) {
-        console.log(player);
-        return this.http.post<ServiceResponse>(this.url,
-            player)
-            .pipe(catchError((errorRes: ServiceResponse) => {
-                return throwError(errorRes.message)
-            }),
-                tap((res: ServiceResponse) => {
-                    console.log("HERE", res);
-                    this.players = res.data;
-                    this.playersChanged.next(this.players.slice());
-                }));
+    createPlayer(player: Player): Observable<ServiceResponse<Player[]>> {
+        return this.http.post<ServiceResponse<Player[]>>(this.url, player);
     }
 
 
     fetchAllPlayers() {
-        return this.http.get<ServiceResponse>(this.url)
-            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
-                map((res: ServiceResponse) => {
-                    let players: Player[] = res.data;
-
-                    this.players = players;
-                    this.playersChanged.next(this.players.slice());
-
-                    return players.slice();
-                }));
+        return this.http.get<ServiceResponse<Player[]>>(this.url);
     }
 
-    fetchPlayerById(id: number) {
-        return this.http.get<ServiceResponse>(this.url + id)
-            .pipe(catchError((errorRes: ServiceResponse) => {
-                return throwError(errorRes.message)
-            }),
-                map((res: ServiceResponse) => {
-
-                    return { ...res.data, id: id };
-                }));
+    fetchPlayerById(id: number): Observable<ServiceResponse<Player>> {
+        return this.http.get<ServiceResponse<Player>>(this.url + id);
     }
 
-    deletePlayer(id: number) {
-        return this.http.delete<ServiceResponse>(this.url + id)
-            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
-                tap((res:ServiceResponse) => {
-
-                    this.players = res.data;
-                    this.playersChanged.next(this.players.slice())
-                })
-            );
+    deletePlayer(id: number): Observable<ServiceResponse<Player[]>> {
+        return this.http.delete<ServiceResponse<Player[]>>(this.url + id);
     }
 
-    updatePlayer(player: Player) {
-        console.log(player);
-
-        return this.http.put<ServiceResponse>(this.url, player)
-            .pipe(catchError((errorRes: ServiceResponse) => { return throwError(errorRes.message) }),
-                tap((res: ServiceResponse) => {
-                    this.playersChanged.next(res.data);
-                }));
+    updatePlayer(player: Player): Observable<ServiceResponse<Player[]>> {
+        return this.http.put<ServiceResponse<Player[]>>(this.url, player);
     }
 
     getPlayerCountByPosition(position: string) {

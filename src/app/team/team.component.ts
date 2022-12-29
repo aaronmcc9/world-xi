@@ -4,7 +4,7 @@ import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
-import { PlayersApiService } from '../players/players-api.service';
+import { PlayersApiService } from '../api/players/players-api.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
@@ -83,6 +83,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playersPage = page;
     })
 
+    //deals with players list - will change
     this.playerSubscription = this.playersApiService.playersChanged
       .pipe((take(1)))
       .subscribe((players: Player[]) => {
@@ -136,7 +137,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.isLoading = true;
     this.teamService.fetchUserTeam().subscribe({
-      next: (res: ServiceResponse) => {
+      next: (res: ServiceResponse<Team>) => {
         console.log(res);
         if (res.data) {
           this.form.controls['teamName'].setValue(res.data.teamName, { onlySelf: true });

@@ -3,7 +3,7 @@ import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { AppCommonModule } from "../app-common.module";
-import { ModifyPlayerModule } from "../players/add-player/modify-player.module";
+import { ModifyPlayerModule } from "../players/modify-player/modify-player.module";
 import { FormationRowModule } from "./formation-row/formation-row.module";
 import { ModifySelectionModule } from "./modify-selection/modify-selection.module";
 import { RevertTeamModule } from "./revert-team/revert-team.module";

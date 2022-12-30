@@ -4,6 +4,7 @@ import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Position } from 'src/app/players/player-position';
 import { Player } from 'src/app/players/player.model';
+import { PositionService } from 'src/app/players/position.service';
 import { SelectionAction } from '../selection-action';
 import { TeamService } from '../team.service';
 
@@ -28,7 +29,8 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
   playersListToModifySubscription = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
 
 
-  constructor(private teamService: TeamService, private alertService: AlertService) { }
+  constructor(private teamService: TeamService, private alertService: AlertService,
+    public positionService: PositionService) { }
 
   ngOnInit(): void {
 
@@ -37,7 +39,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     });
 
     switch (this.player!.position) {
-      case Position[Position.Goalkeeper]:
+      case Position.Goalkeeper:
 
         //checks current selected players for the position
         this.isPlayerSelected = this.isPlayerSelected = this.teamService.teamGoalkeeper.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
@@ -50,7 +52,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
         this.playersListToModifySubscription = this.teamService.teamGoalkeeper;
         break;
 
-      case Position[Position.Defender]:
+      case Position.Defender:
         //checks current selected players for the position
         this.isPlayerSelected = this.teamService.teamDefence.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
 
@@ -62,7 +64,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
         this.playersListToModifySubscription = this.teamService.teamDefence;
         break;
 
-      case Position[Position.Midfield]:
+      case Position.Midfield:
         //checks current selected players for the position
         this.isPlayerSelected = this.teamService.teamMidfield.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
 
@@ -74,7 +76,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
         this.playersListToModifySubscription = this.teamService.teamMidfield;
         break;
 
-      case Position[Position.Forward]:
+      case Position.Forward:
         //checks current selected players for the position
         this.isPlayerSelected = this.teamService.teamForward.getValue().filter((player) => (player?.id === this.player?.id)).length == 1;
 
@@ -137,7 +139,9 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     //player was unable to be added due to maximum reached for their position
     if (this.player != null) {
       this.changeSelectionStatus(); //revert initial selection change
-      this.alertService.toggleAlert('ALERT_REMOVE_PLAYER', AlertType.Danger, '', { 'position': this.player.position.toLowerCase() });
+
+      let positionName = this.positionService.getPositionName(this.player.position).toLowerCase()
+      this.alertService.toggleAlert('ALERT_REMOVE_PLAYER', AlertType.Danger, '', { 'position':  positionName});
     }
   }
 

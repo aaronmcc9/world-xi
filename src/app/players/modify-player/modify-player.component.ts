@@ -7,8 +7,8 @@ import { ColumnService } from 'src/app/columns.service';
 import { Position } from '../player-position';
 import { Player } from '../player.model';
 import { PlayersApiService } from '../../api/players/players-api.service';
-import { ServiceResponse } from 'src/app/service-response.model';
 import { lastValueFrom } from 'rxjs';
+import { PositionService } from '../position.service';
 
 @Component({
   selector: 'app-modify-player',
@@ -17,10 +17,8 @@ import { lastValueFrom } from 'rxjs';
 })
 export class ModifyPlayerComponent implements OnInit {
   editMode = false;
-  player: Player = <Player>{}
-  positionTypes: string[] = [];
-  positions = Object.values(Position)
-    .filter(p => typeof p === 'number');
+  player: Player | null = null;
+  positions: Position[] = [];
 
   id: number = 0;
   isLoading = false;
@@ -32,7 +30,8 @@ export class ModifyPlayerComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
-    private columnService: ColumnService) { }
+    private columnService: ColumnService,
+    public positionService: PositionService) { }
 
   async ngOnInit(): Promise<void> {
 
@@ -40,11 +39,14 @@ export class ModifyPlayerComponent implements OnInit {
       this.cols = cols;
     })
 
+    this.positions = this.positionService.fetchPositionValues();
+
     this.form = new FormGroup({
       firstName: new FormControl<string>('', Validators.required),
       lastName: new FormControl<string>('', Validators.required),
       age: new FormControl<number>(16, [Validators.required, Validators.min(16)]),
-      position: new FormControl<Position>(Position.Goalkeeper, Validators.required),
+      position: new FormControl<Position>(Position.Goalkeeper,
+        [Validators.required, Validators.min(Math.min(...this.positions)), Validators.max(Math.max(...this.positions))]),
       club: new FormControl<string>('', Validators.required),
       country: new FormControl<string>('', Validators.required),
       imagePath: new FormControl<string>('')
@@ -54,37 +56,19 @@ export class ModifyPlayerComponent implements OnInit {
       this.id = params['id'];
     })
 
-    this.positionTypes = Object.keys(Position)
-      .filter(p => {
-        return typeof p === 'string';
-      })
-
     if (this.id) {
       this.editMode = true;
 
-      if (this.playersApiService.players != null && this.playersApiService.players.length > 0) {
+      const playerToEdit = this.playersApiService.players.find((player) => {
+        return player.id === this.id;
+      })
 
-        await this.onFetchPlayer(this.id);
-        //   const playerToEdit = this.playersApiService.players.find((player) => {
-        //     return player.id === this.id;
-        //   })
+      this.player = playerToEdit ?? await this.onFetchPlayer(this.id);
 
-        //   if (playerToEdit) {
-        //     this.player = playerToEdit;
-        //     this.onSetForm();
-        //   }
-        //   else {
-        //     this.onFetchPlayer(this.id);
-        //   }
-        // }
-        // else {
-        //   this.onFetchPlayer(this.id);
-        // }
-      }
-
-      else {
-        this.editMode = false;
-      }
+      this.onSetForm();
+    }
+    else {
+      this.editMode = false;
     }
   }
 
@@ -98,8 +82,6 @@ export class ModifyPlayerComponent implements OnInit {
       await this.onUpdate();
     else
       await this.onCreate()
-
-    this.onClear();
   }
 
   async onCreate() {
@@ -113,6 +95,7 @@ export class ModifyPlayerComponent implements OnInit {
       if (result.data) {
         //latest fetch of players to notify existing sets
         this.playersApiService.playersChanged.next(result.data);
+        this.onClear();
         this.router.navigate(['']);
       }
       else {
@@ -123,73 +106,52 @@ export class ModifyPlayerComponent implements OnInit {
       this.isLoading = false;
       this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
     }
-
-    // this.playersApiService.createPlayer(this.form.value)
-    //   .subscribe({
-    //     next: () => {
-    //       this.isLoading = false;
-    //       this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
-    //     },
-    //     error: errorMessage => {
-    //       console.log(errorMessage);
-    //       this.isLoading = false;
-    //       this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger, errorMessage)
-    //     }
-    //   })
   }
 
   async onUpdate() {
+    console.log(this.form.value);
+    if (!this.player) {
+      this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Danger);
+      throw Error("Invalid Operation");
+    }
+
     this.isLoading = true;
 
-    try{
-      const result = await lastValueFrom(this.playersApiService.updatePlayer({...this.form.value, id: this.player.id}));
+    try {
+      const result = await lastValueFrom(this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id }));
       this.isLoading = false;
       this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
 
       if (result.data) {
         //latest fetch of players to notify existing sets
         this.playersApiService.playersChanged.next(result.data);
+        this.onClear();
         this.router.navigate(['']);
       }
       else {
-        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
+        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Warning, result.message)
       }
     }
-    catch(e){
+    catch (e) {
       this.isLoading = false;
       this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger)
     }
-
-    // this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id })
-    //   .subscribe({
-    //     next: () => {
-    //       this.isLoading = false;
-    //       this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
-    //       this.router.navigate(['']);
-    //     },
-    //     error: (errorMessage: string) => {
-    //       this.isLoading = false;
-    //       this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger, errorMessage)
-    //       // this.error = errorMessage;
-    //     }
-    //   });
   }
 
   onClear() {
     this.form.reset();
   }
 
-  async onFetchPlayer(id: number) {
+  async onFetchPlayer(id: number): Promise<Player | null> {
     this.isLoading = true;
     try {
       const result = await lastValueFrom(this.playersApiService.fetchPlayerById(id));
       this.isLoading = false;
 
       if (result.data) {
-        this.player = result.data;
-        this.onSetForm();
+        return result.data;
       } else {
-        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Warning, result.message)
+        this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Warning, result.message)
       }
     }
     catch (e) {
@@ -197,22 +159,22 @@ export class ModifyPlayerComponent implements OnInit {
       this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
       this.isLoading = false;
     }
+
+    return null;
   }
 
   onSetForm() {
+    if (!this.player)
+      return;
 
     this.form.setValue({
-      firstName: this.player ? this.player.firstName : '',
-      lastName: this.player ? this.player.lastName : '',
-      age: this.player ? this.player.age : 16,
-      position: this.player ? this.player.position : Position.Goalkeeper,
-      club: this.player ? this.player.club : '',
-      country: this.player ? this.player.country : '',
-      imagePath: this.player ? this.player.imagePath : ''
+      firstName: this.player.firstName,
+      lastName: this.player.lastName,
+      age: this.player.age,
+      position: this.player.position,
+      club: this.player.club,
+      country: this.player.country,
+      imagePath: this.player.imagePath
     });
-  }
-
-  getPosition(position: string | Position): string {
-    return Position[+position];
   }
 }

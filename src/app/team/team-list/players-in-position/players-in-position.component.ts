@@ -16,7 +16,7 @@ import { AlertType } from 'src/app/alert/alert-type.enum';
 })
 export class PlayersInPositionComponent implements OnInit, OnDestroy {
 
-  @Input('position') position: string = Position[0];
+  @Input('position') position: Position = Position.Goalkeeper;
   pageSubscription = new Subscription();
   playerToModifySubscription = new Subscription();
   playerToModify: Player | null = null;

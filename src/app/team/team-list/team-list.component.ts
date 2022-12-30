@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { isNull } from 'lodash';
 import { filter, Subscription } from 'rxjs';
 import { Position } from 'src/app/players/player-position';
 import { PositionService } from 'src/app/players/position.service';
@@ -9,27 +10,23 @@ import { PositionService } from 'src/app/players/position.service';
   styleUrls: ['./team-list.component.css']
 })
 export class TeamListComponent implements OnInit, OnDestroy{
-  positions: string[] = [];
+  positions: Position[] = [];
   positionSubscription = new Subscription();
 
-  constructor(private positionService: PositionService) { }
+  constructor(public positionService: PositionService) { }
   
   ngOnInit(): void {
 
     //get an array of all positions
-    this.positions = this.positionService.fetchPositions();
+    this.positions = this.positionService.fetchPositionValues();
 
     this.positionSubscription = this.positionService.teamListPosition
-      .subscribe((filterString) => {
+      .subscribe((position) => {
 
-        this.positions = this.positionService.positionList
-          .filter((p) => {
+        this.positions = this.positionService.positionValues;
 
-            if (filterString == '')
-              return p;
-
-            return p === filterString;
-          });
+        if(position)
+          this.positions = this.positions.filter((p:Position) => p == position);
       });
   }
 

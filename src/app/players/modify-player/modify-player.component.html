@@ -47,10 +47,10 @@
                             </div>
                             <div class="col-xs-9">
                                 <label class="required" for="position">{{'POSITION' | translate}}</label>
-                                <select type="text" formControlName="position" class="form-control">
+                                <select type="number" formControlName="position" class="form-control">
                                     <option *ngFor="let pos of positions"
-                                    [value]="pos">
-                                        {{ getPosition(pos)}}
+                                    [ngValue]="pos">
+                                        {{ positionService.getPositionName(pos)}}
                                     </option>
                                 </select>
                             </div>

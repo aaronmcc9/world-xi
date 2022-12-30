@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { catchError, map, Observable, Subject, tap, throwError } from "rxjs";
 import { ServiceResponse } from "../../service-response.model";
 import { Player } from "../../players/player.model";
+import { Position } from "src/app/players/player-position";
 
 @Injectable({
     providedIn: 'root'
@@ -37,7 +38,7 @@ export class PlayersApiService {
         return this.http.put<ServiceResponse<Player[]>>(this.url, player);
     }
 
-    getPlayerCountByPosition(position: string) {
+    getPlayerCountByPosition(position: Position) {
         return this.players.filter((player: Player) => {
             return player.position === position;
         }).length;

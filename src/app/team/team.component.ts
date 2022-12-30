@@ -13,6 +13,7 @@ import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
 import { ServiceResponse } from '../service-response.model';
+import { Position } from '../players/player-position';
 
 @Component({
   selector: 'app-team',
@@ -27,7 +28,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   formationsList: string[] = [];
-  positions: string[] = [];
+  positions: number[] = [];
 
   error: string = '';
   isLoading = false;
@@ -72,7 +73,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   pitchColspan: number = 2;
   belowMediumSize = false;
 
-  constructor(private positionService: PositionService,
+  constructor(public positionService: PositionService,
     private teamService: TeamService, private playersApiService: PlayersApiService,
     private alertService: AlertService, private translateService: TranslateService,
     private columnService: ColumnService) { }
@@ -166,7 +167,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523'];
-    this.positions = this.positionService.fetchPositions();
+    this.positions = this.positionService.fetchPositionValues();
 
     this.form?.get('formation')
       ?.valueChanges
@@ -211,7 +212,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onFilterPlayerList(value: string) {
-    this.positionService.teamListPosition.next(value);
+    console.log(value);
+    this.positionService.teamListPosition.next(+value);
     this.teamService.page.next(1); //reset page
 
     this.setMaxPage();
@@ -232,7 +234,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   setMaxPage() {
     let currentPosition = this.positionService.teamListPosition.getValue();
 
-    this.maxPage = currentPosition === '' ? this.playerCount / 16 :
+    this.maxPage = !currentPosition ? this.playerCount / 16 :
       this.playersApiService.getPlayerCountByPosition(currentPosition) / 16;
 
     this.checkPageRight();
@@ -288,7 +290,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form?.reset();
 
     this.teamService.page.next(1);
-    this.positionService.teamListPosition.next('');
+    this.positionService.teamListPosition.next(null);
   }
 
   save() {

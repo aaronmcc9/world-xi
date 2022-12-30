@@ -108,10 +108,10 @@ export class TeamService {
    * Sorts players by position before pushing the results to the relevant subscribers
    */
   setPlayersByPosition(players: Player[]) {
-    let goalkeeper = players.filter((player) => player.position === Position[Position.Goalkeeper]);
-    let defence = players.filter((player) => player.position === Position[Position.Defender]);
-    let midfield = players.filter((player) => player.position === Position[Position.Midfield]);
-    let forward = players.filter((player) => player.position === Position[Position.Forward]);
+    let goalkeeper = players.filter((player) => player.position === Position.Goalkeeper);
+    let defence = players.filter((player) => player.position === Position.Defender);
+    let midfield = players.filter((player) => player.position === Position.Midfield);
+    let forward = players.filter((player) => player.position === Position.Forward);
     this.setPlayersInPosition(goalkeeper, defence, midfield, forward);
   }
 

@@ -1,7 +1,7 @@
 <div class="global-list">
     <div *ngFor="let pos of positions; let p = index">
         <div class="position-header">
-            <h4>{{pos}}s</h4>
+            <h4>{{positionService.getPositionName(pos)}}s</h4>
         </div>
         <app-players-in-position [position]="pos"></app-players-in-position>  
     </div>

@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../auth/auth/auth.guard";
-import {  ModifyPlayerComponent } from "./add-player/modify-player.component";
+import {  ModifyPlayerComponent } from "./modify-player/modify-player.component";
 import { PlayersDetailComponent } from "./players-detail/players-detail.component";
 import { PlayersComponent } from "./players.component";
 

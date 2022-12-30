@@ -18,7 +18,7 @@
                     <label class="display-text">{{'COUNTRY' | translate}}: <span class="player-text">{{player.country}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">{{'POSITION' | translate}}: <span class="player-text">{{player.position}}</span></label>
+                    <label class="display-text">{{'POSITION' | translate}}: <span class="player-text">{{positionService.getPositionName(player.position)}}</span></label>
                 </div>
                 <div class="form-group">
                     <label class="display-text">{{'AGE' | translate}}: <span class="player-text">{{player.age}}</span></label>

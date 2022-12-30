@@ -45,7 +45,7 @@
                     <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
                         #filterValue class="player-filter col-xs-6">
                         <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
-                        <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: p}
+                        <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: positionService.getPositionName(p)}
                             }}</option>
                     </select>
                 </div>

@@ -60,6 +60,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
     //       this.error = errorMessage;
     //     }
     //   });
+    await this.fetchPlayers();
   }
 
   private async fetchPlayers() {

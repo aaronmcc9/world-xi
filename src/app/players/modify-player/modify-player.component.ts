@@ -9,6 +9,7 @@ import { Player } from '../player.model';
 import { PlayersApiService } from '../../api/players/players-api.service';
 import { lastValueFrom } from 'rxjs';
 import { PositionService } from '../position.service';
+import { PlayerService } from '../player.service';
 
 @Component({
   selector: 'app-modify-player',
@@ -27,6 +28,7 @@ export class ModifyPlayerComponent implements OnInit {
   cols: number = 2;
 
   constructor(private playersApiService: PlayersApiService,
+    private playerService: PlayerService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
@@ -59,9 +61,11 @@ export class ModifyPlayerComponent implements OnInit {
     if (this.id) {
       this.editMode = true;
 
-      const playerToEdit = this.playersApiService.players.find((player) => {
-        return player.id === this.id;
-      })
+      const playerToEdit = this.playerService.players
+        .getValue()
+        .find((player: Player) => {
+          return player.id === this.id;
+        })
 
       this.player = playerToEdit ?? await this.onFetchPlayer(this.id);
 
@@ -94,7 +98,7 @@ export class ModifyPlayerComponent implements OnInit {
 
       if (result.data) {
         //latest fetch of players to notify existing sets
-        this.playersApiService.playersChanged.next(result.data);
+        this.playerService.players.next(result.data);
         this.onClear();
         this.router.navigate(['']);
       }
@@ -124,7 +128,7 @@ export class ModifyPlayerComponent implements OnInit {
 
       if (result.data) {
         //latest fetch of players to notify existing sets
-        this.playersApiService.playersChanged.next(result.data);
+        this.playerService.players.next(result.data);
         this.onClear();
         this.router.navigate(['']);
       }

@@ -8,6 +8,7 @@ import { lastValueFrom, Subscription } from 'rxjs';
 import { TeamService } from '../../team.service';
 import { AlertService } from 'src/app/alert/alert.service';
 import { AlertType } from 'src/app/alert/alert-type.enum';
+import { PlayerService } from 'src/app/players/player.service';
 
 @Component({
   selector: 'app-players-in-position',
@@ -33,18 +34,20 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
   selectIcon = faUpRightFromSquare
 
   constructor(private playersApiService: PlayersApiService, private positionService: PositionService,
-    private teamService: TeamService, private alertService: AlertService) { }
+    private teamService: TeamService, private alertService: AlertService,
+    private playerService: PlayerService) { }
 
   async ngOnInit(): Promise<void> {
 
-    this.players = this.playersApiService.players
-      .filter((p: Player) => {
-        return p.position == this.position;
-      });
+    this.players = this.playerService.players
+      .getValue();
 
-    if (this.players === null || this.players.length === 0) {
-      this.fetchPlayers();
-    }
+    if (this.players.length === 0)
+      await this.fetchPlayers();
+    
+    this.players = this.players.filter((p: Player) => {
+      return p.position == this.position;
+    });
 
     //track pages of players
     this.pageSubscription = this.teamService.page.subscribe((page) => {
@@ -77,9 +80,8 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
       const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
 
       if (result.data) {
-        this.players = result.data.filter((p: Player) => {
-          return p.position == this.position;
-        });
+        this.playerService.players.next(result.data);
+        this.players = result.data;
       }
 
       this.isLoading = false;
@@ -88,22 +90,6 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
       this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger)
       this.isLoading = false;
     }
-
-    // this.playersApiService.fetchAllPlayers()
-    //   .subscribe({
-    //     next: players => {
-
-    //       this.players = players.filter((p: Player) => {
-    //         return p.position == this.position;
-    //       });
-
-    //       this.loading = false;
-    //     },
-    //     error: message => {
-    //       this.error = message;
-    //       this.loading = false;
-    //     }
-    //   });
   }
 
   modifyPlayer(player: Player) {

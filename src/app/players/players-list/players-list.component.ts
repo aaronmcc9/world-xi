@@ -8,6 +8,8 @@ import { Input } from '@angular/core';
 import { ColumnService } from 'src/app/columns.service';
 import { AlertService } from 'src/app/alert/alert.service';
 import { AlertType } from 'src/app/alert/alert-type.enum';
+import { PlayerService } from '../player.service';
+import { PositionService } from '../position.service';
 
 @Component({
   selector: 'app-players-list',
@@ -28,39 +30,26 @@ export class PlayersListComponent implements OnInit, OnDestroy {
   @Input() cols = 2;
   screenSize = ""
 
-  constructor(private playersApiService: PlayersApiService, private router: Router,
-    private columnService: ColumnService, private alertService: AlertService) { }
+  constructor(private playersApiService: PlayersApiService, public positionService: PositionService,
+    private columnService: ColumnService, private alertService: AlertService,
+    private playerService: PlayerService,) { }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
   async ngOnInit(): Promise<void> {
-    this.isLoading = true;
-
     //tracks current screen size
     this.columnService.screenSize.subscribe((screenSize) => {
       this.screenSize = screenSize;
     });
 
-    this.subscription = this.playersApiService.playersChanged.subscribe(players => {
+    this.subscription = this.playerService.players.subscribe((players: Player[]) => {
       return this.players = players;
     })
 
-    // this.playersApiService.fetchAllPlayers()
-    //   .subscribe({
-    //     next: (players: Player[]) => {
-    //       console.log(players);
-    //       this.players = players;
-    //       this.isLoading = false;
-    //     },
-    //     error: (errorMessage) => {
-    //       console.log("Here", errorMessage);
-    //       this.isLoading = false;
-    //       this.error = errorMessage;
-    //     }
-    //   });
-    await this.fetchPlayers();
+    if (this.players.length === 0)
+      await this.fetchPlayers();
   }
 
   private async fetchPlayers() {
@@ -69,7 +58,8 @@ export class PlayersListComponent implements OnInit, OnDestroy {
       const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
 
       if (result.data) {
-        this.players = result.data;
+        this.playerService.players.next(result.data);
+        // this.players = result.data;
       }
 
       this.isLoading = false

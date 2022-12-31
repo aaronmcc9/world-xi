@@ -60,7 +60,6 @@ export class PlayersDetailComponent implements OnInit {
   }
 
   toggleDeletePlayer(open: boolean) {
-    this.isLoading = open;
     this.deleteModalVisible = open
   }
 

@@ -1,5 +1,6 @@
 using api;
 using api.Services.AuthService;
+using api.Services.FormationService;
 using api.Services.PlayerService;
 using api.Services.TeamService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,6 +37,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFormationService, FormationService>();
+
 builder.Services.AddCors(options => options.AddPolicy(name: "worldxi",
     policy =>
     {

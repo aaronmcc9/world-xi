@@ -37,7 +37,7 @@ export class TeamService {
    * @param team includes selected players and set formation
    * @returns Saves team for specific user and returns errors if any
    */
-  createTeam(team: Team) {
+  async createTeam(team: Team) {
     return this.http.post<ServiceResponse<Team>>(this.url, team)
       .pipe(catchError(((errorRes: ServiceResponse<Team>) => throwError(errorRes))),
         tap((res: ServiceResponse<Team>) => {
@@ -74,7 +74,7 @@ export class TeamService {
         tap((res: ServiceResponse<Team>) => {
           console.log(res.data);
           //to keep record before user makes changes
-          this.savedTeam = cloneDeep(res.data);
+          // this.savedTeam = cloneDeep(res.data);
           this.setPlayersByPosition(res.data.players);
         }
         ));

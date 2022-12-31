@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { pairwise, Subscription, take } from 'rxjs';
+import { lastValueFrom, pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { PlayersApiService } from '../api/players/players-api.service';
 import { Player } from '../players/player.model';
@@ -14,6 +14,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
 import { ServiceResponse } from '../service-response.model';
 import { Position } from '../players/player-position';
+import { PlayerService } from '../players/player.service';
+import { TeamApiService } from '../api/team/team-api.service';
 
 @Component({
   selector: 'app-team',
@@ -24,7 +26,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   form = new FormGroup({
     teamName: new FormControl<string>(''),
-    formation: new FormControl<string>('442')
+    formation: new FormControl<number>(0)
   });
 
   formationsList: string[] = [];
@@ -56,7 +58,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //Cancel/ Reset
   revertAction = '';
-  canCancel = false;
 
   //subscriptions  
   pageSubscription = new Subscription();
@@ -74,9 +75,11 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
   belowMediumSize = false;
 
   constructor(public positionService: PositionService,
-    private teamService: TeamService, private playersApiService: PlayersApiService,
+    private teamApiService: TeamApiService,
+    public teamService: TeamService,
     private alertService: AlertService, private translateService: TranslateService,
-    private columnService: ColumnService) { }
+    private columnService: ColumnService,
+    private playerService: PlayerService) { }
 
   //#hooks
   ngOnInit(): void {
@@ -85,7 +88,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     })
 
     //deals with players list - will change
-    this.playerSubscription = this.playersApiService.playersChanged
+    this.playerSubscription = this.playerService.players
       .pipe((take(1)))
       .subscribe((players: Player[]) => {
 
@@ -139,7 +142,6 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.teamService.fetchUserTeam().subscribe({
       next: (res: ServiceResponse<Team>) => {
-        console.log(res);
         if (res.data) {
           this.form.controls['teamName'].setValue(res.data.teamName, { onlySelf: true });
           this.setFormation(res.data['formation']);
@@ -159,11 +161,10 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     if (this.playerCount === 0)
-      this.playerCount = this.playersApiService.players.length;
+      this.playerCount = this.playerService.players.getValue().length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
-      this.canCancel = this.teamService.canCancelChanges;
     })
 
     this.formationsList = ['343', '352', '342', '442', '433', '451', '532', '541', '523'];
@@ -235,7 +236,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     let currentPosition = this.positionService.teamListPosition.getValue();
 
     this.maxPage = !currentPosition ? this.playerCount / 16 :
-      this.playersApiService.getPlayerCountByPosition(currentPosition) / 16;
+      this.playerService.getPlayerCountByPosition(currentPosition) / 16;
 
     this.checkPageRight();
   }
@@ -293,7 +294,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.positionService.teamListPosition.next(null);
   }
 
-  save() {
+  async save() {
 
     if (!this.form.valid) {
       this.form.markAsDirty();
@@ -305,23 +306,21 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!team)
       return;
 
-    let teamAction = team.id > 0 ?
-      this.teamService.updateTeam(team) :
-      this.teamService.createTeam(team);
+    await this.modifyTeam(team)
 
-    this.isLoading = true;
-    teamAction.subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.canSave = false;
-        this.canCancel = false;
-        this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
-      },
-      error: (errorMessage: string) => {
-        this.error = errorMessage;
-        this.isLoading = false;
-      }
-    });
+    // this.isLoading = true;
+    // teamAction.subscribe({
+    //   next: () => {
+    //     this.isLoading = false;
+    //     this.canSave = false;
+    //     this.canCancel = false;
+    //     this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
+    //   },
+    //   error: (errorMessage: string) => {
+    //     this.error = errorMessage;
+    //     this.isLoading = false;
+    //   }
+    // });
   }
 
   toggleRevertModal(action: string) {
@@ -333,9 +332,31 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       action = '';
     }
 
-    //in the event this value has been altered change it
-    this.canCancel = this.teamService.canCancelChanges;
     this.revertAction = action;
+  }
+
+  private async modifyTeam(team: Team) {
+    this.isLoading = true;
+
+    try {
+      const result = team.id > 0 ?
+        await lastValueFrom(this.teamApiService.updateTeam(team)) :
+        await lastValueFrom(this.teamApiService.createTeam(team));
+
+      if (result.data) {
+        this.teamService.savedTeam = result.data;
+        this.canSave = false;
+        this.teamService.canCancelChanges = false;
+        this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
+      }
+
+      this.isLoading = false;
+    }
+    catch (e) {
+      this.isLoading = false;
+      this.alertService.toggleAlert('ALERT_TEAM_UPDATE_FAILURE', AlertType.Danger);
+    }
+
   }
 
 

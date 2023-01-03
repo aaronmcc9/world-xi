@@ -25,7 +25,7 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<TeamDto>>> InsertTeam(TeamDto team){
+        public async Task<ActionResult<ServiceResponse<TeamDto>>> InsertTeam([FromBody] TeamDto team){
             return Ok(await this._teamService.InsertTeam(team));    
         }
 

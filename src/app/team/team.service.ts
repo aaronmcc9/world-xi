@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, Subject, tap, throwError } from "rxjs";
+import { BehaviorSubject, catchError, lastValueFrom, Subject, tap, throwError } from "rxjs";
 import { AuthService } from "../auth/auth/auth.service";
 import { Position } from "../players/player-position";
 import { Player } from "../players/player.model";
@@ -9,6 +9,8 @@ import { __, cloneDeep } from "lodash";
 import { AlertService } from "../alert/alert.service";
 import { AlertType } from "../alert/alert-type.enum";
 import { ServiceResponse } from "../service-response.model";
+import { Formation } from "../api/team/formation/formation.model";
+import { FormationApiService } from "../api/team/formation/formation-api.service";
 
 @Injectable({
   providedIn: "root"
@@ -18,8 +20,9 @@ export class TeamService {
   private readonly url = "https://localhost:7258/api/team/"
 
 
-  constructor(private http: HttpClient, private authService: AuthService,
-    private alertService: AlertService) { }
+  constructor(private authService: AuthService,
+    private alertService: AlertService,
+    private formationApiService: FormationApiService) { }
 
   page = new BehaviorSubject<number>(1);
   playerToModify = new BehaviorSubject<Player | null>(null);
@@ -29,21 +32,25 @@ export class TeamService {
   teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 
-  savedTeam = new Team(0, '', [], '442');
+  savedTeam = new Team(0, '', [], new Formation(0, ""));
   canCancelChanges = false;
+  formations: Formation[] = [];
 
-  /**
-   * 
-   * @param team includes selected players and set formation
-   * @returns Saves team for specific user and returns errors if any
-   */
-  async createTeam(team: Team) {
-    return this.http.post<ServiceResponse<Team>>(this.url, team)
-      .pipe(catchError(((errorRes: ServiceResponse<Team>) => throwError(errorRes))),
-        tap((res: ServiceResponse<Team>) => {
-          this.savedTeam = this.savedTeam = cloneDeep(res.data);
-          this.canCancelChanges = false;
-        }));
+  async fetchFormationList(): Promise<Formation[]> {
+    try {
+      const result = await lastValueFrom(this.formationApiService.fetchAllFormations());
+
+      if (result.data) {
+        this.formations = result.data;
+        return this.formations.slice();
+      }
+    }
+
+    catch (e) {
+      this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_FORMATIONS', AlertType.Danger);
+    }
+
+    return [];
   }
 
   /**
@@ -51,56 +58,70 @@ export class TeamService {
    * @param team includes selected players and set formation
    * @returns Saves team for specific user and returns errors if any
    */
-  updateTeam(team: Team) {
+  //   async createTeam(team: Team) {
+  //     return this.http.post<ServiceResponse<Team>>(this.url, team)
+  //       .pipe(catchError(((errorRes: ServiceResponse<Team>) => throwError(errorRes))),
+  //         tap((res: ServiceResponse<Team>) => {
+  //           this.savedTeam = this.savedTeam = cloneDeep(res.data);
+  //           this.canCancelChanges = false;
+  //         }));
+  //   }
 
-    return this.http.put<ServiceResponse<Team>>(this.url, team)
-      .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes)),
-        tap((res: ServiceResponse<Team>) => {
-          this.savedTeam = cloneDeep(res.data);
-          this.canCancelChanges = false;
-        }));
-  }
+  //   /**
+  //    * 
+  //    * @param team includes selected players and set formation
+  //    * @returns Saves team for specific user and returns errors if any
+  //    */
+  //   updateTeam(team: Team) {
+
+  //     return this.http.put<ServiceResponse<Team>>(this.url, team)
+  //       .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes)),
+  //         tap((res: ServiceResponse<Team>) => {
+  //           this.savedTeam = cloneDeep(res.data);
+  //           this.canCancelChanges = false;
+  //         }));
+  //   }
 
 
 
-  /**
- * 
- * @returns The users saved team should the have one
- */
-  fetchUserTeam() {
+  //   /**
+  //  * 
+  //  * @returns The users saved team should the have one
+  //  */
+  //   fetchUserTeam() {
 
-    return this.http.get<ServiceResponse<Team>>(this.url)
-      .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes.message)),
-        tap((res: ServiceResponse<Team>) => {
-          console.log(res.data);
-          //to keep record before user makes changes
-          // this.savedTeam = cloneDeep(res.data);
-          this.setPlayersByPosition(res.data.players);
-        }
-        ));
-  }
+  //     return this.http.get<ServiceResponse<Team>>(this.url)
+  //       .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes.message)),
+  //         tap((res: ServiceResponse<Team>) => {
+  //           console.log(res.data);
+  //           //to keep record before user makes changes
+  //           // this.savedTeam = cloneDeep(res.data);
+  //           this.setPlayersByPosition(res.data.players);
+  //         }
+  //         ));
+  //   }
 
-  /**
-  * 
-  * @returns The users saved team should the have one
-  */
-  deleteTeam() {
-    this.http.delete(this.url)
-      .subscribe({
-        next: () => {
-          let formation = this.savedTeam['formation'];
+  //   /**
+  //   * 
+  //   * @returns The users saved team should the have one
+  //   */
+  //   deleteTeam() {
+  //     this.http.delete(this.url)
+  //       .subscribe({
+  //         next: () => {
+  //           let formation = this.savedTeam['formation'];
 
-          formation ?
-            this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation[0]), new Array<Player>(+formation[1]), new Array<Player>(+formation[2])) :
-            this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
+  //           formation ?
+  //             this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation[0]), new Array<Player>(+formation[1]), new Array<Player>(+formation[2])) :
+  //             this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
 
-          this.alertService.toggleAlert('ALERT_TEAM_DELETE_SUCCESS', AlertType.Success);
-        },
-        error: (error: HttpErrorResponse) => {
-          this.alertService.toggleAlert('ALERT_TEAM_DELETE_FAILURE', AlertType.Danger, error.message);
-        }
-      });
-  }
+  //           this.alertService.toggleAlert('ALERT_TEAM_DELETE_SUCCESS', AlertType.Success);
+  //         },
+  //         error: (error: HttpErrorResponse) => {
+  //           this.alertService.toggleAlert('ALERT_TEAM_DELETE_FAILURE', AlertType.Danger, error.message);
+  //         }
+  //       });
+  //   }
 
   /**
    * 
@@ -123,6 +144,10 @@ export class TeamService {
     this.teamForward.next(forwards);
 
     this.canCancelChanges = false;
+  }
+
+  getDefaultFormation(): number {
+    return this.formations.find((f: Formation) => f.structure == "442")?.id ?? 0;
   }
 
 

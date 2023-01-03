@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { cloneDeep } from 'lodash';
+import { TeamApiService } from 'src/app/api/team/team-api.service';
 import { Player } from 'src/app/players/player.model';
+import { Team } from '../team.model';
 import { TeamService } from '../team.service';
 
 @Component({
@@ -18,6 +20,7 @@ export class RevertTeamComponent implements OnInit {
   error = ''
 
   constructor(private teamService: TeamService,
+    private teamApiService: TeamApiService,
     private translateService: TranslateService) { }
 
   ngOnInit(): void {
@@ -33,39 +36,42 @@ export class RevertTeamComponent implements OnInit {
   }
 
   confirm() {
-    this.action == 'Cancel' ?
-      this.cancelChanges() :
-      this.reset();
+    let savedTeam = this.teamService.savedTeam.id > 0 ?
+      cloneDeep(this.teamService.savedTeam) : null;
+    
+       this.action == this.translateService.instant("CANCEL") ?
+      this.cancelChanges(savedTeam) :
+      this.reset(savedTeam);
   }
 
-  cancelChanges() {
-    let savedTeam = cloneDeep(this.teamService.savedTeam);
+  cancelChanges(savedTeam: Team | null) {
 
     //if a saved team doesn't exist, reset everyone
     if (!savedTeam)
-      this.reset();
+      this.reset(null);
     else {
       this.teamService.setPlayersByPosition(savedTeam['players']);
       this.close('', false);
     }
   }
 
-  reset() {
-    let savedTeam = this.teamService.savedTeam;
-    let formation = savedTeam['formation'];
+  reset(savedTeam: Team | null) {
+    let formation = this.teamService.getDefaultFormation()
 
-    if(savedTeam['players'].length === 11){
-      this.teamService.deleteTeam();
+    // will be false if sent here form cancelChanges
+    if (savedTeam) {
+      formation = savedTeam['formation'].id;
+      this.teamApiService.deleteTeam();
     }
-    else{
-      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2)); 
+    else {
+      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
     }
-    
-    this.close(formation, true);
+
+    this.close(formation.toString(), true);
   }
 
   close(formation: string, allowCancel: boolean) {
-    if(!allowCancel || formation)
+    if (!allowCancel || formation)
       this.teamService.canCancelChanges = allowCancel;
 
     this.closeModal.emit(formation);

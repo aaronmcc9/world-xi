@@ -27,9 +27,9 @@ namespace api.Services.AuthService
       this._configuration = configuration;
 
     }
-    public async Task<ServiceResponse<UserDto>> Login(string email, string password)
+    public async Task<ServiceResponse<string>> Login(string email, string password)
     {
-      var serviceResponse = new ServiceResponse<UserDto>();
+      var serviceResponse = new ServiceResponse<string>();
 
       try
       {
@@ -43,10 +43,7 @@ namespace api.Services.AuthService
           return serviceResponse;
         }
 
-        user.AccessToken = this.CreateToken(user);
-
-        var newUser = this._mapper.Map<UserDto>(user);
-        serviceResponse.Data = newUser;
+        serviceResponse.Data = this.CreateToken(user);
         serviceResponse.Message = "User successfully logged in!";
       }
       catch (Exception e)
@@ -59,9 +56,9 @@ namespace api.Services.AuthService
     }
 
 
-    public async Task<ServiceResponse<UserDto>> Register(User user, string password)
+    public async Task<ServiceResponse<string>> Register(User user, string password)
     {
-      var serviceResponse = new ServiceResponse<UserDto>();
+      var serviceResponse = new ServiceResponse<string>();
 
       try
       {
@@ -82,10 +79,7 @@ namespace api.Services.AuthService
         this._dataContext.User.Add(user);
         await this._dataContext.SaveChangesAsync();
 
-        user.AccessToken = this.CreateToken(user);
-        var newUser = this._mapper.Map<UserDto>(user);
-
-        serviceResponse.Data = newUser;
+        serviceResponse.Data = this.CreateToken(user);
         serviceResponse.Message = "User successfully registered!";
       }
       catch (Exception e)

@@ -16,7 +16,8 @@
                                 <label class="formation-label">{{'FORMATION' | translate}}</label>
                                 <select formControlName="formation" name="formation" id="formation"
                                     class="formation-select">
-                                    <option *ngFor="let f of formationsList">{{f}}</option>
+                                    <option *ngFor="let f of formationsList"
+                                        [ngValue]="f.id">{{f.structure}}</option>
                                 </select>
                             </div>
                             <div class="buttons"

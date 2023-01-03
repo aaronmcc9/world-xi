@@ -14,7 +14,7 @@ export class FormationApiService {
     constructor(private http: HttpClient) {
     }
 
-    fetchAllFormations(): Observable<ServiceResponse<Formation>> {
-        return this.http.get<ServiceResponse<Formation>>(this.url);
+    fetchAllFormations(): Observable<ServiceResponse<Formation[]>> {
+        return this.http.get<ServiceResponse<Formation[]>>(this.url);
     }
 }

@@ -21,7 +21,7 @@ namespace api.Controllers
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<ServiceResponse<UserDto>>> Register(UserRequestDto user)
+    public async Task<ActionResult<ServiceResponse<string>>> Register(UserRequestDto user)
     {
       var response = await this._authService.Register(new User { Email = user.Email }, user.Password);
 
@@ -32,7 +32,7 @@ namespace api.Controllers
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ServiceResponse<UserDto>>> Login(UserRequestDto user)
+    public async Task<ActionResult<ServiceResponse<string>>> Login(UserRequestDto user)
     {
       var response = await this._authService.Login(user.Email, user.Password);
 

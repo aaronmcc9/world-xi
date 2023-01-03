@@ -14,6 +14,7 @@ export class AuthInterceptorService implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
         const token = localStorage.getItem("token");
+
         if (token) {
             req = req.clone({
                 setHeaders: { Authorization: `Bearer ${token}` }
@@ -21,20 +22,4 @@ export class AuthInterceptorService implements HttpInterceptor {
         }
             return next.handle(req);
     }
-    // return this.authService.user.pipe(
-    //     take(1),
-    //     exhaustMap((user: User | null) => {
-
-    //         if(!user){
-    //             return next.handle(req)
-    //         }
-
-    //         const modifiedRequest = req.clone({
-    //             params: new HttpParams()
-    //                 .set('auth', user.authToken)
-    //         })
-
-    //         return next.handle(modifiedRequest);
-    //     })
-    // )
 }

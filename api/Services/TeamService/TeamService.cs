@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.Team;
+using api.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,6 @@ namespace api.Services.TeamService
           response.Success = true;
           response.Message = "No team saved for the user";
           response.Data = new TeamDto();
-          response.Data.UserId = userId;
 
           return response;
         }
@@ -66,12 +66,20 @@ namespace api.Services.TeamService
       return response;
     }
 
-    public async Task<ServiceResponse<TeamDto>> InsertTeam(TeamDto team)
+    public async Task<ServiceResponse<TeamDto>> InsertTeam(TeamDto newTeam)
     {
       var response = new ServiceResponse<TeamDto>();
+      var userId = this.GetUserId();
+
       try
       {
+        var team = this._mapper.Map<Team>(newTeam);
+        team.User = this._dataContext.User.FirstOrDefault(u => u.Id == userId);
 
+        this._dataContext.Add(team);
+        await this._dataContext.SaveChangesAsync();
+
+        response.Data = this._mapper.Map<TeamDto>(team);
       }
       catch (Exception e)
       {
@@ -122,11 +130,8 @@ namespace api.Services.TeamService
 
     private int GetUserId()
     {
-      var user = this._httpContextAccessor?.HttpContext?.User?
-        .FindFirstValue(ClaimTypes.NameIdentifier);
-
-      var x = int.Parse(user);
-      return x;
+      return int.Parse(this._httpContextAccessor?.HttpContext?.User?
+        .FindFirstValue(ClaimTypes.NameIdentifier));
     }
   }
 }

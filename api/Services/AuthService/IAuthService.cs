@@ -10,8 +10,8 @@ namespace api.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<ServiceResponse<UserDto>> Register(User user, string password);
-        Task<ServiceResponse<UserDto>> Login(string email, string password);
+        Task<ServiceResponse<string>> Register(User user, string password);
+        Task<ServiceResponse<string>> Login(string email, string password);
         Task<bool> UserExists(string email);
     }
 }

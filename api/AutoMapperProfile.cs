@@ -19,7 +19,9 @@ namespace api
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
             CreateMap<Team, TeamDto>();
+            CreateMap<TeamDto, Team>();
             CreateMap<Formation, FormationDto>();
+            CreateMap<FormationDto, Formation>();
 
         }
     }

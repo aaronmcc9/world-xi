@@ -6,7 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { AuthApiService } from 'src/app/api/auth/auth-api.service';
-import { ServiceResponse } from 'src/app/service-response.model';
+import { ServiceResponse } from 'src/app/api/Common/service-response.dto';
 import { AuthService } from './auth.service';
 
 export interface UserRequestDto {

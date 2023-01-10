@@ -58,7 +58,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
       const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
 
       if (result.data) {
-        this.playerService.players.next(result.data);
+        this.playerService.players.next(result.data.items);
         // this.players = result.data;
       }
 

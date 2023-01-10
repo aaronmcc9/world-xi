@@ -14,7 +14,7 @@ namespace api.Controllers
     public class TeamController: ControllerBase
     {
         public ITeamService _teamService;
-        public TeamController(DataContext dataContext, ITeamService teamService)
+        public TeamController(ITeamService teamService)
         {
             this._teamService = teamService;
         }
@@ -25,12 +25,12 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<TeamDto>>> InsertTeam([FromBody] TeamDto team){
+        public async Task<ActionResult<ServiceResponse<TeamDto>>> InsertTeam([FromBody] ModifyTeamDto team){
             return Ok(await this._teamService.InsertTeam(team));    
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<TeamDto>>> UpdateTeam(TeamDto team){
+        public async Task<ActionResult<ServiceResponse<TeamDto>>> UpdateTeam([FromBody] ModifyTeamDto team){
             return Ok(await this._teamService.UpdateTeam(team));    
         }
 

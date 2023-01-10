@@ -10,9 +10,9 @@ namespace api.Services.TeamService
     public interface ITeamService
     {
         Task<ServiceResponse<TeamDto>> FetchTeam();
-        Task<ServiceResponse<TeamDto>> InsertTeam(TeamDto team);
+        Task<ServiceResponse<TeamDto>> InsertTeam(ModifyTeamDto team);
 
-        Task<ServiceResponse<TeamDto>> UpdateTeam(TeamDto team);
+        Task<ServiceResponse<TeamDto>> UpdateTeam(ModifyTeamDto team);
         Task<ServiceResponse<TeamDto>> DeleteTeam();
 
         

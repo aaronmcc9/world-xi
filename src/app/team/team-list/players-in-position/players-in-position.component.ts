@@ -42,12 +42,9 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
     this.players = this.playerService.players
       .getValue();
 
+    console.log("Hi");
     if (this.players.length === 0)
       await this.fetchPlayers();
-    
-    this.players = this.players.filter((p: Player) => {
-      return p.position == this.position;
-    });
 
     //track pages of players
     this.pageSubscription = this.teamService.page.subscribe((page) => {
@@ -77,11 +74,10 @@ export class PlayersInPositionComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     try {
-      const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
+      const result = await lastValueFrom(this.playersApiService.fetchPlayerByPosition(this.position));
 
       if (result.data) {
-        this.playerService.players.next(result.data);
-        this.players = result.data;
+        this.players = result.data.items;
       }
 
       this.isLoading = false;

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dto;
+using api.Dto.Common;
 using api.Dto.Player;
 using api.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using PlayerPosition = api.Dto.Player.PlayerPosition;
 
 namespace api.Services.PlayerService
 {
@@ -26,15 +28,29 @@ namespace api.Services.PlayerService
       return this._dataContext.Players;
     }
 
-    public async Task<ServiceResponse<List<PlayerDto>>> FetchAllPlayers()
+    public async Task<ServiceResponse<PagedResponseDto<PlayerDto>>>  FetchAllPlayers(int? skip, int? take)
     {
-      var response = new ServiceResponse<List<PlayerDto>>();
+      var response = new ServiceResponse<PagedResponseDto<PlayerDto>>();
 
       try
       {
-        response.Data = await this.Query()
-            .Select(p => this._mapper.Map<PlayerDto>(p))
-            .ToListAsync();
+        var players = this.Query()
+            .Select(p => this._mapper.Map<PlayerDto>(p));
+
+        var total = await players.CountAsync();
+
+        if (skip.HasValue)
+          players = players.Skip(skip.Value);
+
+        if (take.HasValue)
+          players = players.Take(take.Value);
+
+
+        response.Data = new PagedResponseDto<PlayerDto>
+        {
+          Total = total,
+          Items = await players.ToListAsync()
+        };
 
         return response;
       }
@@ -53,7 +69,7 @@ namespace api.Services.PlayerService
       try
       {
         var player = this.Query()
-            .Where(p => p.id == id)
+            .Where(p => p.Id == id)
             .FirstOrDefault();
 
         if (player == null)
@@ -63,6 +79,39 @@ namespace api.Services.PlayerService
           return response;
         }
         response.Data = this._mapper.Map<PlayerDto>(player);
+      }
+      catch (Exception e)
+      {
+        response.Success = false;
+        response.Message = e.Message;
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<PagedResponseDto<PlayerDto>>> FetchPlayerByPosition(PlayerPosition position, int? skip, int? take)
+    {
+      var response = new ServiceResponse<PagedResponseDto<PlayerDto>>();
+
+      try
+      {
+        var players = this.Query()
+          .Where(p => p.Position == (Models.PlayerPosition)position)
+          .Select(p => this._mapper.Map<PlayerDto>(p));
+
+        var total = await players.CountAsync();
+
+        if (skip.HasValue)
+          players = players.Skip(skip.Value);
+
+        if (take.HasValue)
+          players = players.Take(take.Value);
+
+        response.Data = new PagedResponseDto<PlayerDto>
+        {
+          Total = total,
+          Items = await players.ToListAsync()
+        };
       }
       catch (Exception e)
       {
@@ -126,7 +175,7 @@ namespace api.Services.PlayerService
       try
       {
         var playerToDelete = this.Query()
-          .Where(p => p.id == id)
+          .Where(p => p.Id == id)
           .FirstOrDefault();
 
         if (playerToDelete == null)

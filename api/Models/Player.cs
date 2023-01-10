@@ -7,7 +7,7 @@ namespace api.Models
 {
     public class Player
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Club { get; set; } = string.Empty;

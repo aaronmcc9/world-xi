@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { cloneDeep } from 'lodash';
+import { lastValueFrom } from 'rxjs';
+import { AlertType } from 'src/app/alert/alert-type.enum';
+import { AlertService } from 'src/app/alert/alert.service';
 import { TeamApiService } from 'src/app/api/team/team-api.service';
 import { Player } from 'src/app/players/player.model';
 import { Team } from '../team.model';
@@ -21,6 +24,7 @@ export class RevertTeamComponent implements OnInit {
 
   constructor(private teamService: TeamService,
     private teamApiService: TeamApiService,
+    private alertService: AlertService,
     private translateService: TranslateService) { }
 
   ngOnInit(): void {
@@ -38,8 +42,8 @@ export class RevertTeamComponent implements OnInit {
   confirm() {
     let savedTeam = this.teamService.savedTeam.id > 0 ?
       cloneDeep(this.teamService.savedTeam) : null;
-    
-       this.action == this.translateService.instant("CANCEL") ?
+
+    this.action == this.translateService.instant("CANCEL") ?
       this.cancelChanges(savedTeam) :
       this.reset(savedTeam);
   }
@@ -55,18 +59,29 @@ export class RevertTeamComponent implements OnInit {
     }
   }
 
-  reset(savedTeam: Team | null) {
+  async reset(savedTeam: Team | null) {
     let formation = this.teamService.getDefaultFormation()
 
     // will be false if sent here form cancelChanges
     if (savedTeam) {
       formation = savedTeam['formation'].id;
-      this.teamApiService.deleteTeam();
-    }
-    else {
-      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
+
+      try {
+        const result = await lastValueFrom(this.teamApiService.deleteTeam());
+
+        if (result.success) {
+          this.alertService.toggleAlert("ALERT_TEAM_DELETE_SUCCESS", AlertType.Success);
+        }
+        else {
+          this.throwDeleteFailure();
+        }
+      }
+      catch (e) {
+        this.throwDeleteFailure();
+      }
     }
 
+    this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
     this.close(formation.toString(), true);
   }
 
@@ -75,5 +90,10 @@ export class RevertTeamComponent implements OnInit {
       this.teamService.canCancelChanges = allowCancel;
 
     this.closeModal.emit(formation);
+  }
+
+  throwDeleteFailure() {
+    this.alertService.toggleAlert("ALERT_TEAM_DELETE_FAILURE", AlertType.Danger);
+    throw Error(this.translateService.instant("ALERT_TEAM_DELETE_FAILURE"));
   }
 }

@@ -1,10 +1,9 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { lastValueFrom, pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
-import { PlayersApiService } from '../api/players/players-api.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
 import { Team } from './team.model';
@@ -12,24 +11,26 @@ import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
-import { ServiceResponse } from '../service-response.model';
-import { Position } from '../players/player-position';
 import { PlayerService } from '../players/player.service';
 import { TeamApiService } from '../api/team/team-api.service';
 import { FormationApiService } from '../api/team/formation/formation-api.service';
 import { Formation } from '../api/team/formation/formation.model';
+import { ModifyTeamDto } from '../api/team/modify-team.dto';
+
+interface FormValue {
+  teamName: FormControl<string>
+  formation: FormControl<number>,
+}
 
 @Component({
   selector: 'app-team',
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.css']
 })
-export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TeamComponent implements OnInit, OnDestroy {
 
-  form = new FormGroup({
-    teamName: new FormControl<string>(''),
-    formation: new FormControl<number>(0)
-  });
+  form!: FormGroup<FormValue>
+
 
   formationsList: Formation[] = [];
   positions: number[] = [];
@@ -78,7 +79,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(public positionService: PositionService,
     private teamApiService: TeamApiService,
-    public teamService: TeamService, private formationApiService: FormationApiService,
+    public teamService: TeamService,
     private alertService: AlertService, private translateService: TranslateService,
     private columnService: ColumnService,
     private playerService: PlayerService) { }
@@ -90,6 +91,54 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.pageSubscription = this.teamService.page.subscribe((page) => {
       this.playersPage = page;
+    })
+
+    let teamControl = new FormControl<string>("",
+    {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
+    })
+
+    let formationControl = new FormControl<number>(0,
+    {
+      nonNullable: true,
+      validators: [Validators.required]
+    })
+
+    formationControl.valueChanges
+      .pipe(pairwise())
+      .subscribe(([prev, next]: [number | null, number | null]) => {
+        console.log("Hello")
+        try {
+          console.log(next);
+          if (next) {
+            let structure = this.formationsList.find((f: Formation) => f.id == next)?.structure
+
+            if (structure) {
+              let defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +structure![0]);
+              let midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +structure![1]);
+              let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +structure![2]);
+
+              // assign values after incase of formation error
+              this.teamService.teamDefence.next(defence);
+              this.teamService.teamMidfield.next(midfield);
+              this.teamService.teamForward.next(forwards);
+
+              this.teamService.canCancelChanges = true;
+            }
+          }
+        }
+        catch {
+          //reset incase formation change forbidden
+          if (prev)
+            this.setFormation(prev);
+        }
+      });
+
+      console.log("Here atleast")
+    this.form = new FormGroup<FormValue>({
+      teamName: teamControl,
+      formation: formationControl 
     })
 
     //deals with players list - will change
@@ -144,71 +193,19 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setCanSave(newValue.filter(Boolean).length - this.forwards.filter(Boolean).length);
       this.forwards = newValue;
     });
-    // this.isLoading = true;
-    // this.teamService.fetchUserTeam().subscribe({
-    //   next: (res: ServiceResponse<Team>) => {
-    //     if (res.data) {
-    //       this.form.controls['teamName'].setValue(res.data.teamName, { onlySelf: true });
-    //       this.setFormation(res.data['formation']);
-    //       this.playerCount = res.data['players'].length;
-    //     }
-
-    //     this.isLoading = false;
-    //     this.canSave = false;
-    //   },
-    //   error: (errorMessage: string) => {
-    //     console.log(errorMessage);
-
-    //     this.alertService.toggleAlert('ALERT_TEAM_FETCH_FAILURE', AlertType.Danger, errorMessage)
-    //     this.isLoading = false;
-
-    //   }
-    // });
 
     await this.fetchPlayerTeam()
 
-    if (this.playerCount === 0)
-      this.playerCount = this.playerService.players.getValue().length;
+    // if (this.playerCount === 0)
+    //   this.playerCount = this.playerService.players.getValue().length;
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
     })
 
     this.positions = this.positionService.fetchPositionValues();
-
-    this.form?.get('formation')
-      ?.valueChanges
-      .pipe(pairwise())
-      .subscribe(([prev, next]: [number | null, number | null]) => {
-
-        try {
-          if (next) {
-            let structure = this.formationsList.find((f: Formation) => f.id == next)?.structure
-
-            if (structure) {
-              let defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +structure![0]);
-              let midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +structure![1]);
-              let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +structure![2]);
-
-              // assign values after incase of formation error
-              this.teamService.teamDefence.next(defence);
-              this.teamService.teamMidfield.next(midfield);
-              this.teamService.teamForward.next(forwards);
-            }
-          }
-        }
-        catch {
-          //reset incase formation change forbidden
-          if (prev)
-            this.setFormation(prev);
-        }
-      });
   }
 
-  ngAfterViewInit(): void {
-    //set default formation to 442
-    // this.setFormation(this.formationsList[3]);
-  }
 
   ngOnDestroy(): void {
     this.Reset();
@@ -318,23 +315,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!team)
       return;
 
-      console.log(team)
-
-    await this.modifyTeam(team)
-
-    // this.isLoading = true;
-    // teamAction.subscribe({
-    //   next: () => {
-    //     this.isLoading = false;
-    //     this.canSave = false;
-    //     this.canCancel = false;
-    //     this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
-    //   },
-    //   error: (errorMessage: string) => {
-    //     this.error = errorMessage;
-    //     this.isLoading = false;
-    //   } 
-    // });
+    await this.modifyTeam(team);
   }
 
   toggleRevertModal(action: string) {
@@ -358,18 +339,19 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (result.success) {
         if (result.data.id > 0) {
+
           this.teamService.savedTeam = cloneDeep(result.data);
           this.teamService.setPlayersByPosition(result.data.players);
           this.form.controls['teamName'].setValue(result.data.teamName, { onlySelf: true });
           this.setFormation(result.data['formation'].id);
-          // this.playerCount = res.data['players'].length;
+          this.playerCount = result.data['players'].length;
         }
         else {
           //no saved user team
-          let defaultFormation = this.teamService.getDefaultFormation()
-          console.log("HERE", result.data, defaultFormation);
-
-          this.setFormation(defaultFormation);
+          if (!this.form.controls['formation'].value) {
+            let defaultFormation = this.teamService.getDefaultFormation()
+            this.setFormation(defaultFormation);
+          }
         }
 
         this.canSave = false;
@@ -390,7 +372,7 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = false;
   }
 
-  private async modifyTeam(team: Team) {
+  private async modifyTeam(team: ModifyTeamDto) {
     this.isLoading = true;
 
     try {
@@ -423,10 +405,10 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.playersSelected = 11;
-    return playersFull && this.playersSelected === 11
+    return playersFull;
   }
 
-  private getDto(): Team {
+  private getDto(): ModifyTeamDto {
     let formValue = this.form.getRawValue();
     let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
 
@@ -438,9 +420,8 @@ export class TeamComponent implements OnInit, AfterViewInit, OnDestroy {
     return {
       id: this.teamService.savedTeam.id,
       teamName: formValue.teamName,
-      formation: this.formationsList.find((f: Formation) => f.id == formValue.formation),
-      players: players
-    } as Team;
+      formationId: formValue.formation,
+      playerIds: players.map((p: Player | undefined) => p!.id)
+    } as ModifyTeamDto;
   }
-
 }

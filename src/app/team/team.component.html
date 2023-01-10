@@ -9,7 +9,7 @@
         <mat-grid-tile class="tile" [colspan]="pitchColspan">
             <div class="col-xs-8">
                 <div class="img-container">
-                    <form [formGroup]="form">
+                    <form *ngIf="form" [formGroup]="form">
                         <h2 *ngIf="this.playersSelected != 11" class="text-center">{{'SELECT_XI' | translate}}</h2>
                         <div [ngClass]="belowMediumSize ? 'form-controls-sm' : 'form-controls'">
                             <div class="formation" [ngStyle]="{'padding': belowMediumSize ? '1rem' : '2rem'}">

@@ -8,7 +8,6 @@ import { Team } from "./team.model";
 import { __, cloneDeep } from "lodash";
 import { AlertService } from "../alert/alert.service";
 import { AlertType } from "../alert/alert-type.enum";
-import { ServiceResponse } from "../service-response.model";
 import { Formation } from "../api/team/formation/formation.model";
 import { FormationApiService } from "../api/team/formation/formation-api.service";
 
@@ -40,7 +39,7 @@ export class TeamService {
     try {
       const result = await lastValueFrom(this.formationApiService.fetchAllFormations());
 
-      if (result.data) {
+      if (result.data) {  
         this.formations = result.data;
         return this.formations.slice();
       }

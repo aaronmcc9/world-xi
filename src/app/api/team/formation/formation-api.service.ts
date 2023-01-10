@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { ServiceResponse } from "src/app/service-response.model";
+import { ServiceResponse } from "../../Common/service-response.dto";
 import { Formation } from "./formation.model";
 
 @Injectable({

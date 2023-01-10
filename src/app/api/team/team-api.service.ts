@@ -1,8 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { ServiceResponse } from "src/app/service-response.model";
 import { Team } from "src/app/team/team.model";
+import { ServiceResponse } from "../Common/service-response.dto";
+import { ModifyTeamDto } from "./modify-team.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +20,7 @@ export class TeamApiService {
      * @param team includes selected players and set formation
      * @returns Saves team for specific user and returns errors if any
      */
-    createTeam(team: Team): Observable<ServiceResponse<Team>> {
+    createTeam(team: ModifyTeamDto): Observable<ServiceResponse<Team>> {
         return this.http.post<ServiceResponse<Team>>(this.url, team);
     }
 
@@ -28,7 +29,7 @@ export class TeamApiService {
      * @param team includes selected players and set formation
      * @returns Saves team for specific user and returns errors if any
      */
-    updateTeam(team: Team): Observable<ServiceResponse<Team>> {
+    updateTeam(team: ModifyTeamDto): Observable<ServiceResponse<Team>> {
 
         return this.http.put<ServiceResponse<Team>>(this.url, team);
     }
@@ -46,7 +47,7 @@ export class TeamApiService {
     /**
     * deletes user team
     */
-    deleteTeam():Observable<Object> {
-        return this.http.delete(this.url);
+    deleteTeam():Observable<ServiceResponse<null>> {
+        return this.http.delete<ServiceResponse<null>>(this.url);
     }
 }

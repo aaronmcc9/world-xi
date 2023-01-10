@@ -42,8 +42,11 @@ namespace api.Services.TeamService
           return response;
         }
 
-        var savedTeam = this._dataContext.Team.
-          FirstOrDefaultAsync(t => t.UserId == userId);
+        var savedTeam = await this._dataContext.Team
+          .Include(u => u.User)
+          .Include(p => p.Players)
+          .Include(f => f.Formation)
+          .FirstOrDefaultAsync(t => t.User.Id == userId);
 
         if (savedTeam == null)
         {
@@ -51,7 +54,7 @@ namespace api.Services.TeamService
           response.Message = "An error occured fetching the user team";
         }
 
-        var team = this._mapper.Map<TeamDto>(savedTeam);
+        var team = this._mapper.Map<TeamDto>(savedTeam!);
 
         response.Success = true;
         response.Data = team;
@@ -66,17 +69,27 @@ namespace api.Services.TeamService
       return response;
     }
 
-    public async Task<ServiceResponse<TeamDto>> InsertTeam(TeamDto newTeam)
+    public async Task<ServiceResponse<TeamDto>> InsertTeam(ModifyTeamDto newTeam)
     {
       var response = new ServiceResponse<TeamDto>();
-      var userId = this.GetUserId();
 
       try
       {
-        var team = this._mapper.Map<Team>(newTeam);
-        team.User = this._dataContext.User.FirstOrDefault(u => u.Id == userId);
+        var userId = this.GetUserId();
+        var team = new Team();
 
-        this._dataContext.Add(team);
+        team.User = this._dataContext.User
+          .FirstOrDefault(u => u.Id == userId);
+
+        team.TeamName = newTeam.TeamName;
+        team.Players = this._dataContext.Players
+          .Where(p => newTeam.PlayerIds.Contains(p.Id))
+          .ToList();
+
+        team.Formation = this._dataContext.Formation.
+          FirstOrDefault(f => f.Id == newTeam.FormationId);
+
+        this._dataContext.Team.Add(team);
         await this._dataContext.SaveChangesAsync();
 
         response.Data = this._mapper.Map<TeamDto>(team);
@@ -90,12 +103,42 @@ namespace api.Services.TeamService
       return response;
     }
 
-    public async Task<ServiceResponse<TeamDto>> UpdateTeam(TeamDto team)
+    public async Task<ServiceResponse<TeamDto>> UpdateTeam(ModifyTeamDto updatedteam)
     {
       var response = new ServiceResponse<TeamDto>();
+
       try
       {
+        var userId = this.GetUserId();
+        var team = await this._dataContext.Team
+          .Include(p => p.Players)
+          .FirstOrDefaultAsync(t => t.Id == updatedteam.Id);
 
+        if (team == null)
+        {
+          response.Success = false;
+          response.Message = "An error occured locating the current team";
+        }
+
+        if (userId != team.UserId)
+        {
+          response.Success = false;
+          response.Message = "This user does not have permission to modify this team";
+        }
+
+        team.TeamName = updatedteam.TeamName;
+
+        team.Players.Clear();
+        team.Players = this._dataContext.Players
+          .Where(p => updatedteam.PlayerIds.Contains(p.Id))
+          .ToList();
+
+        team.Formation = this._dataContext.Formation.
+          FirstOrDefault(f => f.Id == updatedteam.FormationId);
+
+        await this._dataContext.SaveChangesAsync();
+
+        response.Data = this._mapper.Map<TeamDto>(team);
       }
       catch (Exception e)
       {
@@ -111,6 +154,20 @@ namespace api.Services.TeamService
       var response = new ServiceResponse<TeamDto>();
       try
       {
+        var userId = this.GetUserId();
+
+        var team = await this._dataContext.Team
+          .FirstOrDefaultAsync(t => t.UserId == userId);
+
+        if (team == null)
+        {
+          response.Message = "Team not found!";
+          response.Success = false;
+          return response;
+        }
+
+        this._dataContext.Remove(team);
+        await this._dataContext.SaveChangesAsync();
 
       }
       catch (Exception e)
@@ -125,7 +182,8 @@ namespace api.Services.TeamService
     private async Task<bool> CheckTeamExists(int userId)
     {
       return await this._dataContext.Team
-        .AnyAsync(t => t.UserId == userId);
+        .Include(u => u.User)
+        .AnyAsync(t => t.User.Id == userId);
     }
 
     private int GetUserId()

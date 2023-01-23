@@ -42,25 +42,16 @@
         </mat-grid-tile>
         <mat-grid-tile [ngClass]="cols > 1 ? '' :'bottom-tile-padding'">
             <div class="col-xs-9">
-                <div class="player-filter-container">
-                    <select name="playerFilter" id="playerFilter" (change)="onFilterPlayerList(filterValue.value)"
-                        #filterValue class="player-filter col-xs-6">
-                        <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
-                        <option value="{{p}}" *ngFor="let p of positions">{{'PLACEHOLDE_DYNAMIC' | translate:{param: positionService.getPositionName(p)}
-                            }}</option>
-                    </select>
-                </div>
-
                 <app-team-list></app-team-list>
 
-                <div class="button-container">
+                <!-- <div class="button-container">
                     <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
                         <fa-icon [icon]="leftNav"></fa-icon>
                     </button>
                     <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="canPageRight">
                         <fa-icon [icon]="rightNav"></fa-icon>
                     </button>
-                </div>
+                </div> -->
             </div>
         </mat-grid-tile>
     </mat-grid-list>

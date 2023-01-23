@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { RouterModule } from "@angular/router";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TranslateModule } from "@ngx-translate/core";
 import { AlertComponent } from "./alert/alert.component";
 import { ErrorComponent } from "./error/error.component";
@@ -23,6 +24,7 @@ import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.compo
         MatGridListModule,
         FlexLayoutModule,
         TranslateModule.forChild(),
+        FontAwesomeModule,
     ],
     exports: [
         AlertComponent,
@@ -31,7 +33,8 @@ import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.compo
         MatGridListModule,
         FlexLayoutModule,
         LoadingSpinnerComponent,
-        TranslateModule
+        TranslateModule,
+        FontAwesomeModule
     ]
 })
 export class AppCommonModule {

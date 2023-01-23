@@ -13,7 +13,6 @@ import { AuthComponent } from "./auth.component";
     imports: [
         AppCommonModule,
         CommonModule,
-        FontAwesomeModule,
         ReactiveFormsModule,
     ],
     exports:[

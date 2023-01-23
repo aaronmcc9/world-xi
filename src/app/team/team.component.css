@@ -61,24 +61,6 @@
     flex-direction: column;
 }
 
-.player-filter-container {
-    height: 7rem;
-    display: flex;
-    justify-content: center;
-    padding: 2rem 1rem;
-}
-
-.player-filter {
-    padding: 0.2em 0.6em;
-    text-align: center;
-}
-
-.button-container {
-    display: flex;
-    justify-content: end;
-    margin-top: 0.5em;
-}
-
 .nav-button {
     padding-left: .2em;
 }

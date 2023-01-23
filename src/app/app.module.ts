@@ -12,9 +12,9 @@ import { PlayersModule } from './players/players.module';
 import { AuthModule } from './auth/auth/auth.module';
 import { AppCommonModule } from './app-common.module';
 import { TeamModule } from './team/team.module';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { HeaderComponent } from './header/header/header.component';
+import { SettingsModule } from './settings/settings/settings.module';
+import { HeaderModule } from './header/header/header.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -27,13 +27,13 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   imports: [
     AppCommonModule,
+    AppRoutingModule,
+    AuthModule,
+    BrowserAnimationsModule,
     BrowserModule,
     HttpClientModule,
-    BrowserAnimationsModule,
-    // MatGridListModule,
-    // FlexLayoutModule,
     PlayersModule,
-    AuthModule,
+    SettingsModule,
     TeamModule,
     TranslateModule.forRoot({
       defaultLanguage: 'common-en',
@@ -43,7 +43,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    AppRoutingModule
   ],
   providers: [PlayersApiService,
     {

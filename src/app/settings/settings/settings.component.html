@@ -1,0 +1,36 @@
+<div class="container">
+    <h1>{{'SETTINGS' | translate}}</h1>
+
+    <div class="col-md-12 c-design">
+        <form>
+            <div class="form-check">
+                <input id="chkDiscover" 
+                    type="checkbox"
+                    class="form-check-input"
+                    formControlName="discoverable">
+                <label class="form-check-label" for="chkDiscover"> {{'MAKE_TEAM_DISCOVERABLE' | translate}}</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">{{'USERNAME' | translate}}</label>
+                <input type="text"
+                    class="form-control"
+                    id="username"
+                    formControlName="username">    
+            </div>
+
+            <div class="form-group">
+                <label for="teamName">{{'TEAM_NAME' | translate}}</label>
+                <input type="text"
+                    class="form-control"
+                    id="teamName"
+                    formControlName="teamName">    
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-default" type="button">{{'CANCEL' | translate}}</button>
+                <button class="btn btn-success" type="submit">{{'SAVE' | translate}}</button>   
+            </div>
+        </form>
+    </div>
+</div>

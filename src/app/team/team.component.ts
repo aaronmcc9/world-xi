@@ -1,19 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { lastValueFrom, pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
-import { Team } from './team.model';
 import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
 import { PlayerService } from '../players/player.service';
 import { TeamApiService } from '../api/team/team-api.service';
-import { FormationApiService } from '../api/team/formation/formation-api.service';
 import { Formation } from '../api/team/formation/formation.model';
 import { ModifyTeamDto } from '../api/team/modify-team.dto';
 
@@ -29,8 +26,7 @@ interface FormValue {
 })
 export class TeamComponent implements OnInit, OnDestroy {
 
-  form!: FormGroup<FormValue>
-
+  form!: FormGroup<FormValue>;
 
   formationsList: Formation[] = [];
   positions: number[] = [];
@@ -44,16 +40,6 @@ export class TeamComponent implements OnInit, OnDestroy {
   midfield: (Player | undefined)[] = new Array<Player>(4);
   forwards: (Player | undefined)[] = new Array<Player>(2);
 
-  //icons
-  leftNav = faArrowLeft;
-  rightNav = faArrowRight;
-
-  //page information
-  maxPage: number = 1
-  canPageRight: boolean = false;
-  playersPage: number = 1;
-  playerCount: number = 0;
-
   //team information
   playersSelected: number = 0;
   playerToModify: Player | null = null;
@@ -63,7 +49,6 @@ export class TeamComponent implements OnInit, OnDestroy {
   revertAction = '';
 
   //subscriptions  
-  pageSubscription = new Subscription();
   playerSubscription = new Subscription();
   playerModificationSubscription = new Subscription();
 
@@ -89,21 +74,17 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     await this.setFormationList();
 
-    this.pageSubscription = this.teamService.page.subscribe((page) => {
-      this.playersPage = page;
-    })
-
-    let teamControl = new FormControl<string>("",
-    {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
-    })
+    let teamNameControl = new FormControl<string>("",
+      {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
+      })
 
     let formationControl = new FormControl<number>(0,
-    {
-      nonNullable: true,
-      validators: [Validators.required]
-    })
+      {
+        nonNullable: true,
+        validators: [Validators.required]
+      })
 
     formationControl.valueChanges
       .pipe(pairwise())
@@ -135,20 +116,20 @@ export class TeamComponent implements OnInit, OnDestroy {
         }
       });
 
-      console.log("Here atleast")
+    console.log("Here atleast")
     this.form = new FormGroup<FormValue>({
-      teamName: teamControl,
-      formation: formationControl 
+      teamName: teamNameControl,
+      formation: formationControl
     })
 
     //deals with players list - will change
-    this.playerSubscription = this.playerService.players
-      .pipe((take(1)))
-      .subscribe((players: Player[]) => {
+    // this.playerSubscription = this.playerService.players
+    //   .pipe((take(1)))
+    //   .subscribe((players: Player[]) => {
 
-        this.playerCount = players.length;
-        this.setMaxPage();
-      });
+    //     this.playerCount = players.length;
+    //     this.setMaxPage();
+    //   });
 
     let colObs = this.columnService.columnObs;
 
@@ -166,6 +147,7 @@ export class TeamComponent implements OnInit, OnDestroy {
       this.belowMediumSize = screenSize == 'sm' || screenSize == 'xs';
     });
 
+    //These subscriptions refer to the players fielded on a team per position
     this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
       let newValue = cloneDeep(goalkeeper);
 
@@ -210,7 +192,6 @@ export class TeamComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.Reset();
 
-    this.pageSubscription.unsubscribe();
     this.playerSubscription.unsubscribe();
     this.playerModificationSubscription.unsubscribe();
     this.goalkeeperSubscription.unsubscribe();
@@ -219,38 +200,38 @@ export class TeamComponent implements OnInit, OnDestroy {
     this.forwardsSubscription.unsubscribe();
   }
 
-  onFilterPlayerList(value: string) {
-    console.log(value);
-    this.positionService.teamListPosition.next(+value);
-    this.teamService.page.next(1); //reset page
+  // onFilterPlayerList(value: string) {
+  //   //use + to convert to number value
+  //   this.positionService.teamListPosition.next(+value);
+  //   this.teamService.page.next(1); //reset page
 
-    this.setMaxPage();
-  }
+  //   // this.setMaxPage();
+  // }
 
-  onPageLeft() {
-    if (this.playersPage > 1) {
-      this.teamService.page.next(this.playersPage - 1);
-      this.checkPageRight()
-    }
-  }
+  // onPageLeft() {
+  //   if (this.playersPage > 1) {
+  //     this.teamService.page.next(this.playersPage - 1);
+  //     this.checkPageRight()
+  //   }
+  // }
 
-  onPageRight() {
-    this.teamService.page.next(this.playersPage + 1);
-    this.checkPageRight();
-  }
+  // onPageRight() {
+  //   this.teamService.page.next(this.playersPage + 1);
+  //   this.checkPageRight();
+  // }
 
-  setMaxPage() {
-    let currentPosition = this.positionService.teamListPosition.getValue();
+  // setMaxPage() {
+  //   let currentPosition = this.positionService.teamListPosition.getValue();
 
-    this.maxPage = !currentPosition ? this.playerCount / 16 :
-      this.playerService.getPlayerCountByPosition(currentPosition) / 16;
+  //   this.maxPage = !currentPosition ? this.playerCount / 16 :
+  //     this.playerService.getPlayerCountByPosition(currentPosition) / 16;
 
-    this.checkPageRight();
-  }
+  //   this.checkPageRight();
+  // }
 
-  private checkPageRight() {
-    this.canPageRight = this.maxPage <= this.playersPage;
-  }
+  // private checkPageRight() {
+  //   this.canPageRight = this.maxPage <= this.playersPage;
+  // }
 
   private setFormation(formationId: number) {
     //let formationValue = this.formationsList.find((f: Formation) => f.id === formationId)?.structure
@@ -294,9 +275,9 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   // Resets values
   private Reset() {
-    this.canPageRight = false;
-    this.maxPage = 1;
-    this.playersPage = 1;
+    // this.canPageRight = false;
+    // this.maxPage = 1;
+    // this.playersPage = 1;
     this.form?.reset();
 
     this.teamService.page.next(1);
@@ -344,7 +325,7 @@ export class TeamComponent implements OnInit, OnDestroy {
           this.teamService.setPlayersByPosition(result.data.players);
           this.form.controls['teamName'].setValue(result.data.teamName, { onlySelf: true });
           this.setFormation(result.data['formation'].id);
-          this.playerCount = result.data['players'].length;
+          // this.playerCount = result.data['players'].length;
         }
         else {
           //no saved user team
@@ -368,8 +349,10 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   private async setFormationList() {
     this.isLoading = true;
-    this.formationsList = await this.teamService.fetchFormationList();
-    this.isLoading = false;
+    this.formationsList = await this.teamService
+      .fetchFormationList();
+    
+      this.isLoading = false;
   }
 
   private async modifyTeam(team: ModifyTeamDto) {

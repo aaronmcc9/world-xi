@@ -31,7 +31,6 @@ export class PlayersApiService {
     }
 
     fetchPlayerByPosition(position: Position, skip?: number, take?: number): Observable<ServiceResponse<PagedResponseDto<Player[]>>> {
-        this.apiService.constructParams({ position: position, skip: skip, take: take })
         return this.http.get<ServiceResponse<PagedResponseDto<Player[]>>>(this.url + "position/",
             { params: this.apiService.constructParams({ position: position, skip: skip, take: take }) });
     }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.Team;
+using api.Dto.Team.Settings;
 using api.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -174,6 +175,40 @@ namespace api.Services.TeamService
       {
         response.Success = false;
         response.Message = e.Message;
+      }
+
+      return response;
+    }
+
+    private async Task<ServiceResponse<SettingsDto>> getTeamSettings()
+    {
+      var response = new ServiceResponse<SettingsDto>();
+      try
+      {
+        var userId = this.GetUserId();
+
+        var team = await this._dataContext.Team
+          .Include(u => u.User)
+          .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (team == null)
+        {
+          response.Data.isDiscoverable = false;
+          response.Data.teamExists = false;
+          response.Message = "The user is yet to create a team.";
+          return response;
+        }
+
+        response.Data.isDiscoverable = team.isDiscoverable;
+        response.Data.Username = team.User.Username;
+        response.Data.TeamName = team.TeamName;
+        response.Data.teamExists = true;
+
+      }
+      catch (Exception e)
+      {
+        response.Data.isDiscoverable = false;
+        response.Data.teamExists = false;
       }
 
       return response;

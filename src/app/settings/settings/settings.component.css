@@ -1,0 +1,16 @@
+h1{
+    margin: 15rem 0 2rem;
+}
+.c-design{
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    margin-bottom: 20rem;
+    height: 50vh;
+    padding: 4rem;
+}
+
+.btn-container{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}

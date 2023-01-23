@@ -8,16 +8,13 @@ export class ApiService {
 
     constructParams(params: object): HttpParams {
         let httpParams = new HttpParams();
-
-        let k: keyof typeof params;
         for (const [key, value] of Object.entries(params)) {
 
-            if (typeof value == undefined || typeof value == null)
-                continue;
+            if (typeof value == typeof undefined || typeof value == typeof null)
+                continue
 
-            httpParams.set(key, value)
+            httpParams = httpParams.append(key, value)
         }
-
         return httpParams;
     }
 }

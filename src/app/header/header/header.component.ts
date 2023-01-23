@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { faGear } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth/auth.service';
 
@@ -11,6 +12,9 @@ export class HeaderComponent implements OnInit {
   collapsed = true;
   isAuthenticated = false;
   userSub = new Subscription;
+
+  //icon
+  settingsIcon = faGear;
 
   constructor(private authService: AuthService) { }
 

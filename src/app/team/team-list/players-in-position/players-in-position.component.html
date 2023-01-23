@@ -1,4 +1,5 @@
-<div *ngFor="let player of players | slice:listStart:playerLimit"  class="player">
+<!-- <div *ngFor="let player of players | slice:0:4"  class="player"> -->
+<div *ngFor="let player of players"  class="player">
     <div class="player-container">
         <label>{{player.firstName}} {{player.lastName}}</label>
         <fa-icon

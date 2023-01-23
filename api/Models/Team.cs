@@ -14,6 +14,7 @@ namespace api.Models
     public Formation Formation { get; set; }
     public User User { get; set; }
     public int UserId { get; set; }
+    public bool isDiscoverable { get; set; }
 
   }
 }

@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { Team } from "src/app/team/team.model";
 import { ServiceResponse } from "../Common/service-response.dto";
 import { ModifyTeamDto } from "./modify-team.dto";
+import { Settings } from "./settings.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -34,9 +35,7 @@ export class TeamApiService {
         return this.http.put<ServiceResponse<Team>>(this.url, team);
     }
 
-
-
-    /**
+   /**
    * 
    * @returns The users saved team should the have one
    */
@@ -49,5 +48,21 @@ export class TeamApiService {
     */
     deleteTeam():Observable<ServiceResponse<null>> {
         return this.http.delete<ServiceResponse<null>>(this.url);
+    }
+
+   /**
+   * 
+   * @returns The users saved team settings should they have one
+   */
+    fetchTeamSettings(): Observable<ServiceResponse<Settings>> {
+        return this.http.get<ServiceResponse<Settings>>(this.url + "/settings");
+    }
+
+    /**
+   * 
+   * @returns The users saved team settings should they have one
+   */
+    updateTeamSettings(settings:Settings): Observable<ServiceResponse<Settings>> {
+        return this.http.put<ServiceResponse<Settings>>(this.url + "/settings", settings);
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Dto.Team
 {
+  [DataContract]
   public class ModifyTeamDto
   {
     [DataMember(Name = "id")]

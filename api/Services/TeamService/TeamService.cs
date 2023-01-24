@@ -180,7 +180,7 @@ namespace api.Services.TeamService
       return response;
     }
 
-    private async Task<ServiceResponse<SettingsDto>> getTeamSettings()
+    public async Task<ServiceResponse<SettingsDto>> FetchTeamSettings()
     {
       var response = new ServiceResponse<SettingsDto>();
       try
@@ -189,26 +189,92 @@ namespace api.Services.TeamService
 
         var team = await this._dataContext.Team
           .Include(u => u.User)
-          .FirstOrDefaultAsync(u => u.UserId == userId);
+          .FirstOrDefaultAsync(t => t.UserId == userId);
 
         if (team == null)
         {
-          response.Data.isDiscoverable = false;
-          response.Data.teamExists = false;
+          response.Data.IsDiscoverable = false;
+          response.Data.TeamExists = false;
           response.Message = "The user is yet to create a team.";
           return response;
         }
 
-        response.Data.isDiscoverable = team.isDiscoverable;
+        response.Data.IsDiscoverable = team.isDiscoverable;
         response.Data.Username = team.User.Username;
         response.Data.TeamName = team.TeamName;
-        response.Data.teamExists = true;
+        response.Data.TeamExists = true;
 
       }
       catch (Exception e)
       {
-        response.Data.isDiscoverable = false;
-        response.Data.teamExists = false;
+        response.Message = "Team settings failed to load.";
+        response.Success = false;
+        response.Data.IsDiscoverable = false;
+        response.Data.TeamExists = false;
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<SettingsDto>> UpdateTeamSettings(SettingsDto settings)
+    {
+      var response = new ServiceResponse<SettingsDto>();
+      try
+      {
+        var userId = this.GetUserId();
+
+        var team = this._dataContext.Team
+          .Include(u => u.User)
+          .FirstOrDefault(t => t.UserId == userId);
+
+        if (team == null)
+        {
+          response.Success = false;
+          response.Message = "Error: User team not found.";
+          return response;
+        }
+
+
+        if (team.User.Username != settings.Username &&
+          !string.IsNullOrEmpty(team.User.Username))
+        {
+          var usernameExists = await this._dataContext.Team
+            .AnyAsync(t => t.User.Username.ToLower() == settings.Username.ToLower());
+
+          if (usernameExists)
+          {
+            response.Success = false;
+            response.Message = "Error: Username already exists.";
+            return response;
+          }
+        }
+
+        if (team.TeamName != settings.TeamName &&
+          !string.IsNullOrEmpty(team.TeamName))
+        {
+          var teamNameExists = await this._dataContext.Team
+            .AnyAsync(t => t.TeamName.ToLower() == settings.TeamName.ToLower());
+
+          if (teamNameExists)
+          {
+            response.Success = false;
+            response.Message = "Error: Team name already exists.";
+            return response;
+          }
+        }
+
+        team.isDiscoverable = settings.IsDiscoverable;
+        team.TeamName = settings.TeamName;
+        team.User.Username = settings.Username;
+
+        await this._dataContext.SaveChangesAsync();
+
+        response.Message = "Settings have been successfully updated!";
+      }
+      catch (Exception e)
+      {
+        response.Success = false;
+        response.Message = "An error occured updating your team settings. Please try again.";
       }
 
       return response;

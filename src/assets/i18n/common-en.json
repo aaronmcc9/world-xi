@@ -18,6 +18,7 @@
     "ALERT_TOO_MANY_PLAYERS": "There are too many players for one position.\n Please ensure the formation row has the desired amount of players before changing the formation",
     "ALERT_UNABLE_TO_FETCH_PLAYER": "An error occured retrieving the player. Please Try again.",
     "ALERT_UNABLE_TO_FETCH_PLAYERS": "Unable to retrieve players: ",
+    "ALERT_UNABLE_TO_TEAM_SETTINGS": "An error occured fetching team settings. ",
     "ARE_YOU_SURE_ACTION": "Are you sure you want to {{perform}} {{firstName}} {{lastName}}",
     "AUTHENTICATE": "Authenticate",
     "AVAILABLE_PLAYERS": "Available Players",

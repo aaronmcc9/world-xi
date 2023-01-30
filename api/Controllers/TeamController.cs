@@ -35,14 +35,19 @@ namespace api.Controllers
             return Ok(await this._teamService.InsertTeam(team));    
         }
 
-        [HttpPut]
+        [HttpPut("settings")]
         public async Task<ActionResult<ServiceResponse<SettingsDto>>> UpdateTeamSettings([FromBody] SettingsDto settings){
             return Ok(await this._teamService.UpdateTeamSettings(settings));    
         }
 
-        [HttpPost("settings")]
-        public async Task<ActionResult<ServiceResponse<TeamDto>>> UpdateTeamSettings([FromBody] ModifyTeamDto team){
-            return Ok(await this._teamService.InsertTeam(team));    
+        [HttpGet("settings/username")]
+        public async Task<ActionResult<ServiceResponse<bool>>> CheckUsernameExists(string name){
+            return Ok(await this._teamService.CheckUsernameExists(name));    
+        }
+        
+        [HttpGet("settings/teamName")]
+        public async Task<ActionResult<ServiceResponse<bool>>> CheckTeamNameExist(string name){
+            return Ok(await this._teamService.CheckTeamNameExists(name));    
         }
 
         [HttpDelete]

@@ -17,6 +17,8 @@ namespace api.Services.TeamService
     Task<ServiceResponse<TeamDto>> DeleteTeam();
     Task<ServiceResponse<SettingsDto>> FetchTeamSettings();
     Task<ServiceResponse<SettingsDto>> UpdateTeamSettings(SettingsDto settings);
+    Task<ServiceResponse<bool>> CheckUsernameExists(string name);
+    Task<ServiceResponse<bool>> CheckTeamNameExists(string name);
 
 
 

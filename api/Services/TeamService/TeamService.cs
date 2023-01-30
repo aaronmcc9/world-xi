@@ -183,6 +183,7 @@ namespace api.Services.TeamService
     public async Task<ServiceResponse<SettingsDto>> FetchTeamSettings()
     {
       var response = new ServiceResponse<SettingsDto>();
+      response.Data = new SettingsDto();
       try
       {
         var userId = this.GetUserId();
@@ -275,6 +276,52 @@ namespace api.Services.TeamService
       {
         response.Success = false;
         response.Message = "An error occured updating your team settings. Please try again.";
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<bool>> CheckUsernameExists(string name)
+    {
+      var response = new ServiceResponse<bool>();
+
+      try
+      {
+        var userId = this.GetUserId();
+
+        response.Data = await this._dataContext.Team
+            .AnyAsync(t => t.User.Username.ToLower() == name.ToLower()
+              && t.UserId != userId);
+
+        return response;
+      }
+      catch (Exception e)
+      {
+        response.Message = e.Message;
+        response.Success = false;
+      }
+
+      return response;
+    }
+
+    public async Task<ServiceResponse<bool>> CheckTeamNameExists(string name)
+    {
+      var response = new ServiceResponse<bool>();
+
+      try
+      {
+        var userId = this.GetUserId();
+
+        response.Data = await this._dataContext.Team
+          .AnyAsync(t => t.TeamName.ToLower() == name.ToLower()
+            && t.UserId != userId);
+
+        return response;
+      }
+      catch (Exception e)
+      {
+        response.Message = e.Message;
+        response.Success = false;
       }
 
       return response;

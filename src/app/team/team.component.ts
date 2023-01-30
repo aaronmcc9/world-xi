@@ -15,7 +15,6 @@ import { Formation } from '../api/team/formation/formation.model';
 import { ModifyTeamDto } from '../api/team/modify-team.dto';
 
 interface FormValue {
-  teamName: FormControl<string>
   formation: FormControl<number>,
 }
 
@@ -74,12 +73,6 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     await this.setFormationList();
 
-    let teamNameControl = new FormControl<string>("",
-      {
-        nonNullable: true,
-        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)]
-      })
-
     let formationControl = new FormControl<number>(0,
       {
         nonNullable: true,
@@ -89,7 +82,6 @@ export class TeamComponent implements OnInit, OnDestroy {
     formationControl.valueChanges
       .pipe(pairwise())
       .subscribe(([prev, next]: [number | null, number | null]) => {
-        console.log("Hello")
         try {
           console.log(next);
           if (next) {
@@ -116,9 +108,7 @@ export class TeamComponent implements OnInit, OnDestroy {
         }
       });
 
-    console.log("Here atleast")
     this.form = new FormGroup<FormValue>({
-      teamName: teamNameControl,
       formation: formationControl
     })
 
@@ -323,7 +313,6 @@ export class TeamComponent implements OnInit, OnDestroy {
 
           this.teamService.savedTeam = cloneDeep(result.data);
           this.teamService.setPlayersByPosition(result.data.players);
-          this.form.controls['teamName'].setValue(result.data.teamName, { onlySelf: true });
           this.setFormation(result.data['formation'].id);
           // this.playerCount = result.data['players'].length;
         }
@@ -357,11 +346,13 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   private async modifyTeam(team: ModifyTeamDto) {
     this.isLoading = true;
-
+    console.log("Hi", team);
     try {
       const result = team.id > 0 ?
         await lastValueFrom(this.teamApiService.updateTeam(team)) :
         await lastValueFrom(this.teamApiService.createTeam(team));
+
+    console.log("Res", result);
 
       if (result.data) {
         this.teamService.savedTeam = result.data;
@@ -402,7 +393,6 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     return {
       id: this.teamService.savedTeam.id,
-      teamName: formValue.teamName,
       formationId: formValue.formation,
       playerIds: players.map((p: Player | undefined) => p!.id)
     } as ModifyTeamDto;

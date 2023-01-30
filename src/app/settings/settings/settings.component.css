@@ -14,3 +14,19 @@ h1{
     justify-content: flex-end;
     align-items: flex-end;
 }
+
+#chkDiscover{
+    margin-right: 1rem;
+}
+
+#lblDiscover{
+    
+}
+
+.lblValid{
+    margin-top: .5rem;
+}
+
+fa-icon{
+    margin-right: .5rem;
+}

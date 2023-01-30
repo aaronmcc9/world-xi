@@ -10,6 +10,7 @@ export class ApiService {
         let httpParams = new HttpParams();
         for (const [key, value] of Object.entries(params)) {
 
+            //skip params of these types
             if (typeof value == typeof undefined || typeof value == typeof null)
                 continue
 

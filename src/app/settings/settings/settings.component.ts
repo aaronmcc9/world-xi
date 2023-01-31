@@ -6,6 +6,8 @@ import { AlertType } from 'src/app/alert/alert-type.enum';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Settings } from 'src/app/api/team/settings.dto';
 import { faCircleExclamation, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { UsernameValidator } from 'src/app/Validators/username.validator';
+import { TranslateService } from '@ngx-translate/core';
 
 interface FormValue {
   discoverable: FormControl<boolean>,
@@ -34,7 +36,7 @@ export class SettingsComponent implements OnInit {
   nameAvailable = faCircleCheck;
 
   constructor(private teamApiService: TeamApiService,
-    private alertService: AlertService) { }
+    private alertService: AlertService, private translateService: TranslateService) { }
 
   async ngOnInit(): Promise<void> {
 
@@ -50,7 +52,7 @@ export class SettingsComponent implements OnInit {
     },
       {
         nonNullable: false,
-        validators: [Validators.required, Validators.minLength(5), Validators.maxLength(15)]
+        validators: [Validators.required, Validators.minLength(5), Validators.maxLength(15), UsernameValidator.cannotContainSpace]
       });
 
     let teamNameControl = new FormControl<string>({
@@ -155,6 +157,25 @@ export class SettingsComponent implements OnInit {
       this.isLoading = false;
       this.alertService.toggleAlert("ALERT_UNABLE_TO_UPDATE_TEAM_SETTINGS", AlertType.Danger);
     }
+  }
+
+  getError(controlName: string): string {
+
+    console.log(this.usernameExists);
+    if (this.usernameExists && controlName == "username")
+      return this.translateService.instant("USERNAME_EXISTS");
+    if (this.teamNameExists && controlName == "teamName")
+      return this.translateService.instant("TEAM_NAME_EXISTS");
+    else if (this.form.hasError('cannotContainSpace', controlName))
+      return this.translateService.instant("VALIDATION_CANNOT_CONTAIN", { 'char': "spaces" });
+    else if (this.form.hasError('minlength', controlName))
+      return this.translateService.instant("VALIDATION_MIN_LENGTH", { 'len': this.form.get(controlName)?.errors?.['minlength'].requiredLength });
+    else if (this.form.hasError('maxlength', controlName))
+      return this.translateService.instant("VALIDATION_MAX_LENGTH", { 'len': this.form.get(controlName)?.errors?.['maxlength'].requiredLength });
+    else if (this.form.hasError('required', controlName))
+      return this.translateService.instant("VALIDATION_REQUIRED");
+
+    return "";
   }
 
   private async checkUsernameExists(name: string): Promise<boolean> {

@@ -82,5 +82,9 @@
     "USERNAME_AVAILABLE": "Username is available",
     "USERNAME_EXISTS": "Username already exists",
     "USER_NO_PLAYERS": "You have no players!",
+    "VALIDATION_CANNOT_CONTAIN": "Field cannot contain {{char}}",
+    "VALIDATION_MAX_LENGTH": "The max length is {{len}} characters",
+    "VALIDATION_MIN_LENGTH": "The min length is {{len}} characters",
+    "VALIDATION_REQUIRED": "This field is required",
     "WORLD_XI": "World XI"
 }

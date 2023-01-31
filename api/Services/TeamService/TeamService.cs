@@ -313,7 +313,7 @@ namespace api.Services.TeamService
         var userId = this.GetUserId();
 
         response.Data = await this._dataContext.Team
-          .AnyAsync(t => t.TeamName.ToLower() == name.ToLower()
+          .AnyAsync(t => t.TeamName.Replace(" ", "").ToLower() == name.Replace(" ", "").ToLower()
             && t.UserId != userId);
 
         return response;

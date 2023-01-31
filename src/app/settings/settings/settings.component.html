@@ -13,8 +13,8 @@
                 <label for="username">{{'USERNAME' | translate}}</label>
                 <input type="text" class="form-control" id="username" formControlName="username">
 
-                <label *ngIf="usernameExists" class="lblValid text-danger">
-                    <fa-icon [icon]="existsError"></fa-icon>{{'USERNAME_EXISTS' | translate}}
+                <label *ngIf="form.controls['username']?.touched && (form.controls['username']?.errors || usernameExists)" class="lblValid text-danger">
+                    <fa-icon [icon]="existsError"></fa-icon>{{getError("username")}}
                 </label>
                 <label *ngIf="form.controls['username']?.touched &&
                     form.controls['username']?.valid && !usernameExists" class="lblValid text-success">
@@ -26,8 +26,8 @@
                 <label for="teamName">{{'TEAM_NAME' | translate}}</label>
                 <input type="text" class="form-control" id="teamName" formControlName="teamName">
 
-                <label *ngIf="teamNameExists" class="lblValid text-danger">
-                    <fa-icon [icon]="existsError"></fa-icon>{{'TEAM_NAME_EXISTS' | translate}}
+                <label *ngIf="form.controls['teamName']?.touched && (form.controls['teamName']?.errors || teamNameExists)" class="lblValid text-danger">
+                    <fa-icon [icon]="existsError"></fa-icon>{{getError("teamName")}}
                 </label>
                 <label *ngIf="form.controls['teamName']?.touched &&
                 form.controls['teamName']?.valid && !teamNameExists" class="lblValid text-success">

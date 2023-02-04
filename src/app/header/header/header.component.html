@@ -12,6 +12,7 @@
             <ul class="nav navbar-nav">
                 <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">{{'PLAYERS' | translate}}</a></li>
                 <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">{{'TEAM' | translate}}</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/explore">{{'EXPLORE' | translate}}</a></li>
                 <li *ngIf="isAuthenticated" routerLinkActive="active">
                     <a routerLink="/settings">
                         <fa-icon [icon]="settingsIcon"></fa-icon>

@@ -14,7 +14,9 @@ import { AppCommonModule } from './app-common.module';
 import { TeamModule } from './team/team.module';
 import { HeaderComponent } from './header/header/header.component';
 import { SettingsModule } from './settings/settings/settings.module';
-import { HeaderModule } from './header/header/header.module';
+import { ExploreModule } from './explore/explore.module';
+import { TeamListItemComponent } from './explore/team-list-item/team-list-item.component';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -31,6 +33,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AuthModule,
     BrowserAnimationsModule,
     BrowserModule,
+    ExploreModule,
     HttpClientModule,
     PlayersModule,
     SettingsModule,

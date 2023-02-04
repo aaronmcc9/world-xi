@@ -1,5 +1,4 @@
-<mat-grid-list [ngClass]="cols == 2 ? 'container-padding-top' : 'container-padding-top-none'" 
-    rowHeight="1:1" [cols]="cols" gutterSize="25rem">
+<mat-grid-list rowHeight="1:1" [cols]="cols" gutterSize="25rem">
     <mat-grid-tile>
         <app-players-list [cols]="cols" [ngClass]="cols == 2 && isFixed ? 'fixed' : 'static'"></app-players-list>
     </mat-grid-tile>

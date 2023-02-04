@@ -1,0 +1,15 @@
+.c-design {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.item {
+    border-top: .1px solid lightgray;
+    border-bottom: .1px solid lightgray;
+    padding: 1rem;
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}

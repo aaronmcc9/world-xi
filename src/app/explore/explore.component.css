@@ -1,0 +1,17 @@
+.container-design {
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    height: 70vh;
+    margin: 10rem auto;
+}
+
+
+
+::ng-deep .mat-tab-list .mat-tab-labels{
+    display: flex;
+    justify-content: space-around;
+}
+
+::ng-deep .mat-tab-body-content{
+    overflow: hidden!important;
+}

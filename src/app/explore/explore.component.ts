@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-explore',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ExploreComponent implements OnInit {
 
+  friendsActive: boolean = false;
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  onTabClick(event: MatTabChangeEvent){
+    this.friendsActive = event.index === 1;
+  }
 }

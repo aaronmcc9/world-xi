@@ -84,4 +84,9 @@ export class TeamApiService {
     updateTeamSettings(settings: Settings): Observable<ServiceResponse<Settings>> {
         return this.http.put<ServiceResponse<Settings>>(this.url + "settings", settings);
     }
+
+    fetchAllTeams(friends: boolean, filterText? : string): Observable<ServiceResponse<Team[]>> {
+        return this.http.get<ServiceResponse<Team[]>>(this.url + "all",
+            { params: this.apiService.constructParams({ friends: friends, filterText: filterText })})
+    }
 }

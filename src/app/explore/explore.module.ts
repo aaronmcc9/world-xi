@@ -4,7 +4,7 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { MatTabsModule } from '@angular/material/tabs';
 import { AppCommonModule } from "src/app/app-common.module";
 import { ExploreComponent } from "./explore.component";
-import { TeamListItemModule } from "./team-list-item/team-list-item.module";
+import {  TeamListModule } from "./team-list/team-list.module";
 
 @NgModule({
     imports: [
@@ -12,7 +12,7 @@ import { TeamListItemModule } from "./team-list-item/team-list-item.module";
         CommonModule,
         FontAwesomeModule,
         MatTabsModule,
-        TeamListItemModule
+        TeamListModule
     ],
     declarations: [
         ExploreComponent

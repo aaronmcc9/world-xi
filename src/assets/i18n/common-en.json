@@ -22,6 +22,7 @@
     "ALERT_UNABLE_TO_FETCH_PLAYER": "An error occured retrieving the player. Please Try again.",
     "ALERT_UNABLE_TO_FETCH_PLAYERS": "Unable to retrieve players: ",
     "ALERT_UNABLE_TO_FETCH_TEAM_SETTINGS": "An error occured fetching team settings. ",
+    "ALERT_UNABLE_TO_FETCH_TEAMS": "Could not fetch team list. ",
     "ALERT_UNABLE_TO_UPDATE_TEAM_SETTINGS": "An error occured updating team settings.",
     "ALERT_UNABLE_TO_VALIDATE_TEAMNAME": "Unable to validate team name.",
     "ALERT_UNABLE_TO_VALIDATE_USERNAME": "Unable to validate username.",

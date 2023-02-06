@@ -12,7 +12,7 @@ namespace api
 
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-      
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,5 +33,7 @@ namespace api
     public DbSet<Team> Team { get; set; }
     public DbSet<User> User { get; set; }
     public DbSet<Formation> Formation { get; set; }
+    public DbSet<Result> Result { get; set; }
+    public DbSet<Notification> Notification { get; set; }
   }
 }

@@ -70,6 +70,44 @@ namespace api.Services.TeamService
       return response;
     }
 
+    public async Task<ServiceResponse<List<TeamDto>>> FetchAllTeams(bool friends = true, string? filterText = null)
+    {
+      var response = new ServiceResponse<List<TeamDto>>();
+
+      try
+      {
+        var userId = this.GetUserId();
+
+        var teamsQuery = this._dataContext.Team
+          .Include(r => r.Results)
+          .Where(t => t.UserId != userId &&
+            t.isDiscoverable == true);
+
+        if (friends)
+        {
+
+        }
+
+        if (!string.IsNullOrEmpty(filterText))
+        {
+          teamsQuery.Where(t => t.TeamName.ToLower().Contains(filterText.ToLower()));
+        }
+
+        var teams = await teamsQuery
+          .Select(t => _mapper.Map<TeamDto>(t))
+          .ToListAsync();
+
+        response.Data = teams;
+      }
+      catch (Exception e)
+      {
+        response.Success = false;
+        response.Message = "An error occured fetching teams lists";
+      }
+
+      return response;
+    }
+
     public async Task<ServiceResponse<TeamDto>> InsertTeam(ModifyTeamDto newTeam)
     {
       var response = new ServiceResponse<TeamDto>();

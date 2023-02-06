@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { AppCommonModule } from "src/app/app-common.module";
-import { TeamListItemComponent } from "./team-list-item.component";
+import { TeamListComponent } from "./team-list.component";
 
 @NgModule({
     imports: [
@@ -9,12 +9,12 @@ import { TeamListItemComponent } from "./team-list-item.component";
         CommonModule
     ],
     declarations: [
-        TeamListItemComponent
+        TeamListComponent
     ],
     exports:[
-        TeamListItemComponent
+        TeamListComponent
     ]
 })
-export class TeamListItemModule {
+export class TeamListModule {
 
 }

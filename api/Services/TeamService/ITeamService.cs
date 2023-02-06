@@ -11,6 +11,7 @@ namespace api.Services.TeamService
   public interface ITeamService
   {
     Task<ServiceResponse<TeamDto>> FetchTeam();
+    Task<ServiceResponse<List<TeamDto>>> FetchAllTeams(Boolean friends = true, string? filterText = null);
     Task<ServiceResponse<TeamDto>> InsertTeam(ModifyTeamDto team);
 
     Task<ServiceResponse<TeamDto>> UpdateTeam(ModifyTeamDto team);

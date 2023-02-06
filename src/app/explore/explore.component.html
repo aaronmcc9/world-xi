@@ -1,10 +1,10 @@
 <div class="container container-design">
-    <mat-tab-group>
+    <mat-tab-group (selectedTabChange)="onTabClick($event)">
         <mat-tab label="{{'ALL_TEAMS'| translate}}">
-            <app-team-list-item></app-team-list-item>
+            <app-team-list  *ngIf="!friendsActive" [friends]="friendsActive"></app-team-list>
         </mat-tab>
         <mat-tab label="{{'FRIENDS'| translate}}">
-            Content 2
+            <app-team-list *ngIf="friendsActive" [friends]="friendsActive"></app-team-list>
         </mat-tab>
     </mat-tab-group>
 </div>

@@ -10,6 +10,7 @@ import { AlertService } from "../alert/alert.service";
 import { AlertType } from "../alert/alert-type.enum";
 import { Formation } from "../api/team/formation/formation.model";
 import { FormationApiService } from "../api/team/formation/formation-api.service";
+import { Result } from "../api/team/result/result.dto";
 
 @Injectable({
   providedIn: "root"
@@ -31,7 +32,7 @@ export class TeamService {
   teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 
-  savedTeam = new Team(0, '', [], new Formation(0, ""));
+  savedTeam = new Team(0, '', [], new Formation(0, "",), []);
   canCancelChanges = false;
   formations: Formation[] = [];
 
@@ -148,8 +149,6 @@ export class TeamService {
   getDefaultFormation(): number {
     return this.formations.find((f: Formation) => f.structure == "442")?.id ?? 0;
   }
-
-
 
   //  saveUserTeam(team: Team) {
 

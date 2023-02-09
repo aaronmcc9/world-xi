@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.Team;
 using api.Dto.Team.Settings;
@@ -96,6 +92,8 @@ namespace api.Services.TeamService
         var teams = await teamsQuery
           .Select(t => _mapper.Map<TeamDto>(t))
           .ToListAsync();
+
+          //add wins and losses draws
 
         response.Data = teams;
       }

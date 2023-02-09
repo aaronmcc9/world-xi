@@ -18,6 +18,9 @@ namespace api.Dto.Team
     [DataMember(Name = "teamName")]
     public string TeamName { get; set; } = string.Empty;
 
+    [DataMember(Name = "results")]
+    public List<Result> Results { get; set; } = new List<Result>();
+
     // [DataMember(Name = "userId")]
     // public int UserId { get; set; } = 0;
     // [DataMember(Name="user")]

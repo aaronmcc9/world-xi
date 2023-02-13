@@ -1,16 +1,14 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, lastValueFrom, Subject, tap, throwError } from "rxjs";
-import { AuthService } from "../auth/auth/auth.service";
+import { BehaviorSubject, lastValueFrom } from "rxjs";
 import { Position } from "../players/player-position";
 import { Player } from "../players/player.model";
 import { Team } from "./team.model";
-import { __, cloneDeep } from "lodash";
+import { __ } from "lodash";
 import { AlertService } from "../alert/alert.service";
 import { AlertType } from "../alert/alert-type.enum";
 import { Formation } from "../api/team/formation/formation.model";
 import { FormationApiService } from "../api/team/formation/formation-api.service";
-import { Result } from "../api/team/result/result.dto";
+import { User } from "../api/User/user.dto";
 
 @Injectable({
   providedIn: "root"
@@ -20,8 +18,7 @@ export class TeamService {
   private readonly url = "https://localhost:7258/api/team/"
 
 
-  constructor(private authService: AuthService,
-    private alertService: AlertService,
+  constructor(private alertService: AlertService,
     private formationApiService: FormationApiService) { }
 
   page = new BehaviorSubject<number>(1);
@@ -32,7 +29,15 @@ export class TeamService {
   teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
   teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
 
-  savedTeam = new Team(0, '', [], new Formation(0, "",), []);
+  emptyUser:User = {
+    id: 0,
+    username: "",
+    email: "",
+    notifications:[],
+    friends:[]
+  }
+
+  savedTeam = new Team(0, '', this.emptyUser, [], new Formation(0, "",), [], 0, 0, 0);
   canCancelChanges = false;
   formations: Formation[] = [];
 

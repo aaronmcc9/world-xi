@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { BehaviorSubject, catchError, Subject, tap, throwError } from "rxjs";
-import { User } from "./user.model";
+import { User } from "../../api/User/user.dto";
 
 @Injectable({
     providedIn: 'root'

@@ -12,14 +12,14 @@ namespace api.Dto.User
     [DataMember(Name = "id")]
     public int Id { get; set; }
 
-    [DataMember(Name = "email")]
-    public string Email { get; set; } = string.Empty;
+    // [DataMember(Name = "email")]
+    // public string Email { get; set; } = string.Empty;
+
+    [DataMember(Name = "username")]
+    public string? Username { get; set; }
 
     [DataMember(Name = "notifications")]
     public List<NotificationDto> Notifications { get; set; } = new List<NotificationDto>();
-
-    [DataMember(Name = "email")]
-    public string AccessToken { get; set; } = string.Empty;
 
   }
 }

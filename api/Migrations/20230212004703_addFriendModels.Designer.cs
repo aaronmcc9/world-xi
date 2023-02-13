@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api;
 
@@ -11,9 +12,10 @@ using api;
 namespace api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230212004703_addFriendModels")]
+    partial class addFriendModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,6 +88,19 @@ namespace api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("api.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Friend");
+                });
+
             modelBuilder.Entity("api.Models.FriendRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -94,34 +109,18 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserReceivedId")
+                    b.Property<int>("UserReceived")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserSentId")
+                    b.Property<int>("UserSent")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("FriendRequest");
-                });
-
-            modelBuilder.Entity("api.Models.Friendship", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Friendship");
                 });
 
             modelBuilder.Entity("api.Models.Notification", b =>
@@ -285,7 +284,7 @@ namespace api.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("FriendshipUser", b =>
+            modelBuilder.Entity("FriendUser", b =>
                 {
                     b.Property<int>("FriendsId")
                         .HasColumnType("int");
@@ -297,7 +296,7 @@ namespace api.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("FriendshipUser");
+                    b.ToTable("FriendUser");
                 });
 
             modelBuilder.Entity("PlayerTeam", b =>
@@ -350,9 +349,9 @@ namespace api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FriendshipUser", b =>
+            modelBuilder.Entity("FriendUser", b =>
                 {
-                    b.HasOne("api.Models.Friendship", null)
+                    b.HasOne("api.Models.Friend", null)
                         .WithMany()
                         .HasForeignKey("FriendsId")
                         .OnDelete(DeleteBehavior.Cascade)

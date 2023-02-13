@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faGear } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faBell } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth/auth.service';
 
@@ -15,6 +15,8 @@ export class HeaderComponent implements OnInit {
 
   //icon
   settingsIcon = faGear;
+  notificationIcon = faBell;
+
 
   constructor(private authService: AuthService) { }
 

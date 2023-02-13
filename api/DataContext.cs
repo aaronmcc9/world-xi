@@ -25,7 +25,8 @@ namespace api
         new Formation { Id = 5, Structure = "451" },
         new Formation { Id = 6, Structure = "523" },
         new Formation { Id = 7, Structure = "532" },
-        new Formation { Id = 8, Structure = "541" }
+        new Formation { Id = 8, Structure = "541" },
+        new Formation { Id = 9, Structure = "433" }
       );
     }
 
@@ -35,5 +36,8 @@ namespace api
     public DbSet<Formation> Formation { get; set; }
     public DbSet<Result> Result { get; set; }
     public DbSet<Notification> Notification { get; set; }
+    public DbSet<Friendship> Friendship { get; set; }
+    public DbSet<FriendRequest> FriendRequest { get; set; }
+
   }
 }

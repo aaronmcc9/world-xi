@@ -13,3 +13,13 @@
     flex-direction: row;
     justify-content: space-evenly;
 }
+
+table, tbody, tr, th,
+table, tbody, tr, td{
+    vertical-align: middle!important;
+    text-align: center;
+}
+
+.ratio{
+    font-weight: 600;
+}

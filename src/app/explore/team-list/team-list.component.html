@@ -1,6 +1,7 @@
-<table class="table table-striped">
+<table class="table table-striped" style="table-layout:fixed;">
     <thead>
         <tr>
+            <th>{{'USERNAME' | translate}}</th>
             <th>{{'TEAM_NAME' | translate}}</th>
             <th>{{'RESULT_RATIO' | translate}}</th>
             <th></th>
@@ -9,10 +10,22 @@
     </thead>
     <tbody>
         <tr *ngFor="let team of teams">
+            <td>{{team.user.username}}</td>
             <td><a>{{team.teamName}}</a></td>
-            <td> </td>
-            <td style="width: 10px;"><div class="btn btn-success">{{'ADD_FRIEND' | translate}}</div> </td>
-            <td style="width: 10px;"><div class="btn btn-primary">{{'REQUEST_MATCH' | translate}}</div></td>
+            <td>
+                <span class="ratio">W</span>-{{team.wins}}/
+                <span class="ratio">L</span>-{{team.losses}}/
+                <span class="ratio">D</span>-{{team.draws}}</td>
+            <td style="width: 5rem;">
+                <div *ngIf="!team.friendRequestSending && !team.friendRequestPending" class="btn btn-success" (click)="addFriend(team.user.id)">
+                    {{'ADD_FRIEND' | translate}}
+                </div>
+                <div class="text-center" *ngIf="!team.friendRequestSending && team.friendRequestPending">Pending</div>
+                <app-loading-spinner [forWholeScreen]="false" *ngIf="team.friendRequestSending"></app-loading-spinner>
+            </td>
+            <td style="width: 5rem;"><div class="btn btn-primary">{{'REQUEST_MATCH' | translate}}</div></td>
         </tr>
     </tbody>
 </table>
+
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

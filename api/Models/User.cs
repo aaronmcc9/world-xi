@@ -15,6 +15,8 @@ namespace api.Models
     public byte[] PasswordSalt { get; set; }
     public List<Notification> Notifications { get; set; } 
     public Team? Team { get; set; }
+    public List<Friendship> Friends { get; set; } 
+
     [NotMapped]
     public string AccessToken { get; set; }
   }

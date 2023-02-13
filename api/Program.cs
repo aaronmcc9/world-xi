@@ -1,6 +1,7 @@
 using api;
 using api.Services.AuthService;
 using api.Services.FormationService;
+using api.Services.FriendRequestService;
 using api.Services.PlayerService;
 using api.Services.TeamService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +39,8 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFormationService, FormationService>();
+builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
+
 
 builder.Services.AddCors(options => options.AddPolicy(name: "worldxi",
     policy =>

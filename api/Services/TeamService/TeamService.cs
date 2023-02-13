@@ -2,6 +2,7 @@ using System.Security.Claims;
 using api.Dto;
 using api.Dto.Team;
 using api.Dto.Team.Settings;
+using api.Dto.User;
 using api.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -76,12 +77,17 @@ namespace api.Services.TeamService
 
         var teamsQuery = this._dataContext.Team
           .Include(r => r.Results)
+          .Include(u => u.User)
+          .ThenInclude(f => f.Friends)
           .Where(t => t.UserId != userId &&
             t.isDiscoverable == true);
 
         if (friends)
         {
-
+          teamsQuery = teamsQuery
+             .Where(t => t.User.Friends
+                .Any(f => f.Users
+                  .Any(u => u.Id == userId)));
         }
 
         if (!string.IsNullOrEmpty(filterText))
@@ -90,17 +96,39 @@ namespace api.Services.TeamService
         }
 
         var teams = await teamsQuery
-          .Select(t => _mapper.Map<TeamDto>(t))
-          .ToListAsync();
+          .Select(t => new TeamDto
+          {
+            Id = t.Id,
+            TeamName = t.TeamName,
+            User = new UserDto
+            {
+              Id = t.UserId,
+              Username = t.User.Username,
+            },
+            // Results =  t.Results
+            //   .Select(r => this._mapper.Map<ResultDto>(r))
+            //   .ToList(),
+            Wins = t.Results
+              .Where(r => r.WinnerId == userId)
+              .Count(),
+            Losses = t.Results
+            .Where(r => r.LoserId == userId)
+            .Count(),
+            Draws = t.Results
+              .Where(r => r.WinnerId == null && r.LoserId == null)
+              .Count(),
+            FriendRequestPending = friends ? false :
+             this._dataContext.FriendRequest
+                .Any(fr => fr.UserSentId == userId && fr.UserReceivedId == t.UserId)
+          }).ToListAsync();
 
-          //add wins and losses draws
 
         response.Data = teams;
       }
       catch (Exception e)
       {
         response.Success = false;
-        response.Message = "An error occured fetching teams lists";
+        response.Message = "An error occured fetching teams lists " + e.Message;
       }
 
       return response;

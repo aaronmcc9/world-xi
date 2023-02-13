@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dto;
 using api.Dto.Player;
 using api.Dto.Team;
 using api.Dto.Team.Formation;
@@ -23,18 +24,12 @@ namespace api
       CreateMap<TeamDto, Team>();
       CreateMap<Formation, FormationDto>();
       CreateMap<FormationDto, Formation>();
+      CreateMap<Result, ResultDto>();
+      CreateMap<ResultDto, Result>();
+      CreateMap<FriendRequestDto, FriendRequest>();
+      CreateMap<FriendRequest, FriendRequestDto>();
 
-    //   CreateMap<SettingsDto, Team>()
-    //     .ForMember(x => x.Id, x => x.Ignore())
-    //     .ForMember(x => x.Formation, x => x.Ignore())
-    //     .ForMember(x => x.Players, x => x.Ignore())
-    //     .ForMember(x => x.UserId, x => x.Ignore())
-    //     .ForMember(x => x.User.Id, x => x.Ignore())
-    //     .ForMember(x => x.User.PasswordHash, x => x.Ignore())
-    //     .ForMember(x => x.User.PasswordSalt, x => x.Ignore())
-    //     .ForMember(x => x.User.AccessToken, x => x.Ignore())
-    //     .ForMember(x => x.User.Email, x => x.Ignore())
-    //     .ForMember(x => x.User.Team, x => x.Ignore());
+
 
     }
   }

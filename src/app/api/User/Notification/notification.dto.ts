@@ -1,4 +1,4 @@
-import { User } from "src/app/auth/auth/user.model";
+import { User } from "src/app/api/User/user.dto";
 import { NotificationType } from "./notification-type.enum";
 
 export interface Notification {

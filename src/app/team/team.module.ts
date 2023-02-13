@@ -7,7 +7,7 @@ import { ModifyPlayerModule } from "../players/modify-player/modify-player.modul
 import { FormationRowModule } from "./formation-row/formation-row.module";
 import { ModifySelectionModule } from "./modify-selection/modify-selection.module";
 import { RevertTeamModule } from "./revert-team/revert-team.module";
-import { TeamListModule } from "./team-list/team-list.module";
+import { PlayerSelectionListModule } from "./team-list/player-selection-list.module";
 import { TeamComponent } from "./team.component";
 
 @NgModule({
@@ -21,15 +21,14 @@ import { TeamComponent } from "./team.component";
         FormationRowModule,
         ModifySelectionModule,
         RevertTeamModule,
-        TeamListModule,
-        FontAwesomeModule
+        PlayerSelectionListModule,
     ],
     exports: [
         TeamComponent,
         FormationRowModule,
         ModifySelectionModule,
         RevertTeamModule,
-        TeamListModule
+        PlayerSelectionListModule
     ]
 })
 export class TeamModule {

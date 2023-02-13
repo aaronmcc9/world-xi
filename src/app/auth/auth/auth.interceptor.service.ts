@@ -2,7 +2,6 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpParams, HttpRequest } from
 import { Injectable } from "@angular/core";
 import { exhaustMap, Observable, take } from "rxjs";
 import { AuthService } from "./auth.service";
-import { User } from "./user.model";
 
 @Injectable({
     providedIn: 'root'

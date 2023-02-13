@@ -13,7 +13,7 @@ import { Settings } from "./settings.dto";
 
 export class TeamApiService {
 
-    private readonly url = "https://localhost:7258/api/team/"
+    private readonly url = "https://localhost:7258/api/team/";
 
     constructor(private http: HttpClient, private apiService: ApiService) { }
 

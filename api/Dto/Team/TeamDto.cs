@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using api.Dto.Player;
 using api.Dto.Team.Formation;
+using api.Dto.User;
 
 namespace api.Dto.Team
 {
@@ -18,12 +20,26 @@ namespace api.Dto.Team
     [DataMember(Name = "teamName")]
     public string TeamName { get; set; } = string.Empty;
 
-    [DataMember(Name = "results")]
-    public List<Result> Results { get; set; } = new List<Result>();
+    [DataMember(Name = "user")]
+    public UserDto User { get; set; }
 
-    // [DataMember(Name = "userId")]
-    // public int UserId { get; set; } = 0;
-    // [DataMember(Name="user")]
-    // public UserDto User { get; set; } = new UserDto();
+    [DataMember(Name = "results")]
+    public List<ResultDto> Results { get; set; } = new List<ResultDto>();
+
+    [NotMapped]
+    [DataMember(Name = "wins")]
+    public int Wins { get; set; } = 0;
+
+    [NotMapped]
+    [DataMember(Name = "losses")]
+    public int Losses { get; set; } = 0;
+
+    [NotMapped]
+    [DataMember(Name = "draws")]
+    public int Draws { get; set; } = 0;
+    
+    [NotMapped]
+    [DataMember(Name = "friendRequestPending")]
+    public bool? FriendRequestPending { get; set; } = false;
   }
 }

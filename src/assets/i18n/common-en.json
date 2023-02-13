@@ -4,6 +4,7 @@
     "ADD_PLAYER": "Add Player",
     "AGE": "Age",
     "ALERT_ELEVEN_PLAYERS_TO_SAVE": "Please select 11 players",
+    "ALERT_FRIEND_REQUEST_FAILURE": "An error occured sending the friend request",
     "ALERT_NO_TEAM": "It appears you are yet to create a team! \n Create one on the teams page to edit these settings.",
     "ALERT_PLAYER_ADDED": "Player successfully added!",
     "ALERT_PLAYER_ADD_FAILURE": "Failed to add player: ",

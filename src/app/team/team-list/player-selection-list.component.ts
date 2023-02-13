@@ -7,10 +7,10 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-team-list',
-  templateUrl: './team-list.component.html',
-  styleUrls: ['./team-list.component.css']
+  templateUrl: './player-selection-list.component.html',
+  styleUrls: ['./player-selection-list.component.css']
 })
-export class TeamListComponent implements OnInit, OnDestroy {
+export class PlayerSelectionListComponent implements OnInit, OnDestroy {
   positions: Position[] = [];
   listPositions: Position[] = [];
 

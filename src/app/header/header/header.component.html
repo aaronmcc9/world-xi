@@ -1,4 +1,4 @@
- <nav class="nav navbar navbar-default">
+<nav class="nav navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
             <button class="navbar-toggle" type="button" (click)="collapsed = !collapsed">
@@ -9,15 +9,21 @@
 
         <div class="navbar-collapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
             <ul class="nav navbar-nav">
-                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">{{'PLAYERS' | translate}}</a></li>
-                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">{{'TEAM' | translate}}</a></li>
-                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/explore">{{'EXPLORE' | translate}}</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/players">{{'PLAYERS' |
+                        translate}}</a></li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/team">{{'TEAM' | translate}}</a>
+                </li>
+                <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/explore">{{'EXPLORE' |
+                        translate}}</a></li>
                 <li *ngIf="isAuthenticated" class="dropdown" appDropdown>
                     <a class="dropdown-toggle"><fa-icon [icon]="notificationIcon"></fa-icon>
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="#"> </a></li>
+                        <li><app-notification></app-notification></li>
+                        <div class="view-all-container">
+                            <button class="btn btn-link">{{'VIEW_ALL_NOTIFICATIONS' | translate}}</button>
+                        </div>
                     </ul>
                 </li>
                 <li *ngIf="isAuthenticated" routerLinkActive="active">
@@ -25,7 +31,8 @@
                         <fa-icon [icon]="settingsIcon"></fa-icon>
                     </a>
                 </li>
-                <li *ngIf="!isAuthenticated" routerLinkActive="active"><a routerLink="/auth">{{'LOGIN' | translate}}</a></li>
+                <li *ngIf="!isAuthenticated" routerLinkActive="active"><a routerLink="/auth">{{'LOGIN' | translate}}</a>
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li *ngIf="isAuthenticated"><a (click)="logout()">{{'LOGOUT' | translate}}</a></li>

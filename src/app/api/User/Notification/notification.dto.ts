@@ -6,7 +6,7 @@ export interface Notification {
     sender?: User;
     senderId?: number;
     recipientId: number;
-    message: number;
+    message: string;
     notificationType: NotificationType;
     sent: Date;
 

@@ -1,6 +1,7 @@
 export enum NotificationType{
-    SocialMessage = 0,
-    FriendRequest = 1,
-    GameRequest = 2,
-    System = 3
+    All = 0,
+    SocialMessage = 1,
+    FriendRequest = 2,
+    GameRequest = 3,
+    System = 4
 }

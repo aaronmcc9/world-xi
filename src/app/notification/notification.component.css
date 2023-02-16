@@ -1,0 +1,37 @@
+/* .test{
+    width: 40rem;
+    height: 7.5rem;
+} */
+
+.c-design {
+    width: 40rem;
+    height: 10rem;
+    padding: 0 1rem 1rem;
+    border-bottom: 1px solid lightgray;
+}
+
+.n-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.action-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.view-message-container {
+    display: flex;
+    justify-content: center;
+}
+
+.view-message {
+    font-size: 1.2rem;
+}
+
+p {
+    font-size: 1.1rem;
+}

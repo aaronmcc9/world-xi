@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faGear, faBell } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
+import { NotificationType } from 'src/app/api/User/Notification/notification-type.enum';
 import { AuthService } from 'src/app/auth/auth/auth.service';
 
 @Component({
@@ -17,6 +18,11 @@ export class HeaderComponent implements OnInit {
   settingsIcon = faGear;
   notificationIcon = faBell;
 
+  notifications: Notification[] = [];
+  skip = 0;
+  take = 10;
+  notificationType: NotificationType = NotificationType.All;
+
 
   constructor(private authService: AuthService) { }
 
@@ -28,5 +34,9 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  async fetchUserNotifications(){
+
   }
 }

@@ -6,10 +6,12 @@ import { RouterModule } from "@angular/router";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TranslateModule } from "@ngx-translate/core";
 import { AlertComponent } from "./alert/alert.component";
-import { DropdownDirective } from "./api/Common/dropdown.directive";
+import { DropdownDirective } from "./common/dropdown.directive";
 import { ErrorComponent } from "./error/error.component";
 import { HeaderComponent } from "./header/header/header.component";
 import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.component";
+import { NotificationComponent } from "./notification/notification.component";
+import { NotificationModule } from "./notification/notification.module";
 
 @NgModule({
     declarations: [
@@ -17,8 +19,8 @@ import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.compo
         ErrorComponent,
         // HeaderComponent,
         LoadingSpinnerComponent,
-        DropdownDirective
-
+        DropdownDirective,
+        NotificationComponent
     ],
     imports: [
         CommonModule,
@@ -37,7 +39,9 @@ import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.compo
         LoadingSpinnerComponent,
         TranslateModule,
         FontAwesomeModule,
-        DropdownDirective
+        DropdownDirective,
+        NotificationComponent
+        
     ]
 })
 export class AppCommonModule {

@@ -9,5 +9,6 @@ export interface Notification {
     message: string;
     notificationType: NotificationType;
     sent: Date;
-
+    isRead:Boolean
+    actionRequired: Boolean;
 }

@@ -16,8 +16,9 @@ export class AuthService {
 
     logout() {
         this.removeToken();
-        this.router.navigate(['/auth']);
+        // this.router.navigate(['/auth']);
         this.tokenExpirationEvent = null;
+        window.location.replace('/auth');
     }
 
 

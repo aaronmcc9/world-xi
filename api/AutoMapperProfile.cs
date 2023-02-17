@@ -8,6 +8,8 @@ using api.Dto.Team;
 using api.Dto.Team.Formation;
 using api.Dto.Team.Settings;
 using api.Dto.User;
+using api.Dto.User.Friend.FriendRequest;
+using api.Dto.User.Notification;
 using api.Models;
 
 namespace api
@@ -28,6 +30,10 @@ namespace api
       CreateMap<ResultDto, Result>();
       CreateMap<FriendRequestDto, FriendRequest>();
       CreateMap<FriendRequest, FriendRequestDto>();
+      CreateMap<UpdateFriendRequestDto, FriendRequest>();
+      CreateMap<FriendRequest, UpdateFriendRequestDto>();
+      CreateMap<NotificationDto, Notification>();
+      CreateMap<Notification, NotificationDto>();
 
 
 

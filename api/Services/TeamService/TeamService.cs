@@ -117,10 +117,12 @@ namespace api.Services.TeamService
             Draws = t.Results
               .Where(r => r.WinnerId == null && r.LoserId == null)
               .Count(),
-            FriendRequestPending = friends ? false :
-             this._dataContext.FriendRequest
-                .Any(fr => fr.UserSentId == userId && fr.UserReceivedId == t.UserId)
-          }).ToListAsync();
+            FriendRequestStatus = (Dto.User.Friend.FriendRequestStatus)this._dataContext.FriendRequest
+                .FirstOrDefault(fr => (fr.UserSentId == userId && fr.UserReceivedId == t.UserId)
+                 || (fr.UserReceivedId == userId && fr.UserSentId == t.UserId)).Status,
+          })
+          .OrderBy(t => t.User.Username)
+          .ToListAsync();
 
 
         response.Data = teams;

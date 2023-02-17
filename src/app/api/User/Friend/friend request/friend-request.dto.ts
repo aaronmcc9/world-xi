@@ -9,5 +9,4 @@ export interface FriendRequest {
     userReceived?: User;
     status: FriendRequestStatus;
     created: Date;
-
 }

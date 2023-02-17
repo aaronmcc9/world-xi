@@ -1,34 +1,15 @@
-<!-- <div *ngIf="notification" class="c-design">
+<div *ngIf="notification" class="c-design">
     <div class="n-header">
-        <h5>{{notificationHeader}}</h5>
+        <h5 [ngClass]="{'unread': !notification.isRead}">{{notificationHeader}}</h5>
         <h6>{{notification.sent | date:'shortTime'}}</h6>
     </div>
 
     <p>{{notification.message}}</p>
 
-    <div class="action-container" *ngIf="notification?.notificationType == notificationType.FriendRequest
+    <div class="action-container" *ngIf="notification.actionRequired && notification?.notificationType == notificationType.FriendRequest
             || notification?.notificationType == notificationType.GameRequest">
-        <button class="btn btn-outline">{{'DENY' | translate}}</button>
-        <button class="btn btn-outline">{{'CONFIRM' | translate}}</button>
-    </div>
-
-    <div class="view-message-container" *ngIf="notification?.notificationType == notificationType.SocialMessage">
-        <button class="btn btn-link view-message ">{{'VIEW_MESSAGE' | translate}}</button>
-    </div>
-</div> -->
-
-<div class="c-design">
-    <div class="n-header">
-        <h5>Friend Request</h5>
-        <h6>12:20pm</h6>
-    </div>
-
-    <p>John Jacobs has added you as a friend. Confirm request below</p>
-
-    <div class="action-container" *ngIf="notification?.notificationType == notificationType.FriendRequest
-            || notification?.notificationType == notificationType.GameRequest">
-        <button class="btn btn-outline">{{'DENY' | translate}}</button>
-        <button class="btn btn-outline">{{'CONFIRM' | translate}}</button>
+        <button class="btn btn-outline" (click)="action(false)">{{'DENY' | translate}}</button>
+        <button class="btn btn-outline" (click)="action(true)">{{'CONFIRM' | translate}}</button>
     </div>
 
     <div class="view-message-container" *ngIf="notification?.notificationType == notificationType.SocialMessage">

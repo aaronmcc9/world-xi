@@ -21,6 +21,8 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+    position: relative;
+    top: -7.5px;
 }
 
 .view-message-container {
@@ -35,3 +37,19 @@
 p {
     font-size: 1.1rem;
 }
+
+.unread::before{
+    vertical-align: middle;
+    content: "\2022";
+    color: dodgerblue;
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+/* h5::before{
+    vertical-align: middle;
+    content: "\2022";
+    color: dodgerblue;
+    font-size: 2rem;
+    margin-right: 1rem;
+} */

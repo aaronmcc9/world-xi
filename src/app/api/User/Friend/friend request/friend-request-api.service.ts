@@ -1,8 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { ApiService } from "src/app/api/api.service";
 import { ServiceResponse } from "src/app/api/Common/service-response.dto";
+import { Notification } from "../../Notification/notification.dto";
 import { FriendRequest } from "./friend-request.dto";
+import { UpdateFriendRequest } from "./update-friend-request.dto";
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +14,7 @@ export class FriendRequestApiService{
 
     private readonly url = "https://localhost:7258/api/friendrequest/"
 
-    constructor(private http: HttpClient){
+    constructor(private http: HttpClient, private apiService: ApiService){
 
     }
 
@@ -19,7 +22,8 @@ export class FriendRequestApiService{
         return this.http.post<ServiceResponse<string>>(this.url, friendRequest);
     }
 
-    updateFriendRequest(friendRequest:FriendRequest): Observable<ServiceResponse<string>>{
-        return this.http.put<ServiceResponse<string>>(this.url, friendRequest);
+    updateFriendRequest(friendRequest:UpdateFriendRequest, notificationId:number): Observable<ServiceResponse<Notification>>{
+        return this.http.put<ServiceResponse<Notification>>(this.url, 
+            {params : this.apiService.constructParams({'friendRequest': friendRequest, 'notificationId': notificationId })});
     }
 }

@@ -5,7 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.User;
+using api.Dto.User.Friend.FriendRequest;
+using api.Dto.User.Notification;
 using api.Models;
+using api.Services.NotificationService;
 using AutoMapper;
 
 namespace api.Services.FriendRequestService
@@ -14,13 +17,16 @@ namespace api.Services.FriendRequestService
   {
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
     private IHttpContextAccessor _httpContextAccessor;
 
-    public FriendRequestService(DataContext dataContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+    public FriendRequestService(DataContext dataContext, IMapper mapper, IHttpContextAccessor httpContextAccessor,
+      INotificationService notificationService)
     {
       this._dataContext = dataContext;
       this._mapper = mapper;
       this._httpContextAccessor = httpContextAccessor;
+      this._notificationService = notificationService;
     }
 
     public async Task<ServiceResponse<string>> CreateFriendRequest(FriendRequestDto newFriendRequest)
@@ -41,6 +47,15 @@ namespace api.Services.FriendRequestService
         this._dataContext.Add(friendRequest);
         await this._dataContext.SaveChangesAsync();
 
+        var senderUsername = this._dataContext.User
+          .FirstOrDefault(u => u.Id == friendRequest.UserSentId)
+          ?.Username;
+
+        var notificationMessage = $"You received a friend request from {senderUsername}";
+        
+        await this._notificationService.SendNotification(friendRequest.UserSentId, friendRequest.UserReceivedId, 
+          notificationMessage, Models.NotificationType.FriendRequest, true);
+        
         response.Message = "Friend request sent!";
       }
       catch (Exception e)
@@ -52,17 +67,24 @@ namespace api.Services.FriendRequestService
       return response;
     }
 
-    public async Task<ServiceResponse<string>> UpdateFriendRequest(FriendRequestDto updateFriendRequest)
+    public async Task<ServiceResponse<NotificationDto>> UpdateFriendRequest(UpdateFriendRequestDto updateFriendRequest, int notificationId)
     {
-      var response = new ServiceResponse<string>();
+      var response = new ServiceResponse<NotificationDto>();
       try
       {
+
         if (updateFriendRequest.Status == Dto.User.Friend.FriendRequestStatus.Pending)
         {
           response.Success = false;
           response.Message = "Invalid Operation: Request must be accepted or rejected.";
           return response;
         }
+
+        var dbfriendRequest = this._dataContext.FriendRequest
+          .FirstOrDefault(fr => fr.UserReceivedId == updateFriendRequest.UserReceivedId
+            && fr.UserSentId == updateFriendRequest.UserSentId);
+          
+          dbfriendRequest.Status = (FriendRequestStatus)updateFriendRequest.Status;
 
         var userReceived = await this._dataContext.User
             .FindAsync(updateFriendRequest.UserReceivedId);
@@ -79,7 +101,7 @@ namespace api.Services.FriendRequestService
 
         var friendRequest = this._mapper.Map<FriendRequest>(updateFriendRequest);
 
-        if (updateFriendRequest.Status == Dto.User.Friend.FriendRequestStatus.Accepted)
+        if (dbfriendRequest.Status == FriendRequestStatus.Accepted)
         {
           Friendship friendship = new Friendship
           {
@@ -91,9 +113,10 @@ namespace api.Services.FriendRequestService
           };
 
           this._dataContext.Friendship.Add(friendship);
-          response.Message = $"You and {userReceived.Username} are now friends!";
+
+          response.Message = $"You and {userSent.Username} are now friends!";
         }
-        else if (updateFriendRequest.Status == Dto.User.Friend.FriendRequestStatus.Rejected)
+        else if (dbfriendRequest.Status == FriendRequestStatus.Rejected)
         {
           //   var friendship = this._dataContext.Friendship
           //       .FirstOrDefault(f => f.Users.Contains(userOne)
@@ -105,11 +128,13 @@ namespace api.Services.FriendRequestService
           //     response.Message = "Friend Request does not exist.";
           //     return response;
           //   }
-          response.Message = $"Friend request denied for {userReceived.Username}.";
+          response.Message = $"Friend request denied for {userSent.Username}.";
         }
 
         this._dataContext.FriendRequest.Update(friendRequest);
         await this._dataContext.SaveChangesAsync();
+
+        var notificationReponse = await this._notificationService.UpdateNotification(notificationId, true, false);
       }
       catch (Exception e)
       {

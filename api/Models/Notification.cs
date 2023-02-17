@@ -15,5 +15,7 @@ namespace api.Models
         public string Message { get; set; }
         public NotificationType NotificationType{ get; set; }
         public DateTime Sent { get; set; }
+        public bool Read { get; set; } = false;
+        public bool ActionRequired { get; set; } = false;
     }
 }

@@ -18,6 +18,8 @@ export class TeamListComponent implements OnChanges {
   @Input("friends") friends = false;
   teams: Team[] = [];
   isLoading = false;
+  readonly friendRequestStatus = FriendRequestStatus;
+
 
 
   constructor(private teamApiService: TeamApiService, private alertService: AlertService,
@@ -59,72 +61,42 @@ export class TeamListComponent implements OnChanges {
       status: FriendRequestStatus.Pending,
       userReceivedId: userRequestedId,
       userSentId: 0, //will get at backend
-      created: new Date()
+      created: new Date(new Date().toUTCString())
     };
 
 
     try {
 
-      this.updateTeamByUser(userRequestedId, true, false);
+      this.updateTeamByUser(userRequestedId, true, undefined);
 
       const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
 
       if (result.success) {
         this.alertService.toggleAlert(result.message, AlertType.Info)
-        this.updateTeamByUser(userRequestedId, false, true);
+        this.updateTeamByUser(userRequestedId, false, FriendRequestStatus.Pending);
 
       }
       else {
         this.alertService.toggleAlert(result.message, AlertType.Danger)
-        this.updateTeamByUser(userRequestedId, false, false);
+        this.updateTeamByUser(userRequestedId, false, undefined);
       }
 
     }
     catch (e) {
       this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
-      this.updateTeamByUser(userRequestedId, false, false);
+      this.updateTeamByUser(userRequestedId, false, undefined);
     }
 
   }
 
-  // async updateFriendRequestTest() {
-
-  //   let friendRequest: FriendRequest = {
-  //     id: 2,
-  //     status: FriendRequestStatus.Accepted,
-  //     userReceivedId: 2,
-  //     userSentId: 1, //will get at backend
-  //     created: new Date()
-  //   };
-
-
-  //   try {
-
-
-  //     const result = await lastValueFrom(this.friendRequestApiService.updateFriendRequest(friendRequest));
-
-  //     if (result.success) {
-  //       this.alertService.toggleAlert(result.message, AlertType.Info)
-  //     }
-  //     else {
-  //       this.alertService.toggleAlert(result.message, AlertType.Danger)
-  //     }
-
-  //   }
-  //   catch (e) {
-  //     this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
-  //   }
-
-  // }
-
-  private updateTeamByUser(userRequestedId: number, updateSendingStatus: boolean, updatePendingStatus: boolean) {
+  private updateTeamByUser(userRequestedId: number, updateSendingStatus: boolean, friendRequestStatus?: FriendRequestStatus) {
     this.teams.map((team: Team) => {
 
       if (team.user.id != userRequestedId)
         return team;
 
       team.friendRequestSending = updateSendingStatus;
-      team.friendRequestPending = updatePendingStatus;
+      team.friendRequestStatus = friendRequestStatus;
       return team;
     })
   }

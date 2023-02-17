@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Dto;
 using api.Dto.User;
+using api.Dto.User.Friend.FriendRequest;
+using api.Dto.User.Notification;
 using api.Services.FriendRequestService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,9 +28,9 @@ namespace api.Controllers
     }
 
     [HttpPut]
-    public async Task<ActionResult<ServiceResponse<string>>> UpdateFriendRequest(FriendRequestDto friendRequest)
+    public async Task<ActionResult<ServiceResponse<NotificationDto>>> UpdateFriendRequest(UpdateFriendRequestDto friendRequest, int notificationId)
     {
-      return Ok(await this._friendRequestService.UpdateFriendRequest(friendRequest));
+      return Ok(await this._friendRequestService.UpdateFriendRequest(friendRequest, notificationId));
     }
   }
 }

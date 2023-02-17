@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using api.Dto.Player;
 using api.Dto.Team.Formation;
 using api.Dto.User;
+using api.Dto.User.Friend;
 
 namespace api.Dto.Team
 {
@@ -39,7 +40,7 @@ namespace api.Dto.Team
     public int Draws { get; set; } = 0;
     
     [NotMapped]
-    [DataMember(Name = "friendRequestPending")]
-    public bool? FriendRequestPending { get; set; } = false;
+    [DataMember(Name = "friendRequestStatus")]
+    public FriendRequestStatus? FriendRequestStatus { get; set; } = null;
   }
 }

@@ -1,5 +1,12 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { lastValueFrom } from 'rxjs';
+import { AlertType } from '../alert/alert-type.enum';
+import { AlertService } from '../alert/alert.service';
+import { FriendRequestApiService } from '../api/User/Friend/friend request/friend-request-api.service';
+import { FriendRequestStatus } from '../api/User/Friend/friend request/friend-request-status.enum';
+import { FriendRequest } from '../api/User/Friend/friend request/friend-request.dto';
+import { UpdateFriendRequest } from '../api/User/Friend/friend request/update-friend-request.dto';
 import { NotificationType } from '../api/User/Notification/notification-type.enum';
 import { Notification } from '../api/User/Notification/notification.dto';
 
@@ -10,11 +17,12 @@ import { Notification } from '../api/User/Notification/notification.dto';
 })
 export class NotificationComponent implements OnChanges {
 
-  @Input() notification: Notification | null = null;
+  @Input() notification!: Notification;
   readonly notificationType = NotificationType;
   notificationHeader = "";
 
-  constructor(private translateService: TranslateService) { }
+  constructor(private translateService: TranslateService, private friendRequestApiService: FriendRequestApiService,
+    private alertService:AlertService) { }
 
   ngOnChanges(): void {
     if (!this.notification)
@@ -34,8 +42,53 @@ export class NotificationComponent implements OnChanges {
         this.notificationHeader = this.translateService.instant("SOCIAL_NOTIFICATION")
         break;
     }
-    if (this.notification.message.length < 69) {
+
+    //replace date string with local time
+    let dateStr = new Date(this.notification.sent).toString()
+    this.notification.sent = new Date(dateStr + 'UTC')
+
+    if (this.notification.message.length > 69) {
       this.notification.message = this.notification.message.substring(0, 68) + "...";
     }
   }
+
+  async action(accepted: boolean) {
+    if (this.notification.notificationType == NotificationType.FriendRequest) {
+
+      let friendRequest: UpdateFriendRequest = {
+        userReceivedId: this.notification.recipientId,
+        userSentId: this.notification.senderId!,
+        status: accepted ? FriendRequestStatus.Accepted : FriendRequestStatus.Rejected
+      };
+
+      this.updateFriendRequest(friendRequest);
+    }
+
+    if (this.notification.notificationType == NotificationType.GameRequest) {
+      this.updateGameRequest();
+    }
+  }
+
+  async updateFriendRequest(friendRequest: UpdateFriendRequest) {
+    try {
+      const result = await lastValueFrom(this.friendRequestApiService.updateFriendRequest(friendRequest, this.notification.id));
+
+      if(result.success){
+        this.notification = result.data;
+        this.notification.message = result.message;
+        this.alertService.toggleAlert(result.message, AlertType.Info);
+      }
+      else{
+        this.alertService.toggleAlert(result.message, AlertType.Danger);
+      }
+    }
+    catch (e) {
+      this.alertService.toggleAlert('ALERT_FRIEND_REQUEST_UPDATE_FAILURE', AlertType.Danger);
+    }
+  }
+
+  updateGameRequest() {
+
+  }
+
 }

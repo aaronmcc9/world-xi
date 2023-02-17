@@ -23,5 +23,11 @@ namespace api.Dto.User.Notification
     public NotificationType NotificationType { get; set; }
     [DataMember(Name = "sent")]
     public DateTime Sent { get; set; }
+    [DataMember(Name = "isRead")]
+    public bool Read { get; set; } = false;
+    [DataMember(Name = "actionRequired")]
+    public bool ActionRequired { get; set; } = false;
+
+
   }
 }

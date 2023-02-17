@@ -17,3 +17,16 @@ a{
     display: flex;
     justify-content: center;
 }
+
+.notification-empty{
+    text-align: center;
+    padding: 2rem 8rem;
+}
+
+.unread::before{
+    vertical-align: middle;
+    content: "\2022";
+    color: dodgerblue;
+    font-size: 2rem;
+    margin-right: .5rem;
+}

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Dto.User.Notification
 {
-  [DataContract]
+  [DataContract(Name ="Notification")]
   public class NotificationDto
   {
     [DataMember(Name = "id")]
@@ -23,7 +23,7 @@ namespace api.Dto.User.Notification
     public NotificationType NotificationType { get; set; }
     [DataMember(Name = "sent")]
     public DateTime Sent { get; set; }
-    [DataMember(Name = "isRead")]
+    [DataMember(Name = "read")]
     public bool Read { get; set; } = false;
     [DataMember(Name = "actionRequired")]
     public bool ActionRequired { get; set; } = false;

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using api;
 using api.Services.AuthService;
 using api.Services.FormationService;
@@ -35,6 +36,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = false
       };
     });
+builder.Services.AddControllersWithViews()
+                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+    
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ITeamService, TeamService>();

@@ -11,6 +11,6 @@ namespace api.Services.NotificationService
     {
         Task<ServiceResponse<List<NotificationDto>>> FetchUserNotifications(int? skip = null, int? take = null);
         Task<ServiceResponse<string>> SendNotification(int? senderId, int recipientId, string message, Models.NotificationType notificationType, bool actionRequired);
-        Task<ServiceResponse<NotificationDto>> UpdateNotification(int notificationId, bool? isRead, bool? actionRequired);
+        Task<ServiceResponse<NotificationDto>> UpdateNotification(int notificationId, string? message, bool? isRead, bool? actionRequired);
     }   
 }

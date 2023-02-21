@@ -52,10 +52,10 @@ namespace api.Services.FriendRequestService
           ?.Username;
 
         var notificationMessage = $"You received a friend request from {senderUsername}";
-        
-        await this._notificationService.SendNotification(friendRequest.UserSentId, friendRequest.UserReceivedId, 
+
+        await this._notificationService.SendNotification(friendRequest.UserSentId, friendRequest.UserReceivedId,
           notificationMessage, Models.NotificationType.FriendRequest, true);
-        
+
         response.Message = "Friend request sent!";
       }
       catch (Exception e)
@@ -83,8 +83,8 @@ namespace api.Services.FriendRequestService
         var dbfriendRequest = this._dataContext.FriendRequest
           .FirstOrDefault(fr => fr.UserReceivedId == updateFriendRequest.UserReceivedId
             && fr.UserSentId == updateFriendRequest.UserSentId);
-          
-          dbfriendRequest.Status = (FriendRequestStatus)updateFriendRequest.Status;
+
+        dbfriendRequest.Status = (FriendRequestStatus)updateFriendRequest.Status;
 
         var userReceived = await this._dataContext.User
             .FindAsync(updateFriendRequest.UserReceivedId);
@@ -134,7 +134,13 @@ namespace api.Services.FriendRequestService
         this._dataContext.FriendRequest.Update(friendRequest);
         await this._dataContext.SaveChangesAsync();
 
-        var notificationReponse = await this._notificationService.UpdateNotification(notificationId, true, false);
+        //onlt notify friend request sender if friend request is accepted
+        if (friendRequest.Status == FriendRequestStatus.Accepted)
+          await this._notificationService.SendNotification(null, userSent.Id, $"You and {userReceived.Username} are now friends!",
+           Models.NotificationType.System, false);
+
+        var notificationReponse = await this._notificationService.UpdateNotification(notificationId, response.Message, true, false);
+        response.Data = notificationReponse.Data;
       }
       catch (Exception e)
       {

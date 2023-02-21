@@ -19,4 +19,9 @@ export class NotificationApiService {
         return this.http.get<ServiceResponse<Notification[]>>(this.url,
             { params: this.apiService.constructParams({ 'skip': skip, 'take': take }) })
     }
+
+    updateNotification(notificationId: number, message?: string, isRead?: boolean, actionRequired?: boolean): Observable<ServiceResponse<Notification>> {
+        return this.http.put<ServiceResponse<Notification>>(this.url, {},
+            { params: this.apiService.constructParams({'notificationId': notificationId, 'message': message, 'isRead': isRead, 'actionRequired': actionRequired }) })
+    }
 }

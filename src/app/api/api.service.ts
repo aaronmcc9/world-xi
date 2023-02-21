@@ -16,6 +16,7 @@ export class ApiService {
 
             httpParams = httpParams.append(key, value)
         }
+        console.log(httpParams)
         return httpParams;
     }
 }

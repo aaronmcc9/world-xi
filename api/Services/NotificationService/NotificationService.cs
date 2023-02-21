@@ -43,7 +43,7 @@ namespace api.Services.NotificationService
           notificationsQuery = notificationsQuery.Take(take.Value);
 
         response.Data = await notificationsQuery
-            .OrderBy(n => n.Sent)
+            .OrderByDescending(n => n.Sent)
             .Select(n => _mapper.Map<NotificationDto>(n))
             .ToListAsync();
 
@@ -86,7 +86,7 @@ namespace api.Services.NotificationService
       return response;
     }
 
-    public async Task<ServiceResponse<NotificationDto>> UpdateNotification(int notificationId, bool? isRead, bool? actionRequired)
+    public async Task<ServiceResponse<NotificationDto>> UpdateNotification(int notificationId, string? message, bool? isRead, bool? actionRequired)
     {
       var response = new ServiceResponse<NotificationDto>();
 
@@ -100,6 +100,9 @@ namespace api.Services.NotificationService
           response.Message = "Error: Notification not found.";
           return response;
         }
+
+        if(!string.IsNullOrEmpty(message))
+          notification.Message = message;
 
         if (isRead.HasValue)
           notification.Read = isRead.Value;

@@ -1,18 +1,21 @@
 <div *ngIf="notification" class="c-design">
     <div class="n-header">
-        <h5 [ngClass]="{'unread': !notification.isRead}">{{notificationHeader}}</h5>
+        <h5 [ngClass]="{'unread': !notification.read}">{{notificationHeader}}</h5>
         <h6>{{notification.sent | date:'shortTime'}}</h6>
     </div>
 
     <p>{{notification.message}}</p>
 
-    <div class="action-container" *ngIf="notification.actionRequired && notification?.notificationType == notificationType.FriendRequest
+    <div class="action-container">
+        <button class="btn btn-outline" *ngIf="!notification.read" (click)="markAsRead()">{{'MARK_AS_READ' | translate}}</button>
+        <div *ngIf="notification.actionRequired && notification?.notificationType == notificationType.FriendRequest
             || notification?.notificationType == notificationType.GameRequest">
-        <button class="btn btn-outline" (click)="action(false)">{{'DENY' | translate}}</button>
-        <button class="btn btn-outline" (click)="action(true)">{{'CONFIRM' | translate}}</button>
-    </div>
+            <button class="btn btn-outline" (click)="action(false)">{{'DENY' | translate}}</button>
+            <button class="btn btn-outline" (click)="action(true)">{{'CONFIRM' | translate}}</button>
+        </div>
 
-    <div class="view-message-container" *ngIf="notification?.notificationType == notificationType.SocialMessage">
-        <button class="btn btn-link view-message ">{{'VIEW_MESSAGE' | translate}}</button>
+        <div class="view-message-container" *ngIf="notification?.notificationType == notificationType.SocialMessage">
+            <button class="btn btn-link view-message ">{{'VIEW_MESSAGE' | translate}}</button>
+        </div>
     </div>
 </div>

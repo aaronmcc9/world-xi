@@ -16,13 +16,19 @@ namespace api.Controllers
     private readonly INotificationService _notificationService;
     public NotificationController(INotificationService notificationService)
     {
-        this._notificationService = notificationService;
+      this._notificationService = notificationService;
     }
 
     [HttpGet]
     public async Task<ActionResult<ServiceResponse<List<NotificationDto>>>> FetchUserNotifications(int? skip = null, int? take = null)
     {
-        return Ok(await this._notificationService.FetchUserNotifications(skip, take));
+      return Ok(await this._notificationService.FetchUserNotifications(skip, take));
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<NotificationDto>>> UpdateNotification(int notificationId, string? message, bool? isRead, bool? actionRequired)
+    {
+      return Ok(await this._notificationService.UpdateNotification(notificationId, message, isRead, actionRequired));
     }
   }
 }

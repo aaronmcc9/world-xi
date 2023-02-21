@@ -23,7 +23,7 @@ export class FriendRequestApiService{
     }
 
     updateFriendRequest(friendRequest:UpdateFriendRequest, notificationId:number): Observable<ServiceResponse<Notification>>{
-        return this.http.put<ServiceResponse<Notification>>(this.url, 
-            {params : this.apiService.constructParams({'friendRequest': friendRequest, 'notificationId': notificationId })});
+        return this.http.put<ServiceResponse<Notification>>(this.url, friendRequest,
+            {params : this.apiService.constructParams({'notificationId': notificationId })});
     }
 }

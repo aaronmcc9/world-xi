@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { NotificationApiService } from 'api/Dto/User/Notification/notification-api.service';
 import { lastValueFrom } from 'rxjs';
 import { AlertType } from '../alert/alert-type.enum';
 import { AlertService } from '../alert/alert.service';
@@ -22,11 +23,13 @@ export class NotificationComponent implements OnChanges {
   notificationHeader = "";
 
   constructor(private translateService: TranslateService, private friendRequestApiService: FriendRequestApiService,
-    private alertService:AlertService) { }
+    private alertService: AlertService, private notificationApiService: NotificationApiService) { }
 
   ngOnChanges(): void {
     if (!this.notification)
       return;
+
+    console.log(this.notification);
 
     switch (this.notification.notificationType) {
       case NotificationType.FriendRequest:
@@ -73,17 +76,37 @@ export class NotificationComponent implements OnChanges {
     try {
       const result = await lastValueFrom(this.friendRequestApiService.updateFriendRequest(friendRequest, this.notification.id));
 
-      if(result.success){
+      if (result.success) {
         this.notification = result.data;
         this.notification.message = result.message;
         this.alertService.toggleAlert(result.message, AlertType.Info);
       }
-      else{
+      else {
         this.alertService.toggleAlert(result.message, AlertType.Danger);
       }
     }
     catch (e) {
       this.alertService.toggleAlert('ALERT_FRIEND_REQUEST_UPDATE_FAILURE', AlertType.Danger);
+    }
+  }
+
+  async markAsRead() {
+    if(!this.notification){
+      this.alertService.toggleAlert("ALERT_NOTIFICATION_NOT_FOUND", AlertType.Danger)
+    }
+    try{
+      const result = await lastValueFrom(this.notificationApiService.updateNotification(this.notification.id, undefined, true, undefined));
+
+      if(result.data){
+        this.notification = result.data;
+      }
+      else{
+        this.alertService.toggleAlert(result.message, AlertType.Danger)
+      }
+    }
+    catch(e){
+      console.log(e)
+      this.alertService.toggleAlert("ALERT_NOTIFICATION_UPDATE_FAILURE", AlertType.Danger)
     }
   }
 

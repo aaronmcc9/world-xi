@@ -61,7 +61,7 @@ export class HeaderComponent implements OnInit {
 
       if (result.success) {
         this.notifications = result.data;
-        this.hasUnreadNotifications = this.notifications.some(n => !n.isRead);
+        this.hasUnreadNotifications = this.notifications.some(n => !n.read);
       }
       else {
         this.alertService.toggleAlert(result.message, AlertType.Danger);

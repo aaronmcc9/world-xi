@@ -8,6 +8,7 @@ import { NotificationType } from 'src/app/api/User/Notification/notification-typ
 import { Notification } from 'src/app/api/User/Notification/notification.dto';
 import { AuthService } from 'src/app/auth/auth/auth.service';
 import { DropdownDirective } from 'src/app/common/dropdown.directive';
+import { NotificationService } from 'src/app/notification/notification.service';
 
 @Component({
   selector: 'app-header',
@@ -33,15 +34,20 @@ export class HeaderComponent implements OnInit {
 
 
   constructor(private authService: AuthService, private notificationApiService: NotificationApiService,
-    private alertService: AlertService) { }
+    private alertService: AlertService, private notificationService: NotificationService) { }
 
   async ngOnInit(): Promise<void> {
     this.userSub = this.authService.userLoggedIn.subscribe(async (isLoggedIn) => {
+
+      this.notificationService.notifications.subscribe((notifications: Notification[]) => {
+        this.notifications = notifications;
+        this.hasUnreadNotifications = this.notifications.some(n => !n.read);
+      })
+
       //dont keep fetching only if value chnages
       //if auth is false here, it will be true in a moment if this case is met
       if (!this.isAuthenticated && this.isAuthenticated != isLoggedIn) {
         await this.fetchUserNotifications()
-        console.log("hi")
       }
       this.isAuthenticated = isLoggedIn;
     });
@@ -60,8 +66,7 @@ export class HeaderComponent implements OnInit {
       const result = await lastValueFrom(this.notificationApiService.fetchNotifications(skip, take));
 
       if (result.success) {
-        this.notifications = result.data;
-        this.hasUnreadNotifications = this.notifications.some(n => !n.read);
+        this.notificationService.notifications.next(result.data);
       }
       else {
         this.alertService.toggleAlert(result.message, AlertType.Danger);

@@ -6,10 +6,10 @@ import { AlertType } from '../alert/alert-type.enum';
 import { AlertService } from '../alert/alert.service';
 import { FriendRequestApiService } from '../api/User/Friend/friend request/friend-request-api.service';
 import { FriendRequestStatus } from '../api/User/Friend/friend request/friend-request-status.enum';
-import { FriendRequest } from '../api/User/Friend/friend request/friend-request.dto';
 import { UpdateFriendRequest } from '../api/User/Friend/friend request/update-friend-request.dto';
 import { NotificationType } from '../api/User/Notification/notification-type.enum';
 import { Notification } from '../api/User/Notification/notification.dto';
+import { NotificationService } from './notification.service';
 
 @Component({
   selector: 'app-notification',
@@ -23,7 +23,8 @@ export class NotificationComponent implements OnChanges {
   notificationHeader = "";
 
   constructor(private translateService: TranslateService, private friendRequestApiService: FriendRequestApiService,
-    private alertService: AlertService, private notificationApiService: NotificationApiService) { }
+    private alertService: AlertService, private notificationApiService: NotificationApiService,
+    private notificationService: NotificationService) { }
 
   ngOnChanges(): void {
     if (!this.notification)
@@ -99,6 +100,7 @@ export class NotificationComponent implements OnChanges {
 
       if(result.data){
         this.notification = result.data;
+        this.notificationService.updateNotification(this.notification);
       }
       else{
         this.alertService.toggleAlert(result.message, AlertType.Danger)

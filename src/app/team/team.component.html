@@ -40,18 +40,9 @@
                 </div>
             </div>
         </mat-grid-tile>
-        <mat-grid-tile [ngClass]="cols > 1 ? '' :'bottom-tile-padding'">
+        <mat-grid-tile *ngIf="!viewMode" [ngClass]="cols > 1 ? '' :'bottom-tile-padding'">
             <div class="col-xs-9">
                 <app-team-list></app-team-list>
-
-                <!-- <div class="button-container">
-                    <button type="button" *ngIf="playersPage > 1" (click)="onPageLeft()">
-                        <fa-icon [icon]="leftNav"></fa-icon>
-                    </button>
-                    <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="canPageRight">
-                        <fa-icon [icon]="rightNav"></fa-icon>
-                    </button>
-                </div> -->
             </div>
         </mat-grid-tile>
     </mat-grid-list>

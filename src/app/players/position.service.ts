@@ -8,7 +8,6 @@ import { Position } from "./player-position";
 })
 export class PositionService {
 
-    teamListPosition = new BehaviorSubject<Position | null>(null);
     positionValues: number[] = [];
 
     //fetches string values of positions 

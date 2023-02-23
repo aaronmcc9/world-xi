@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { lastValueFrom, pairwise, Subscription, take } from 'rxjs';
@@ -23,9 +23,11 @@ interface FormValue {
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.css']
 })
-export class TeamComponent implements OnInit, OnDestroy {
+export class TeamComponent implements OnInit, OnChanges, OnDestroy {
 
   form!: FormGroup<FormValue>;
+  viewMode = true;
+  @Input() teamId = 0;
 
   formationsList: Formation[] = [];
   positions: number[] = [];
@@ -70,56 +72,7 @@ export class TeamComponent implements OnInit, OnDestroy {
 
   //#hooks
   async ngOnInit(): Promise<void> {
-
     await this.setFormationList();
-
-    let formationControl = new FormControl<number>(0,
-      {
-        nonNullable: true,
-        validators: [Validators.required]
-      })
-
-    formationControl.valueChanges
-      .pipe(pairwise())
-      .subscribe(([prev, next]: [number | null, number | null]) => {
-        try {
-          console.log(next);
-          if (next) {
-            let structure = this.formationsList.find((f: Formation) => f.id == next)?.structure
-
-            if (structure) {
-              let defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +structure![0]);
-              let midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +structure![1]);
-              let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +structure![2]);
-
-              // assign values after incase of formation error
-              this.teamService.teamDefence.next(defence);
-              this.teamService.teamMidfield.next(midfield);
-              this.teamService.teamForward.next(forwards);
-
-              this.teamService.canCancelChanges = true;
-            }
-          }
-        }
-        catch {
-          //reset incase formation change forbidden
-          if (prev)
-            this.setFormation(prev);
-        }
-      });
-
-    this.form = new FormGroup<FormValue>({
-      formation: formationControl
-    })
-
-    //deals with players list - will change
-    // this.playerSubscription = this.playerService.players
-    //   .pipe((take(1)))
-    //   .subscribe((players: Player[]) => {
-
-    //     this.playerCount = players.length;
-    //     this.setMaxPage();
-    //   });
 
     let colObs = this.columnService.columnObs;
 
@@ -137,51 +90,22 @@ export class TeamComponent implements OnInit, OnDestroy {
       this.belowMediumSize = screenSize == 'sm' || screenSize == 'xs';
     });
 
-    //These subscriptions refer to the players fielded on a team per position
-    this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
-      let newValue = cloneDeep(goalkeeper);
-
-      this.setCanSave(newValue.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
-      this.goalkeeper = newValue;
-    });
-
-    this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
-      let newValue = cloneDeep(defence);
-
-      this.setCanSave(newValue.filter(Boolean).length - this.defence.filter(Boolean).length);
-      this.defence = newValue;
-    });
-
-    this.midfieldSubscription = this.teamService.teamMidfield.subscribe((midfield) => {
-      let newValue = cloneDeep(midfield);
-
-      this.setCanSave(newValue.filter(Boolean).length - this.midfield.filter(Boolean).length);
-      this.midfield = newValue;
-    });
-
-    this.forwardsSubscription = this.teamService.teamForward.subscribe((forwards) => {
-      let newValue = cloneDeep(forwards);
-
-      this.setCanSave(newValue.filter(Boolean).length - this.forwards.filter(Boolean).length);
-      this.forwards = newValue;
-    });
-
-    await this.fetchPlayerTeam()
-
-    // if (this.playerCount === 0)
-    //   this.playerCount = this.playerService.players.getValue().length;
-
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
     })
 
     this.positions = this.positionService.fetchPositionValues();
+    await this.reset()
+  }
+
+  async ngOnChanges(): Promise<void> {
+    await this.reset()
   }
 
 
-  ngOnDestroy(): void {
-    this.Reset();
 
+
+  ngOnDestroy(): void {
     this.playerSubscription.unsubscribe();
     this.playerModificationSubscription.unsubscribe();
     this.goalkeeperSubscription.unsubscribe();
@@ -189,39 +113,6 @@ export class TeamComponent implements OnInit, OnDestroy {
     this.midfieldSubscription.unsubscribe();
     this.forwardsSubscription.unsubscribe();
   }
-
-  // onFilterPlayerList(value: string) {
-  //   //use + to convert to number value
-  //   this.positionService.teamListPosition.next(+value);
-  //   this.teamService.page.next(1); //reset page
-
-  //   // this.setMaxPage();
-  // }
-
-  // onPageLeft() {
-  //   if (this.playersPage > 1) {
-  //     this.teamService.page.next(this.playersPage - 1);
-  //     this.checkPageRight()
-  //   }
-  // }
-
-  // onPageRight() {
-  //   this.teamService.page.next(this.playersPage + 1);
-  //   this.checkPageRight();
-  // }
-
-  // setMaxPage() {
-  //   let currentPosition = this.positionService.teamListPosition.getValue();
-
-  //   this.maxPage = !currentPosition ? this.playerCount / 16 :
-  //     this.playerService.getPlayerCountByPosition(currentPosition) / 16;
-
-  //   this.checkPageRight();
-  // }
-
-  // private checkPageRight() {
-  //   this.canPageRight = this.maxPage <= this.playersPage;
-  // }
 
   private setFormation(formationId: number) {
     //let formationValue = this.formationsList.find((f: Formation) => f.id === formationId)?.structure
@@ -264,14 +155,85 @@ export class TeamComponent implements OnInit, OnDestroy {
   }
 
   // Resets values
-  private Reset() {
-    // this.canPageRight = false;
-    // this.maxPage = 1;
-    // this.playersPage = 1;
-    this.form?.reset();
+  private async reset() {
 
-    this.teamService.page.next(1);
-    this.positionService.teamListPosition.next(null);
+    if (!this.viewMode) {
+      this.form?.reset();
+      this.teamService.page.next(1);
+    }
+
+    this.viewMode = this.teamId ?
+      true : false;
+
+    let formationControl = new FormControl<number>(0,
+      {
+        nonNullable: true,
+        validators: [Validators.required]
+      });
+
+    formationControl.valueChanges
+      .pipe(pairwise())
+      .subscribe(([prev, next]: [number | null, number | null]) => {
+        try {
+          console.log(next);
+          if (next) {
+            let structure = this.formationsList.find((f: Formation) => f.id == next)?.structure
+
+            if (structure) {
+              let defence = this.populatePlayerArray(this.teamService.teamDefence.getValue(), +structure![0]);
+              let midfield = this.populatePlayerArray(this.teamService.teamMidfield.getValue(), +structure![1]);
+              let forwards = this.populatePlayerArray(this.teamService.teamForward.getValue(), +structure![2]);
+
+              // assign values after incase of formation error
+              this.teamService.teamDefence.next(defence);
+              this.teamService.teamMidfield.next(midfield);
+              this.teamService.teamForward.next(forwards);
+
+              this.teamService.canCancelChanges = true;
+            }
+          }
+        }
+        catch {
+          //reset incase formation change forbidden
+          if (prev)
+            this.setFormation(prev);
+        }
+      });
+
+    this.form = new FormGroup<FormValue>({
+      formation: formationControl
+    })
+
+    //These subscriptions refer to the players fielded on a team per position
+    this.goalkeeperSubscription = this.teamService.teamGoalkeeper.subscribe((goalkeeper) => {
+      let newValue = cloneDeep(goalkeeper);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.goalkeeper.filter(Boolean).length);
+      this.goalkeeper = newValue;
+    });
+
+    this.defenceSubscription = this.teamService.teamDefence.subscribe((defence) => {
+      let newValue = cloneDeep(defence);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.defence.filter(Boolean).length);
+      this.defence = newValue;
+    });
+
+    this.midfieldSubscription = this.teamService.teamMidfield.subscribe((midfield) => {
+      let newValue = cloneDeep(midfield);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.midfield.filter(Boolean).length);
+      this.midfield = newValue;
+    });
+
+    this.forwardsSubscription = this.teamService.teamForward.subscribe((forwards) => {
+      let newValue = cloneDeep(forwards);
+
+      this.setCanSave(newValue.filter(Boolean).length - this.forwards.filter(Boolean).length);
+      this.forwards = newValue;
+    });
+
+    await this.fetchPlayerTeam()
   }
 
   async save() {
@@ -340,8 +302,8 @@ export class TeamComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.formationsList = await this.teamService
       .fetchFormationList();
-    
-      this.isLoading = false;
+
+    this.isLoading = false;
   }
 
   private async modifyTeam(team: ModifyTeamDto) {
@@ -352,7 +314,7 @@ export class TeamComponent implements OnInit, OnDestroy {
         await lastValueFrom(this.teamApiService.updateTeam(team)) :
         await lastValueFrom(this.teamApiService.createTeam(team));
 
-    console.log("Res", result);
+      console.log("Res", result);
 
       if (result.data) {
         this.teamService.savedTeam = result.data;

@@ -1,0 +1,49 @@
+<div class="container c-design">
+    <div *ngIf="team">
+        <div class="row">
+            <h2 class="text-center">{{team.teamName}}</h2>
+
+            <div class="col-md-9">
+                <h3>{{'USERNAME' | translate}}: {{team.user.username}}</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'ESTABLISHED' | translate}}: {{team.established | date}}</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'WINS' | translate}}: {{team.wins}}</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'LOSSES' | translate}}: {{team.losses}}</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'DRAWS' | translate}}: {{team.draws}}</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'TOP_SCORER' | translate}}: N/A</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'MOST_VICTORIOUS' | translate}}: N/A</h3>
+            </div>
+
+            <div class="col-md-9">
+                <h3>{{'BOGEY_TEAM' | translate}}: N/A</h3>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <div *ngIf="!team.friendRequestSending && !team.friendRequestStatus" class="btn btn-success"
+                (click)="addFriend()">
+                {{'ADD_FRIEND' | translate}}
+            </div>
+            <div class="btn btn-primary">
+                {{'REQUEST_MATCH' | translate}}
+            </div>
+        </div>
+    </div>
+</div>

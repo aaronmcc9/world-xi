@@ -40,8 +40,10 @@ export class TeamApiService {
     * 
     * @returns The users saved team should the have one
     */
-    fetchUserTeam(): Observable<ServiceResponse<Team>> {
-        return this.http.get<ServiceResponse<Team>>(this.url);
+    fetchUserTeam(id?: number): Observable<ServiceResponse<Team>> {
+        let key = id ? id : ""; 
+            console.log("hi", id);
+        return this.http.get<ServiceResponse<Team>>(this.url + key);
     }
 
     /**
@@ -85,8 +87,8 @@ export class TeamApiService {
         return this.http.put<ServiceResponse<Settings>>(this.url + "settings", settings);
     }
 
-    fetchAllTeams(friends: boolean, filterText? : string): Observable<ServiceResponse<Team[]>> {
+    fetchAllTeams(friends: boolean, filterText?: string): Observable<ServiceResponse<Team[]>> {
         return this.http.get<ServiceResponse<Team[]>>(this.url + "all",
-            { params: this.apiService.constructParams({ friends: friends, filterText: filterText })})
+            { params: this.apiService.constructParams({ friends: friends, filterText: filterText }) })
     }
 }

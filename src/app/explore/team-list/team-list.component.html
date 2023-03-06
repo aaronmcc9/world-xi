@@ -11,7 +11,7 @@
     <tbody>
         <tr *ngFor="let team of teams">
             <td>{{team.user.username}}</td>
-            <td><a class="pointer">{{team.teamName}}</a></td>
+            <td><a class="pointer" routerLink="../team/{{team.user.id}}" >{{team.teamName}}</a></td>
             <td>
                 <span class="ratio">W</span>-{{team.wins}}/
                 <span class="ratio">L</span>-{{team.losses}}/

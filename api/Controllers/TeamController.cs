@@ -20,10 +20,10 @@ namespace api.Controllers
       this._teamService = teamService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<ServiceResponse<TeamDto>>> FetchTeam()
+    [HttpGet("{id?}")]
+    public async Task<ActionResult<ServiceResponse<TeamDto>>> FetchTeam(int? Id)
     {
-      return Ok(await this._teamService.FetchTeam());
+      return Ok(await this._teamService.FetchTeam(Id));
     }
 
     [HttpGet("all")]

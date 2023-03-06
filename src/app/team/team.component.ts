@@ -5,7 +5,7 @@ import { lastValueFrom, pairwise, Subscription, take } from 'rxjs';
 import { TeamService } from './team.service';
 import { Player } from '../players/player.model';
 import { AlertType } from '../alert/alert-type.enum';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isNumber } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
@@ -13,6 +13,7 @@ import { PlayerService } from '../players/player.service';
 import { TeamApiService } from '../api/team/team-api.service';
 import { Formation } from '../api/team/formation/formation.model';
 import { ModifyTeamDto } from '../api/team/modify-team.dto';
+import { ActivatedRoute } from '@angular/router';
 
 interface FormValue {
   formation: FormControl<number>,
@@ -27,7 +28,7 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
 
   form!: FormGroup<FormValue>;
   viewMode = true;
-  @Input() teamId = 0;
+  @Input() teamId?: number;
 
   formationsList: Formation[] = [];
   positions: number[] = [];
@@ -68,7 +69,7 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
     public teamService: TeamService,
     private alertService: AlertService, private translateService: TranslateService,
     private columnService: ColumnService,
-    private playerService: PlayerService) { }
+    private route: ActivatedRoute) { }
 
   //#hooks
   async ngOnInit(): Promise<void> {
@@ -92,6 +93,13 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
 
     this.playerModificationSubscription = this.teamService.playerToModify.subscribe((player) => {
       this.playerToModify = player;
+    })
+
+    this.route.params.subscribe((params) => {
+      let id = +params['id'];
+      if (id) {
+        this.teamId = id;
+      }
     })
 
     this.positions = this.positionService.fetchPositionValues();
@@ -156,14 +164,12 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
 
   // Resets values
   private async reset() {
+    this.viewMode = this.teamId ?
+      true : false;
 
     if (!this.viewMode) {
       this.form?.reset();
-      this.teamService.page.next(1);
     }
-
-    this.viewMode = this.teamId ?
-      true : false;
 
     let formationControl = new FormControl<number>(0,
       {
@@ -267,16 +273,15 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
     this.isLoading = true;
 
     try {
-      const result = await lastValueFrom(this.teamApiService.fetchUserTeam());
+      const result = await lastValueFrom(this.teamApiService.fetchUserTeam(this.teamId));
       this.isLoading = false;
 
       if (result.success) {
         if (result.data.id > 0) {
 
-          this.teamService.savedTeam = cloneDeep(result.data);
+          this.teamService.savedTeam.next(result.data);
           this.teamService.setPlayersByPosition(result.data.players);
           this.setFormation(result.data['formation'].id);
-          // this.playerCount = result.data['players'].length;
         }
         else {
           //no saved user team
@@ -308,7 +313,6 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
 
   private async modifyTeam(team: ModifyTeamDto) {
     this.isLoading = true;
-    console.log("Hi", team);
     try {
       const result = team.id > 0 ?
         await lastValueFrom(this.teamApiService.updateTeam(team)) :
@@ -317,7 +321,7 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
       console.log("Res", result);
 
       if (result.data) {
-        this.teamService.savedTeam = result.data;
+        this.teamService.savedTeam.next(result.data);
         this.canSave = false;
         this.teamService.canCancelChanges = false;
         this.alertService.toggleAlert("ALERT_TEAM_UPDATED", AlertType.Success);
@@ -354,7 +358,7 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return {
-      id: this.teamService.savedTeam.id,
+      id: this.teamService.savedTeam.getValue()?.id ?? 0,
       formationId: formValue.formation,
       playerIds: players.map((p: Player | undefined) => p!.id)
     } as ModifyTeamDto;

@@ -15,7 +15,6 @@ import { PlayerSelectionListComponent } from "./player-selection-list.component"
     ],
     exports: [
         PlayerSelectionListComponent,
-        // PlayersInPositionModule
     ]
 })
 export class PlayerSelectionListModule {

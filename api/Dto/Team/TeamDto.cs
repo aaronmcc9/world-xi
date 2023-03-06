@@ -27,6 +27,9 @@ namespace api.Dto.Team
     [DataMember(Name = "results")]
     public List<ResultDto> Results { get; set; } = new List<ResultDto>();
 
+    [DataMember(Name ="established")]
+    public DateTime Established { get; set; }
+
     [NotMapped]
     [DataMember(Name = "wins")]
     public int Wins { get; set; } = 0;

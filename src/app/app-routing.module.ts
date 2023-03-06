@@ -8,7 +8,7 @@ import { TeamComponent } from './team/team.component';
 
 const routes: Routes = [
   {path:'', redirectTo:'/players', pathMatch:"full"},
-  {path:'team', component:TeamComponent, canActivate: [AuthGuard]},
+  {path:'team/:id', component:TeamComponent, canActivate: [AuthGuard], },
   {path:'explore', component:ExploreComponent, canActivate: [AuthGuard]},
   {path:'auth', component:AuthComponent},
   {path:'settings', component:SettingsComponent,canActivate: [AuthGuard]},

@@ -72,12 +72,12 @@ export class TeamListComponent implements OnChanges {
       const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
 
       if (result.success) {
-        this.alertService.toggleAlert(result.message, AlertType.Info)
+        this.alertService.toggleAlert("", AlertType.Info, result.message,)
         this.updateTeamByUser(userRequestedId, false, FriendRequestStatus.Pending);
 
       }
       else {
-        this.alertService.toggleAlert(result.message, AlertType.Danger)
+        this.alertService.toggleAlert("", AlertType.Danger, result.message)
         this.updateTeamByUser(userRequestedId, false, undefined);
       }
 

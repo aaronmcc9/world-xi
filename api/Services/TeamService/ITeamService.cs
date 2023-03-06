@@ -10,7 +10,7 @@ namespace api.Services.TeamService
 {
   public interface ITeamService
   {
-    Task<ServiceResponse<TeamDto>> FetchTeam();
+    Task<ServiceResponse<TeamDto>> FetchTeam(int? Id);
     Task<ServiceResponse<List<TeamDto>>> FetchAllTeams(Boolean friends = true, string? filterText = null);
     Task<ServiceResponse<TeamDto>> InsertTeam(ModifyTeamDto team);
 

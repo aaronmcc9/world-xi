@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
         this.notificationService.notifications.next(result.data);
       }
       else {
-        this.alertService.toggleAlert(result.message, AlertType.Danger);
+        this.alertService.toggleAlert("", AlertType.Danger, result.message);
       }
     }
     catch (e) {

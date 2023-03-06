@@ -23,14 +23,14 @@ namespace api.Services.TeamService
       this._httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<ServiceResponse<TeamDto>> FetchTeam()
+    public async Task<ServiceResponse<TeamDto>> FetchTeam(int? Id)
     {
       var response = new ServiceResponse<TeamDto>();
       try
       {
-        var userId = this.GetUserId();
+        var teamUserId = Id ?? this.GetUserId();
 
-        if (!await this.CheckTeamExists(userId))
+        if (!await this.CheckTeamExists(teamUserId))
         {
           //true to signal no error has occurred
           response.Success = true;
@@ -44,7 +44,7 @@ namespace api.Services.TeamService
           .Include(u => u.User)
           .Include(p => p.Players)
           .Include(f => f.Formation)
-          .FirstOrDefaultAsync(t => t.User.Id == userId);
+          .FirstOrDefaultAsync(t => t.User.Id == teamUserId);
 
         if (savedTeam == null)
         {

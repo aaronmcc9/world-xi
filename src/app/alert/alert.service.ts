@@ -18,17 +18,20 @@ export class AlertService {
         if (messageKey) {
             this.message = messageParams ? this.translateService.instant(messageKey, messageParams) :
              this.translateService.instant(messageKey);
+        }
 
-            if (errorMessage)
+        if (errorMessage)
                 this.message = this.message + ' ' + errorMessage;
+
+
+        if(this.message){
             //closes alert
             setTimeout(() => {
                 this.toggleAlert('', AlertType.None);
             }, 7000)
-        }
 
-
-        this.alertSubscription.next(new Alert(this.message, alertType));
-        this.message = '';
+            this.alertSubscription.next(new Alert(this.message, alertType));
+            this.message = '';
+        }      
     }
 }

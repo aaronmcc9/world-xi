@@ -9,6 +9,7 @@ export class Team {
     constructor(public id: number, public teamName: string,
         public user: User,
         public players: Player[], public formation: Formation,
+        public established: Date,
         public results: Result[], public wins: number,
         public losses: number, public draws: number,
         public friendRequestStatus?: FriendRequestStatus,

@@ -40,7 +40,8 @@ import { NotificationModule } from "./notification/notification.module";
         TranslateModule,
         FontAwesomeModule,
         DropdownDirective,
-        NotificationComponent
+        NotificationComponent,
+        RouterModule
         
     ]
 })

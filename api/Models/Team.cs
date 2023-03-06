@@ -15,6 +15,7 @@ namespace api.Models
     public User User { get; set; }
     public int UserId { get; set; }
     public bool isDiscoverable { get; set; }
+    public DateTime Established { get; set; }
     public List<Result> Results { get; set; }
 
   }

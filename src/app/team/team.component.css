@@ -70,7 +70,7 @@
 }
 
 .mat-grid-list .mat-grid-tile {
-    padding-top: 80rem !important;
+    /* padding-top: 80rem !important; */
     overflow: visible;
 }
 
@@ -108,4 +108,10 @@
 
 .mat-grid-list .mat-grid-tile {
     padding-top: 80rem !important;
+}
+
+.team-info-sm{
+    display: flex;
+    justify-content: center;
+    margin: 5rem;
 }

@@ -7,6 +7,7 @@ import { ModifyPlayerModule } from "../players/modify-player/modify-player.modul
 import { FormationRowModule } from "./formation-row/formation-row.module";
 import { ModifySelectionModule } from "./modify-selection/modify-selection.module";
 import { RevertTeamModule } from "./revert-team/revert-team.module";
+import { TeamInfoModule } from "./team-info/team-info.module";
 import { PlayerSelectionListModule } from "./team-list/player-selection-list.module";
 import { TeamComponent } from "./team.component";
 
@@ -22,13 +23,14 @@ import { TeamComponent } from "./team.component";
         ModifySelectionModule,
         RevertTeamModule,
         PlayerSelectionListModule,
+        TeamInfoModule
     ],
     exports: [
         TeamComponent,
         FormationRowModule,
         ModifySelectionModule,
         RevertTeamModule,
-        PlayerSelectionListModule
+        PlayerSelectionListModule,
     ]
 })
 export class TeamModule {

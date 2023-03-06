@@ -80,10 +80,10 @@ export class NotificationComponent implements OnChanges {
       if (result.success) {
         this.notification = result.data;
         this.notification.message = result.message;
-        this.alertService.toggleAlert(result.message, AlertType.Info);
+        this.alertService.toggleAlert("", AlertType.Info, result.message);
       }
       else {
-        this.alertService.toggleAlert(result.message, AlertType.Danger);
+        this.alertService.toggleAlert("", AlertType.Danger, result.message);
       }
     }
     catch (e) {
@@ -103,7 +103,7 @@ export class NotificationComponent implements OnChanges {
         this.notificationService.updateNotification(this.notification);
       }
       else{
-        this.alertService.toggleAlert(result.message, AlertType.Danger)
+        this.alertService.toggleAlert("", AlertType.Danger, result.message)
       }
     }
     catch(e){

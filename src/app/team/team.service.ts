@@ -21,7 +21,6 @@ export class TeamService {
   constructor(private alertService: AlertService,
     private formationApiService: FormationApiService) { }
 
-  page = new BehaviorSubject<number>(1);
   playerToModify = new BehaviorSubject<Player | null>(null);
 
   teamGoalkeeper = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(1));
@@ -37,7 +36,7 @@ export class TeamService {
     friends:[]
   }
 
-  savedTeam = new Team(0, '', this.emptyUser, [], new Formation(0, "",), [], 0, 0, 0);
+  savedTeam = new BehaviorSubject<Team | null>(null);
   canCancelChanges = false;
   formations: Formation[] = [];
 
@@ -58,75 +57,6 @@ export class TeamService {
     return [];
   }
 
-  /**
-   * 
-   * @param team includes selected players and set formation
-   * @returns Saves team for specific user and returns errors if any
-   */
-  //   async createTeam(team: Team) {
-  //     return this.http.post<ServiceResponse<Team>>(this.url, team)
-  //       .pipe(catchError(((errorRes: ServiceResponse<Team>) => throwError(errorRes))),
-  //         tap((res: ServiceResponse<Team>) => {
-  //           this.savedTeam = this.savedTeam = cloneDeep(res.data);
-  //           this.canCancelChanges = false;
-  //         }));
-  //   }
-
-  //   /**
-  //    * 
-  //    * @param team includes selected players and set formation
-  //    * @returns Saves team for specific user and returns errors if any
-  //    */
-  //   updateTeam(team: Team) {
-
-  //     return this.http.put<ServiceResponse<Team>>(this.url, team)
-  //       .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes)),
-  //         tap((res: ServiceResponse<Team>) => {
-  //           this.savedTeam = cloneDeep(res.data);
-  //           this.canCancelChanges = false;
-  //         }));
-  //   }
-
-
-
-  //   /**
-  //  * 
-  //  * @returns The users saved team should the have one
-  //  */
-  //   fetchUserTeam() {
-
-  //     return this.http.get<ServiceResponse<Team>>(this.url)
-  //       .pipe(catchError((errorRes: ServiceResponse<Team>) => throwError(errorRes.message)),
-  //         tap((res: ServiceResponse<Team>) => {
-  //           console.log(res.data);
-  //           //to keep record before user makes changes
-  //           // this.savedTeam = cloneDeep(res.data);
-  //           this.setPlayersByPosition(res.data.players);
-  //         }
-  //         ));
-  //   }
-
-  //   /**
-  //   * 
-  //   * @returns The users saved team should the have one
-  //   */
-  //   deleteTeam() {
-  //     this.http.delete(this.url)
-  //       .subscribe({
-  //         next: () => {
-  //           let formation = this.savedTeam['formation'];
-
-  //           formation ?
-  //             this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation[0]), new Array<Player>(+formation[1]), new Array<Player>(+formation[2])) :
-  //             this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
-
-  //           this.alertService.toggleAlert('ALERT_TEAM_DELETE_SUCCESS', AlertType.Success);
-  //         },
-  //         error: (error: HttpErrorResponse) => {
-  //           this.alertService.toggleAlert('ALERT_TEAM_DELETE_FAILURE', AlertType.Danger, error.message);
-  //         }
-  //       });
-  //   }
 
   /**
    * 
@@ -154,68 +84,4 @@ export class TeamService {
   getDefaultFormation(): number {
     return this.formations.find((f: Formation) => f.structure == "442")?.id ?? 0;
   }
-
-  //  saveUserTeam(team: Team) {
-
-  //   let userId = this.authService.getCurrentUserId();
-
-  //   if (userId == undefined)
-  //     throwError("User is login out. Please logout to peform this operation")
-
-  //   return this.http.put<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json', team)
-  //     .pipe(catchError((error) => throwError(error)),
-  //       tap((res) => {
-  //         this.savedTeam = this.savedTeam = cloneDeep(res);
-  //         this.canCancelChanges = false;
-  //       }));
-  // }
-  // fetchUserTeam() {
-
-  //   let userId = this.authService.getCurrentUserId();
-
-  //   if (userId == undefined)
-  //     throwError("User is logged out. Please login to peform this operation");
-
-  //   return this.http.get<Team>('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json')
-  //     .pipe(catchError((error: HttpErrorResponse) => throwError(error)),
-  //       tap((res: Team) => {
-  //         if (res) {
-  //           let players = <Player[]>Object.values(res['players']);
-
-  //           if (players && players.length === 11) {
-  //             //to keep record before user makes changes
-  //             this.savedTeam = cloneDeep(res);
-  //             this.setPlayersByPosition(players);
-  //           }
-  //         }
-  //         else {
-  //           //we do not have the players so create a an array of undefined players to populate UI
-  //           this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
-  //         }
-  //       }));
-  // }
-
-  // deleteTeam() {
-
-  //   let userId = this.authService.getCurrentUserId();
-
-  //   if (userId == undefined)
-  //     throwError("User is logged out. Please login to peform this operation");
-
-  //   this.http.delete('https://world-xi-app-default-rtdb.firebaseio.com/teams/' + userId + '.json',)
-  //     .subscribe({
-  //       next: () => {
-  //         let formation = this.savedTeam['formation'];
-
-  //         formation ?
-  //           this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation[0]), new Array<Player>(+formation[1]), new Array<Player>(+formation[2])) :
-  //           this.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
-
-  //         this.alertService.toggleAlert('ALERT_TEAM_DELETE_SUCCESS', AlertType.Success);
-  //       },
-  //       error: (error: HttpErrorResponse) => {
-  //         this.alertService.toggleAlert('ALERT_TEAM_DELETE_FAILURE', AlertType.Danger, error.message);
-  //       }
-  //     });
-  // }
 }

@@ -18,9 +18,12 @@ export class RevertTeamComponent implements OnInit {
 
   @Input('action') action: string = '';
   @Output() closeModal = new EventEmitter<string>();
+  
+  team: Team | null = null;
   title = '';
   body = '';
   error = ''
+  
 
   constructor(private teamService: TeamService,
     private teamApiService: TeamApiService,
@@ -28,6 +31,10 @@ export class RevertTeamComponent implements OnInit {
     private translateService: TranslateService) { }
 
   ngOnInit(): void {
+
+    this.teamService.savedTeam.subscribe((team) => {
+      this.team = team;
+    })
 
     if (this.action === this.translateService.instant("CANCEL")) {
       this.title = this.translateService.instant("CANCEL_CHANGES");
@@ -40,31 +47,28 @@ export class RevertTeamComponent implements OnInit {
   }
 
   confirm() {
-    let savedTeam = this.teamService.savedTeam.id > 0 ?
-      cloneDeep(this.teamService.savedTeam) : null;
-
     this.action == this.translateService.instant("CANCEL") ?
-      this.cancelChanges(savedTeam) :
-      this.reset(savedTeam);
+      this.cancelChanges() :
+      this.reset();
   }
 
-  cancelChanges(savedTeam: Team | null) {
+  cancelChanges() {
 
     //if a saved team doesn't exist, reset everyone
-    if (!savedTeam)
-      this.reset(null);
+    if (!this.team)
+      this.reset();
     else {
-      this.teamService.setPlayersByPosition(savedTeam['players']);
+      this.teamService.setPlayersByPosition(this.team.players);
       this.close('', false);
     }
   }
 
-  async reset(savedTeam: Team | null) {
+  async reset() {
     let formation = this.teamService.getDefaultFormation()
 
     // will be false if sent here form cancelChanges
-    if (savedTeam) {
-      formation = savedTeam['formation'].id;
+    if (this.team) {
+      formation = this.team.formation.id;
 
       try {
         const result = await lastValueFrom(this.teamApiService.deleteTeam());

@@ -1,5 +1,5 @@
 <div class="container c-design">
-    <div *ngIf="team">
+    <div class="d-flex" *ngIf="team">
         <div class="row">
             <h2 class="text-center">{{team.teamName}}</h2>
 
@@ -36,13 +36,16 @@
             </div>
         </div>
 
-        <div class="button-container">
-            <div *ngIf="!team.friendRequestSending && !team.friendRequestStatus" class="btn btn-success"
-                (click)="addFriend()">
-                {{'ADD_FRIEND' | translate}}
-            </div>
-            <div class="btn btn-primary">
-                {{'REQUEST_MATCH' | translate}}
+        <div class="row">
+            <div class="button-container">
+                <button *ngIf="!team.friendRequestSending && !team.friendRequestStatus" class="btn btn-success"
+                    (click)="addFriend()">
+                    {{'ADD_FRIEND' | translate}}
+                </button>
+                <app-loading-spinner [forWholeScreen]="false" *ngIf="team.friendRequestSending"></app-loading-spinner>
+                <button class="btn btn-primary">
+                    {{'REQUEST_MATCH' | translate}}
+                </button>
             </div>
         </div>
     </div>

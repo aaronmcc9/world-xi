@@ -16,7 +16,7 @@ import { TeamService } from '../team.service';
 export class TeamInfoComponent implements OnInit {
 
   team: Team | null = null
-  constructor(private teamService: TeamService, private alertService:AlertService,
+  constructor(private teamService: TeamService, private alertService: AlertService,
     private friendRequestApiService: FriendRequestApiService) { }
 
   ngOnInit(): void {
@@ -27,30 +27,30 @@ export class TeamInfoComponent implements OnInit {
 
 
   async addFriend() {
-    if (this.team)
+    if (!this.team)
       return;
 
     let friendRequest: FriendRequest = {
       id: 0,
       status: FriendRequestStatus.Pending,
-      userReceivedId: this.team!.id,
+      userReceivedId: this.team!.user.id,
       userSentId: 0, //will get at backend
       created: new Date(new Date().toUTCString())
     };
 
 
     try {
-
+      this.team!.friendRequestSending = true;
       const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
 
       if (result.success) {
         this.alertService.toggleAlert("", AlertType.Info, result.message)
-
+        this.team!.friendRequestStatus = FriendRequestStatus.Pending
+        this.team!.friendRequestSending = false;
       }
       else {
         this.alertFriendRequestFailure("", result.message);
       }
-
     }
     catch (e) {
       this.alertFriendRequestFailure("ALERT_FRIEND_REQUEST_FAILURE")
@@ -58,7 +58,8 @@ export class TeamInfoComponent implements OnInit {
     }
   }
 
-  alertFriendRequestFailure(key: string, error?:string){
+  alertFriendRequestFailure(key: string, error?: string) {
+    this.team!.friendRequestSending = false;
     this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
   }
 }

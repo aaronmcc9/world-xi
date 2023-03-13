@@ -24,11 +24,11 @@ interface FormValue {
   templateUrl: './team.component.html',
   styleUrls: ['./team.component.css']
 })
-export class TeamComponent implements OnInit, OnChanges, OnDestroy {
+export class TeamComponent implements OnInit, OnDestroy {
 
   form!: FormGroup<FormValue>;
   viewMode = true;
-  @Input() teamId?: number;
+  teamId?: number;
 
   formationsList: Formation[] = [];
   positions: number[] = [];
@@ -95,23 +95,20 @@ export class TeamComponent implements OnInit, OnChanges, OnDestroy {
       this.playerToModify = player;
     })
 
+    let isInit = true;
     this.route.params.subscribe((params) => {
       let id = +params['id'];
-      if (id) {
-        this.teamId = id;
-      }
+      this.teamId = id;
+
+      let viewMode = id > 0;
+      if (this.viewMode != viewMode && !isInit)
+        this.reset();
     })
 
     this.positions = this.positionService.fetchPositionValues();
+    isInit = false;
     await this.reset()
   }
-
-  async ngOnChanges(): Promise<void> {
-    await this.reset()
-  }
-
-
-
 
   ngOnDestroy(): void {
     this.playerSubscription.unsubscribe();

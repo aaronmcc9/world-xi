@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using api.Dto;
+using api.Dto.Player;
 using api.Dto.Team;
+using api.Dto.Team.Formation;
 using api.Dto.Team.Settings;
 using api.Dto.User;
 using api.Models;
@@ -28,7 +30,10 @@ namespace api.Services.TeamService
       var response = new ServiceResponse<TeamDto>();
       try
       {
-        var teamUserId = Id ?? this.GetUserId();
+        var userId = this.GetUserId();
+        //current team being viewed
+        var teamUserId = Id ?? userId; 
+        
 
         if (!await this.CheckTeamExists(teamUserId))
         {
@@ -44,7 +49,37 @@ namespace api.Services.TeamService
           .Include(u => u.User)
           .Include(p => p.Players)
           .Include(f => f.Formation)
-          .FirstOrDefaultAsync(t => t.User.Id == teamUserId);
+          .Select(t => new TeamDto
+          {
+            Id = t.Id,
+            TeamName = t.TeamName,
+            Formation = new FormationDto
+            {
+              Id = t.Formation.Id,
+              Structure = t.Formation.Structure
+            },
+            Players = t.Players.Select(p => this._mapper.Map<PlayerDto>(p)),
+            User = new UserDto
+            {
+              Id = t.UserId,
+              Username = t.User.Username,
+            },
+            Wins = t.Results
+              .Where(r => r.WinnerId == teamUserId)
+              .Count(),
+            Losses = t.Results
+            .Where(r => r.LoserId == teamUserId)
+            .Count(),
+            Draws = t.Results
+              .Where(r => r.WinnerId == null && r.LoserId == null)
+              .Count(),
+            FriendRequestStatus = Id.HasValue ? (Dto.User.Friend.FriendRequestStatus)this._dataContext.FriendRequest
+                .FirstOrDefault(fr => (fr.UserSentId == Id && fr.UserReceivedId == userId)
+                 || (fr.UserReceivedId == Id && fr.UserSentId == userId)).Status : null,
+          })
+          .SingleOrDefaultAsync(t => t.User.Id == teamUserId);
+
+
 
         if (savedTeam == null)
         {
@@ -52,10 +87,10 @@ namespace api.Services.TeamService
           response.Message = "An error occured fetching the user team";
         }
 
-        var team = this._mapper.Map<TeamDto>(savedTeam!);
+        // var team = this._mapper.Map<TeamDto>(savedTeam!);
 
         response.Success = true;
-        response.Data = team;
+        response.Data = savedTeam;
 
       }
       catch (Exception e)

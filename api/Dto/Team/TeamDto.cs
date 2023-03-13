@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using api.Dto.Player;
+using api.Dto.Stat;
 using api.Dto.Team.Formation;
 using api.Dto.User;
 using api.Dto.User.Friend;
@@ -13,7 +14,7 @@ namespace api.Dto.Team
     [DataMember(Name = "id")]
     public int Id { get; set; } = 0;
     [DataMember(Name = "players")]
-    public List<PlayerDto> Players { get; set; } = new List<PlayerDto>();
+    public IEnumerable<PlayerDto> Players { get; set; } = new List<PlayerDto>();
 
     [DataMember(Name = "formation")]
     public FormationDto Formation { get; set; }
@@ -41,6 +42,18 @@ namespace api.Dto.Team
     [NotMapped]
     [DataMember(Name = "draws")]
     public int Draws { get; set; } = 0;
+
+    [NotMapped]
+    [DataMember(Name = "topScorer")]
+    public QuickStatDto TopScorer { get; set; }
+
+    [NotMapped]
+    [DataMember(Name = "mostVictories")]
+    public QuickStatDto MostVictories { get; set; }
+
+    [NotMapped]
+    [DataMember(Name = "bogeyTeam")]
+    public QuickStatDto  BogeyTeam { get; set; }
     
     [NotMapped]
     [DataMember(Name = "friendRequestStatus")]

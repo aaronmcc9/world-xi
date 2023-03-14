@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Team } from "src/app/team/team.model";
 import { ApiService } from "../api.service";
+import { PagedResponseDto } from "../Common/paged-response.dto";
 import { ServiceResponse } from "../Common/service-response.dto";
 import { ModifyTeamDto } from "./modify-team.dto";
 import { Settings } from "./settings.dto";
@@ -41,8 +42,8 @@ export class TeamApiService {
     * @returns The users saved team should the have one
     */
     fetchUserTeam(id?: number): Observable<ServiceResponse<Team>> {
-        let key = id ? id : ""; 
-            console.log("hi", id);
+        let key = id ? id : "";
+        console.log("hi", id);
         return this.http.get<ServiceResponse<Team>>(this.url + key);
     }
 
@@ -87,8 +88,8 @@ export class TeamApiService {
         return this.http.put<ServiceResponse<Settings>>(this.url + "settings", settings);
     }
 
-    fetchAllTeams(friends: boolean, filterText?: string): Observable<ServiceResponse<Team[]>> {
-        return this.http.get<ServiceResponse<Team[]>>(this.url + "all",
-            { params: this.apiService.constructParams({ friends: friends, filterText: filterText }) })
+    fetchAllTeams(friends: boolean, filterText?: string, skip?: number, take?: number): Observable<ServiceResponse<PagedResponseDto<Team[]>>> {
+        return this.http.get<ServiceResponse<PagedResponseDto<Team[]>>>(this.url + "all",
+            { params: this.apiService.constructParams({ friends: friends, filterText: filterText, skip: skip, take: take }) })
     }
 }

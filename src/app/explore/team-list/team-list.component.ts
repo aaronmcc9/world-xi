@@ -6,6 +6,7 @@ import { TeamApiService } from 'src/app/api/team/team-api.service';
 import { FriendRequestApiService } from 'src/app/api/User/Friend/friend request/friend-request-api.service';
 import { FriendRequestStatus } from 'src/app/api/User/Friend/friend request/friend-request-status.enum';
 import { FriendRequest } from 'src/app/api/User/Friend/friend request/friend-request.dto';
+import { User } from 'src/app/api/User/user.dto';
 import { Team } from 'src/app/team/team.model';
 
 @Component({
@@ -18,9 +19,15 @@ export class TeamListComponent implements OnChanges {
   @Input("friends") friends = false;
   teams: Team[] = [];
   isLoading = false;
+
+  //paging
+  itemLimit = 10;
+  skip = 0;
+  take = this.itemLimit;
+  page = 1;
+  canMoveRight = false;
+
   readonly friendRequestStatus = FriendRequestStatus;
-
-
 
   constructor(private teamApiService: TeamApiService, private alertService: AlertService,
     private friendRequestApiService: FriendRequestApiService) { }
@@ -37,10 +44,11 @@ export class TeamListComponent implements OnChanges {
     try {
       this.isLoading = true;
       const result = await lastValueFrom(this.teamApiService.fetchAllTeams(friends, filterText));
-
-      console.log(result.success)
+      
       if (result.success) {
-        this.teams = result.data;
+        this.teams = result.data.items;
+        this.page = this.take / this.itemLimit;
+        this.canMoveRight = this.take < result.data.total;
       }
       else {
         this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger, result.message)
@@ -99,6 +107,17 @@ export class TeamListComponent implements OnChanges {
       team.friendRequestStatus = friendRequestStatus;
       return team;
     })
+  }
+
+  onPageChanged(forward: boolean) {
+    if (forward) {
+      this.skip = this.skip + this.itemLimit;
+      this.take = this.take + this.itemLimit;
+    }
+    else {
+      this.skip = this.skip - this.itemLimit;
+      this.take = this.take - this.itemLimit;
+    }
   }
 
 }

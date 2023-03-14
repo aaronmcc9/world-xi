@@ -3,8 +3,7 @@
         class="player-filter col-xs-6">
         <option value="">{{'PLACEHOLDE_ALL' | translate}}</option>
         <option value="{{p}}" *ngFor="let p of positions">
-            {{'PLACEHOLDE_DYNAMIC' | translate:{param: positionService.getPositionName(p)}
-            }}
+            {{'PLACEHOLDE_DYNAMIC' | translate:{param: positionService.getPositionName(p)} }}
         </option>
     </select>
 </div>

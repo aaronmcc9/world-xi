@@ -1,6 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { cloneDeep, isNull } from 'lodash';
-import { filter, Subscription } from 'rxjs';
 import { Position } from 'src/app/players/player-position';
 import { PositionService } from 'src/app/players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -38,13 +37,13 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
 
 
   onFilterPlayerList(position: string) {
-    console.log(position, this.positions);
     this.pageSize = !position ?
       4 : 16;
 
     //reset pages with each filter
     this.skip = 0;
     this.take = this.pageSize;
+    this.page = 1;
     this.total = 0;
 
     this.listPositions = position ?
@@ -53,6 +52,7 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
   }
 
   setPageRight(playerTotal: number) {
+    //counts players from each position segment
     this.total = this.total + playerTotal
 
     this.canPageRight = this.pageSize == 16 ?
@@ -62,7 +62,6 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
 
   onPageLeft() {
     if (this.page > 1) {
-      console.log(this.skip, this.take)
       this.total = 0;
       this.skip = this.skip - this.pageSize;
       this.take = this.take - this.pageSize;

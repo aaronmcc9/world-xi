@@ -25,10 +25,12 @@ namespace api.Services.PlayerService
 
     public IQueryable<Player> Query()
     {
-      return this._dataContext.Players;
+      return this._dataContext.Players
+          .OrderBy(p => p.FirstName)
+          .ThenBy(p => p.LastName);
     }
 
-    public async Task<ServiceResponse<PagedResponseDto<PlayerDto>>>  FetchAllPlayers(int? skip, int? take)
+    public async Task<ServiceResponse<PagedResponseDto<PlayerDto>>> FetchAllPlayers(int? skip, int? take)
     {
       var response = new ServiceResponse<PagedResponseDto<PlayerDto>>();
 
@@ -39,11 +41,11 @@ namespace api.Services.PlayerService
 
         var total = await players.CountAsync();
 
-        if (skip.HasValue)
-          players = players.Skip(skip.Value);
-
         if (take.HasValue)
           players = players.Take(take.Value);
+          
+        if (skip.HasValue)
+          players = players.Skip(skip.Value);
 
 
         response.Data = new PagedResponseDto<PlayerDto>
@@ -96,21 +98,31 @@ namespace api.Services.PlayerService
       try
       {
         var players = this.Query()
-          .Where(p => p.Position == (Models.PlayerPosition)position)
-          .Select(p => this._mapper.Map<PlayerDto>(p));
+          .Where(p => p.Position == (Models.PlayerPosition)position);
 
         var total = await players.CountAsync();
+
+        var testOne = await players.ToListAsync();
+
+        if (take.HasValue)
+          players = players
+
+          .Take(take.Value);
+
+        var testTwo = await players.ToListAsync();
 
         if (skip.HasValue)
           players = players.Skip(skip.Value);
 
-        if (take.HasValue)
-          players = players.Take(take.Value);
+
+        var testThree = await players.ToListAsync();
 
         response.Data = new PagedResponseDto<PlayerDto>
         {
           Total = total,
-          Items = await players.ToListAsync()
+          Items = await players
+            .Select(p => this._mapper.Map<PlayerDto>(p))
+            .ToListAsync()
         };
       }
       catch (Exception e)

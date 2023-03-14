@@ -1,17 +1,15 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { AppCommonModule } from "../app-common.module";
+import { AppCommonModule } from "src/app/app-common.module";
 
 @NgModule({
-    imports:[
+    declarations: [
+    ],
+    imports: [
         AppCommonModule,
         CommonModule
-    ],
-    declarations:[
-    ],
-    exports:[
     ]
 })
-export class NotificationModule{
+export class PageNavigationModule {
 
 }

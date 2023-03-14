@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using api.Dto;
+using api.Dto.Common;
 using api.Dto.Player;
 using api.Dto.Team;
 using api.Dto.Team.Formation;
@@ -32,8 +33,8 @@ namespace api.Services.TeamService
       {
         var userId = this.GetUserId();
         //current team being viewed
-        var teamUserId = Id ?? userId; 
-        
+        var teamUserId = Id ?? userId;
+
 
         if (!await this.CheckTeamExists(teamUserId))
         {
@@ -102,9 +103,10 @@ namespace api.Services.TeamService
       return response;
     }
 
-    public async Task<ServiceResponse<List<TeamDto>>> FetchAllTeams(bool friends = true, string? filterText = null)
+    public async Task<ServiceResponse<PagedResponseDto<TeamDto>>> FetchAllTeams(bool friends = true, string? filterText = null,
+      int? skip = null, int? take = null)
     {
-      var response = new ServiceResponse<List<TeamDto>>();
+      var response = new ServiceResponse<PagedResponseDto<TeamDto>>();
 
       try
       {
@@ -130,7 +132,17 @@ namespace api.Services.TeamService
           teamsQuery.Where(t => t.TeamName.ToLower().Contains(filterText.ToLower()));
         }
 
-        var teams = await teamsQuery
+        var total = await teamsQuery.CountAsync();
+
+        if (take.HasValue)
+          teamsQuery = teamsQuery.Take(take.Value);
+
+        if (skip.HasValue)
+          teamsQuery = teamsQuery.Skip(skip.Value);
+
+
+        var teams = teamsQuery
+          .OrderBy(t => t.User.Username)
           .Select(t => new TeamDto
           {
             Id = t.Id,
@@ -155,12 +167,17 @@ namespace api.Services.TeamService
             FriendRequestStatus = (Dto.User.Friend.FriendRequestStatus)this._dataContext.FriendRequest
                 .FirstOrDefault(fr => (fr.UserSentId == userId && fr.UserReceivedId == t.UserId)
                  || (fr.UserReceivedId == userId && fr.UserSentId == t.UserId)).Status,
-          })
-          .OrderBy(t => t.User.Username)
-          .ToListAsync();
+          });
 
 
-        response.Data = teams;
+
+
+        response.Data = new PagedResponseDto<TeamDto>
+        {
+          Items = await teams.ToListAsync(),
+          Total = total
+        };
+
       }
       catch (Exception e)
       {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dto;
+using api.Dto.Common;
 using api.Dto.Team;
 using api.Dto.Team.Settings;
 using api.Services.TeamService;
@@ -27,9 +28,9 @@ namespace api.Controllers
     }
 
     [HttpGet("all")]
-    public async Task<ActionResult<ServiceResponse<List<TeamDto>>>> FetchAllTeams(Boolean friends = true, string? filterText = null)
+    public async Task<ActionResult<ServiceResponse<PagedResponseDto<TeamDto>>>> FetchAllTeams(Boolean friends = true, string? filterText = null, int? skip = null, int? take = null)
     {
-      return Ok(await this._teamService.FetchAllTeams(friends, filterText));
+      return Ok(await this._teamService.FetchAllTeams(friends, filterText, skip, take));
     }
 
     [HttpGet("settings")]

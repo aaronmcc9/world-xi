@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { isNumber } from "lodash";
-import { BehaviorSubject, Subject } from "rxjs";
 import { Position } from "./player-position";
 
 @Injectable({
@@ -23,8 +22,6 @@ export class PositionService {
 
         this.positionValues = <Position[]>Object.values(Position)
             .filter((p) => isNumber(p));
-
-        console.log(this.positionValues);
 
         return this.positionValues.slice();
     }

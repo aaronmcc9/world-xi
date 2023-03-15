@@ -43,7 +43,6 @@ export class TeamApiService {
     */
     fetchUserTeam(id?: number): Observable<ServiceResponse<Team>> {
         let key = id ? id : "";
-        console.log("hi", id);
         return this.http.get<ServiceResponse<Team>>(this.url + key);
     }
 

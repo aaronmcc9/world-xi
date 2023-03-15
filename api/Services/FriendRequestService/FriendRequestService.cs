@@ -84,6 +84,14 @@ namespace api.Services.FriendRequestService
           .FirstOrDefault(fr => fr.UserReceivedId == updateFriendRequest.UserReceivedId
             && fr.UserSentId == updateFriendRequest.UserSentId);
 
+
+        if (dbfriendRequest == null)
+        {
+          response.Success = false;
+          response.Message = "Friend Request not found.";
+          return response;
+        }
+
         dbfriendRequest.Status = (FriendRequestStatus)updateFriendRequest.Status;
 
         var userReceived = await this._dataContext.User
@@ -91,13 +99,6 @@ namespace api.Services.FriendRequestService
 
         var userSent = await this._dataContext.User
             .FindAsync(updateFriendRequest.UserSentId);
-
-        if (userReceived == null || userSent == null)
-        {
-          response.Success = false;
-          response.Message = "Invalid Operation: One or more users does not exist.";
-          return response;
-        }
 
         var friendRequest = this._mapper.Map<FriendRequest>(updateFriendRequest);
 

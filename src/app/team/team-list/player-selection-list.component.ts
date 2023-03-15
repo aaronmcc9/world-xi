@@ -3,6 +3,7 @@ import { cloneDeep, isNull } from 'lodash';
 import { Position } from 'src/app/players/player-position';
 import { PositionService } from 'src/app/players/position.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { PlayerPageTotals } from './players-in-position/players-in-position.component';
 
 @Component({
   selector: 'app-team-list',
@@ -17,8 +18,10 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
   page = 1;
   skip = 0;
   take = 4;
-  total = 0;
+  totalPlayers = 0;
+  itemsViewingCount = 0;
   canPageRight = false;
+  pageBack = false;
 
   //icons
   leftNav = faArrowLeft;
@@ -44,36 +47,32 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
     this.skip = 0;
     this.take = this.pageSize;
     this.page = 1;
-    this.total = 0;
+    this.totalPlayers = 0;
+    this.itemsViewingCount = 0;
 
     this.listPositions = position ?
       cloneDeep(this.positions.filter((p: Position) => p == +position)) :
       cloneDeep(this.positions);
   }
 
-  setPageRight(playerTotal: number) {
-    //counts players from each position segment
-    this.total = this.total + playerTotal
-
-    this.canPageRight = this.pageSize == 16 ?
-      this.total > this.take :
-      this.total > this.take * this.pageSize;
+  //ERROR WITH MINUS - MUST FIX
+  setCanPageRight(playerTotals: PlayerPageTotals) {
+    //counts total players from each position segment
+    this.totalPlayers = this.totalPlayers + playerTotals['total'];
+    this.itemsViewingCount =  this.pageBack ? 
+      this.itemsViewingCount - playerTotals['totalOnPage'] :
+      this.itemsViewingCount + playerTotals['totalOnPage'];
+    
+    this.canPageRight = this.totalPlayers > this.itemsViewingCount;
   }
 
-  onPageLeft() {
-    if (this.page > 1) {
-      this.total = 0;
-      this.skip = this.skip - this.pageSize;
-      this.take = this.take - this.pageSize;
-      this.page--;
-    }
-  }
+  async onPageChanged(page: number) {
+    this.pageBack = page < this.page
 
-  onPageRight() {
-    this.total = 0;
-    this.skip = this.skip + this.pageSize;
-    this.page++;
-    this.take = this.pageSize * this.page;
+    this.page = page;
+    this.totalPlayers = 0;
+    this.take = this.pageSize * page;
+    this.skip = this.take - this.pageSize
   }
 
   ngOnDestroy(): void {

@@ -28,5 +28,6 @@
     </tbody>
 </table>
 
-<app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canMoveRight"></app-page-navigation>
+<app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canMoveRight"
+    [pageItems]="itemsViewingCount" [totalItems]="totalItems"></app-page-navigation>
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

@@ -44,9 +44,12 @@ export class TeamService {
     try {
       const result = await lastValueFrom(this.formationApiService.fetchAllFormations());
 
-      if (result.data) {  
+      if (result.success) {  
         this.formations = result.data;
         return this.formations.slice();
+      }
+      else{
+        this.alertService.toggleAlert("", AlertType.Danger, result.message);
       }
     }
 

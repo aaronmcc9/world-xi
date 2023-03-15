@@ -22,6 +22,8 @@ export class TeamListComponent implements OnChanges {
 
   //paging
   itemLimit = 10;
+  totalItems = 0;
+  itemsViewingCount = 0;
   skip = 0;
   take = this.itemLimit;
   page = 1;
@@ -33,22 +35,25 @@ export class TeamListComponent implements OnChanges {
     private friendRequestApiService: FriendRequestApiService) { }
 
   async ngOnChanges(): Promise<void> {
-    await this.reset(this.friends);
+    await this.reset();
   }
 
-  async reset(friends: boolean, filterText?: string) {
-    await this.fetchTeams(friends, filterText);
+  async reset(filterText?: string) {
+    await this.fetchTeams(this.friends, filterText);
   }
 
   async fetchTeams(friends: boolean, filterText?: string) {
     try {
       this.isLoading = true;
-      const result = await lastValueFrom(this.teamApiService.fetchAllTeams(friends, filterText));
+      const result = await lastValueFrom(this.teamApiService.fetchAllTeams(friends, filterText, this.skip, this.take));
       
       if (result.success) {
         this.teams = result.data.items;
         this.page = this.take / this.itemLimit;
-        this.canMoveRight = this.take < result.data.total;
+
+        this.itemsViewingCount = this.teams.length + this.skip;
+        this.totalItems = result.data.total;
+        this.canMoveRight = this.take < this.totalItems;
       }
       else {
         this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger, result.message)
@@ -109,15 +114,11 @@ export class TeamListComponent implements OnChanges {
     })
   }
 
-  onPageChanged(forward: boolean) {
-    if (forward) {
-      this.skip = this.skip + this.itemLimit;
-      this.take = this.take + this.itemLimit;
-    }
-    else {
-      this.skip = this.skip - this.itemLimit;
-      this.take = this.take - this.itemLimit;
-    }
+  async onPageChanged(page: number) {
+      this.take = this.itemLimit * page;
+      this.skip = this.take - this.itemLimit
+
+    await this.reset();
   }
 
 }

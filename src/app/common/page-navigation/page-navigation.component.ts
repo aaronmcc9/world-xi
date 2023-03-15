@@ -14,8 +14,11 @@ export class PageNavigationComponent implements OnChanges {
 
   @Input() page = 1;
   @Input() canPageRight = false;
+  @Input() totalItems = 0;
+  @Input() pageItems = 0;
 
-  @Output() pageChanged = new EventEmitter<boolean>();
+
+  @Output() pageChanged = new EventEmitter<number>();
 
   constructor() { }
 
@@ -26,13 +29,13 @@ export class PageNavigationComponent implements OnChanges {
   onPageLeft() {
     if (this.page > 1) {
       this.page--;
-      this.pageChanged.emit(false);
+      this.pageChanged.emit(this.page);
     }
   }
 
   onPageRight() {
     this.page++;
-    this.pageChanged.emit(true);
+    this.pageChanged.emit(this.page);
   }
 
 }

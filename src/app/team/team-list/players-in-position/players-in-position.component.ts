@@ -8,6 +8,11 @@ import { TeamService } from '../../team.service';
 import { AlertService } from 'src/app/alert/alert.service';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 
+export interface PlayerPageTotals{
+  total: number,
+  totalOnPage: number
+}
+
 @Component({
   selector: 'app-players-in-position',
   templateUrl: './players-in-position.component.html',
@@ -15,7 +20,7 @@ import { AlertType } from 'src/app/alert/alert-type.enum';
 })
 export class PlayersInPositionComponent implements OnChanges, OnDestroy {
 
-  @Output() totalPerPosition = new EventEmitter<number>(false);
+  @Output() totalsPerPosition = new EventEmitter<PlayerPageTotals>();
 
   @Input('position') position: Position = Position.Goalkeeper;
   @Input('skip') skip = 0;
@@ -38,7 +43,6 @@ export class PlayersInPositionComponent implements OnChanges, OnDestroy {
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     await this.fetchPlayersByPosition();
-    console.log(changes)
 
     this.playerToModifySubscription = this.teamService.playerToModify.subscribe((playerToModify: Player | null) => {
       this.playerToModify = playerToModify;
@@ -58,8 +62,7 @@ export class PlayersInPositionComponent implements OnChanges, OnDestroy {
 
       if (result.data) {
         this.players = result.data.items;
-        console.log(result.data)
-        this.totalPerPosition.emit(result.data.total);
+        this.totalsPerPosition.emit({total: result.data.total, totalOnPage: result.data.items.length} as PlayerPageTotals);
       }
 
       this.isLoading = false;

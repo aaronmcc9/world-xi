@@ -26,6 +26,7 @@ namespace api.Services.FormationService
       try
       {
         serviceResponse.Data = await this._dataContext.Formation
+            .OrderBy(f => f.Structure)
             .Select(f => this._mapper.Map<FormationDto>(f))
             .ToListAsync();
       }

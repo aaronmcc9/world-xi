@@ -1,8 +1,13 @@
-<div class="button-container">
-    <button type="button" *ngIf="page > 1" (click)="onPageLeft()">
-        <fa-icon [icon]="leftNav"></fa-icon>
-    </button>
-    <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="!canPageRight">
-        <fa-icon [icon]="rightNav"></fa-icon>
-    </button>
+<div class="flex">
+    <div class="button-container">
+        <button type="button" *ngIf="page > 1" (click)="onPageLeft()">
+            <fa-icon [icon]="leftNav"></fa-icon>
+        </button>
+        <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="!canPageRight">
+            <fa-icon [icon]="rightNav"></fa-icon>
+        </button>
+        <div>
+            <label>{{pageItems}} {{'OF' | translate}} {{totalItems}}</label>
+        </div>
+    </div>
 </div>

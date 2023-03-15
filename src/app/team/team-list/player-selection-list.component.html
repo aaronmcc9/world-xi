@@ -13,14 +13,16 @@
             <h4>{{positionService.getPositionName(pos)}}s</h4>
         </div>
         <app-players-in-position [position]="pos" [skip]="skip" [take]="take"
-        (totalPerPosition)="setPageRight($event)"></app-players-in-position>
+        (totalsPerPosition)="setCanPageRight($event)"></app-players-in-position>
     </div>
 </div>
-<div class="button-container">
+<app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canPageRight"
+    [pageItems]="itemsViewingCount" [totalItems]="totalPlayers"></app-page-navigation>
+<!-- <div class="button-container">
     <button type="button" *ngIf="page > 1" (click)="onPageLeft()">
         <fa-icon [icon]="leftNav"></fa-icon>
     </button>
     <button type="button" class="nav-button" (click)="onPageRight()" [disabled]="!canPageRight">
         <fa-icon [icon]="rightNav"></fa-icon>
     </button>
-</div>
+</div> -->

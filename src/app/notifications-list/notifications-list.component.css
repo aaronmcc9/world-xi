@@ -1,0 +1,8 @@
+.c-design{
+    display: flex;
+    justify-content: center;
+    border: 1px lightgray solid;
+    border-radius: 1rem;
+    flex-direction: column;
+    width: fit-content;
+}

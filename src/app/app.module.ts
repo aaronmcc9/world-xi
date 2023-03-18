@@ -15,6 +15,7 @@ import { TeamModule } from './team/team.module';
 import { HeaderComponent } from './header/header/header.component';
 import { SettingsModule } from './settings/settings/settings.module';
 import { ExploreModule } from './explore/explore.module';
+import { NotificationListModule } from './notifications-list/notification-list.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -33,6 +34,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     ExploreModule,
     HttpClientModule,
+    NotificationListModule,
     PlayersModule,
     SettingsModule,
     TeamModule,

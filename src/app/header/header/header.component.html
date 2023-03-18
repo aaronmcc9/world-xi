@@ -27,7 +27,7 @@
                         </li>
                         <label class="notification-empty" *ngIf="notifications.length === 0">{{'NOTIFICATIONS_EMPTY' | translate}}</label>
                         <div class="view-all-container">
-                            <button class="btn btn-link">{{'VIEW_ALL_NOTIFICATIONS' | translate}}</button>
+                                <a class="btn btn-link" routerLink="/notifications">{{'VIEW_ALL_NOTIFICATIONS' | translate}}</a>
                         </div>
                     </ul>
                 </li>

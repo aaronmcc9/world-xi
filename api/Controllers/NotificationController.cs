@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dto;
+using api.Dto.Common;
 using api.Dto.User.Notification;
 using api.Services.NotificationService;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace api.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<ServiceResponse<List<NotificationDto>>>> FetchUserNotifications(int? skip = null, int? take = null)
+    public async Task<ActionResult<ServiceResponse<PagedResponseDto<NotificationDto>>>> FetchUserNotifications(int? skip = null, int? take = null)
     {
       return Ok(await this._notificationService.FetchUserNotifications(skip, take));
     }

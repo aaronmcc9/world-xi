@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using api.Dto;
+using api.Dto.Common;
 using api.Dto.User.Notification;
 using api.Models;
 using AutoMapper;
@@ -25,9 +26,9 @@ namespace api.Services.NotificationService
       this._mapper = mapper;
     }
 
-    public async Task<ServiceResponse<List<NotificationDto>>> FetchUserNotifications(int? skip = null, int? take = null)
+    public async Task<ServiceResponse<PagedResponseDto<NotificationDto>>> FetchUserNotifications(int? skip = null, int? take = null)
     {
-      var response = new ServiceResponse<List<NotificationDto>>();
+      var response = new ServiceResponse<PagedResponseDto<NotificationDto>>();
 
       try
       {
@@ -36,17 +37,21 @@ namespace api.Services.NotificationService
         var notificationsQuery = this._dataContext.Notification
             .Where(n => n.RecipientId == userId);
 
-        if (skip.HasValue)
-          notificationsQuery = notificationsQuery.Skip(skip.Value!);
+        var total = await notificationsQuery.CountAsync();
 
         if (take.HasValue)
           notificationsQuery = notificationsQuery.Take(take.Value);
 
-        response.Data = await notificationsQuery
-            .OrderByDescending(n => n.Sent)
-            .Select(n => _mapper.Map<NotificationDto>(n))
-            .ToListAsync();
+        if (skip.HasValue)
+          notificationsQuery = notificationsQuery.Skip(skip.Value!);
 
+        response.Data = new PagedResponseDto<NotificationDto>{
+          Total = total,
+          Items = await notificationsQuery
+            .OrderBy(n => n.Sent)
+            .Select(n => _mapper.Map<NotificationDto>(n))
+            .ToListAsync()
+        };
       }
       catch (Exception e)
       {

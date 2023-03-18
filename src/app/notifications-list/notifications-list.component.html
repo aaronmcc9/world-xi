@@ -1,0 +1,7 @@
+<div class="container c-design">
+    <div *ngFor="let notification of notifications">
+        <app-notification [notification]="notification"></app-notification>
+    </div>
+</div>
+<!-- <app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canPageRight"
+    [pageItems]="itemsViewingCount" [totalItems]="totalPlayers"></app-page-navigation> -->

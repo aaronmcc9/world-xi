@@ -57,11 +57,14 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
 
   //ERROR WITH MINUS - MUST FIX
   setCanPageRight(playerTotals: PlayerPageTotals) {
+
     //counts total players from each position segment
     this.totalPlayers = this.totalPlayers + playerTotals['total'];
     this.itemsViewingCount =  this.pageBack ? 
       this.itemsViewingCount - playerTotals['totalOnPage'] :
       this.itemsViewingCount + playerTotals['totalOnPage'];
+
+      console.log(this.skip, this.take);
     
     this.canPageRight = this.totalPlayers > this.itemsViewingCount;
   }

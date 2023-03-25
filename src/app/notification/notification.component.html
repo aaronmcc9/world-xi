@@ -1,7 +1,7 @@
-<div *ngIf="notification" class="c-design">
+<div *ngIf="notification" class="c-design" [ngClass]="sizeMini ? 'mini' : 'normal'">
     <div class="n-header">
         <h5 [ngClass]="{'unread': !notification.read}">{{notificationHeader}}</h5>
-        <h6>{{notification.sent | date:'shortTime'}}</h6>
+        <h6>{{notification.sent | date:'short'}}</h6>
     </div>
 
     <p>{{notification.message}}</p>

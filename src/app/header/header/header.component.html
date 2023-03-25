@@ -22,7 +22,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li *ngFor="let notification of notifications"> 
-                            <app-notification [notification]="notification">
+                            <app-notification [notification]="notification" [sizeMini]="true">
                             </app-notification>
                         </li>
                         <label class="notification-empty" *ngIf="notifications.length === 0">{{'NOTIFICATIONS_EMPTY' | translate}}</label>

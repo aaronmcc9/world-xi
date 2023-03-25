@@ -1,13 +1,16 @@
-/* .test{
-    width: 40rem;
-    height: 7.5rem;
-} */
-
 .c-design {
-    width: 40rem;
-    height: 10rem;
     padding: 0 1rem 1rem;
     border-bottom: 1px solid lightgray;
+}
+
+.mini {
+    width: 40rem;
+    height: 10rem;
+}
+
+.normal{
+    width: 80rem;
+    height: 10rem;
 }
 
 .n-header {
@@ -38,7 +41,7 @@ p {
     font-size: 1.1rem;
 }
 
-.unread::before{
+.unread::before {
     vertical-align: middle;
     content: "\2022";
     color: dodgerblue;

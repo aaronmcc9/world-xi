@@ -63,10 +63,10 @@ export class HeaderComponent implements OnInit {
       return;
 
     try {
-      const result = await lastValueFrom(this.notificationApiService.fetchNotifications(skip, take));
+      const result = await lastValueFrom(this.notificationApiService.fetchNotifications(skip ?? this.skip, take ?? this.take));
 
       if (result.success) {
-        this.notificationService.notifications.next(result.data);
+        this.notificationService.notifications.next(result.data.items);
       }
       else {
         this.alertService.toggleAlert("", AlertType.Danger, result.message);

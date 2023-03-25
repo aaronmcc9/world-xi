@@ -35,6 +35,7 @@ namespace api.Services.NotificationService
         var userId = this.GetUserId();
 
         var notificationsQuery = this._dataContext.Notification
+            .OrderByDescending(n => n.Sent)
             .Where(n => n.RecipientId == userId);
 
         var total = await notificationsQuery.CountAsync();
@@ -48,7 +49,6 @@ namespace api.Services.NotificationService
         response.Data = new PagedResponseDto<NotificationDto>{
           Total = total,
           Items = await notificationsQuery
-            .OrderBy(n => n.Sent)
             .Select(n => _mapper.Map<NotificationDto>(n))
             .ToListAsync()
         };

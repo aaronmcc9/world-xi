@@ -19,6 +19,7 @@ import { NotificationService } from './notification.service';
 export class NotificationComponent implements OnChanges {
 
   @Input() notification!: Notification;
+  @Input() sizeMini = false;
   readonly notificationType = NotificationType;
   notificationHeader = "";
 
@@ -29,8 +30,6 @@ export class NotificationComponent implements OnChanges {
   ngOnChanges(): void {
     if (!this.notification)
       return;
-
-    console.log(this.notification);
 
     switch (this.notification.notificationType) {
       case NotificationType.FriendRequest:

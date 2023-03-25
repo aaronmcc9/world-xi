@@ -1,7 +1,17 @@
-<div class="container c-design">
-    <div *ngFor="let notification of notifications">
-        <app-notification [notification]="notification"></app-notification>
+<div class="outer">
+    <div *ngIf="notifications.length > 0">
+        <div class="container c-design">
+            <div *ngFor="let notification of notifications">
+                <app-notification [notification]="notification" [sizeMini]="false"></app-notification>
+            </div>
+        </div>
+        <div class="page-nav-c">
+            <app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canMoveRight"
+                [pageItems]="itemsViewingCount" [totalItems]="notificationsTotal"></app-page-navigation>
+        </div>
+    </div>
+
+    <div class="d-text" *ngIf="!notifications || notifications.length == 0">
+        <label>{{'NOTIFICATIONS_EMPTY' | translate}}</label>
     </div>
 </div>
-<!-- <app-page-navigation (pageChanged)="onPageChanged($event)" [page]="page" [canPageRight]="canPageRight"
-    [pageItems]="itemsViewingCount" [totalItems]="totalPlayers"></app-page-navigation> -->

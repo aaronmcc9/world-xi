@@ -20,6 +20,8 @@ export class NotificationComponent implements OnChanges {
 
   @Input() notification!: Notification;
   @Input() sizeMini = false;
+  @Input() focused = false;
+  
   readonly notificationType = NotificationType;
   notificationHeader = "";
 
@@ -28,6 +30,8 @@ export class NotificationComponent implements OnChanges {
     private notificationService: NotificationService) { }
 
   ngOnChanges(): void {
+    console.log(this.focused)
+
     if (!this.notification)
       return;
 
@@ -50,8 +54,8 @@ export class NotificationComponent implements OnChanges {
     let dateStr = new Date(this.notification.sent).toString()
     this.notification.sent = new Date(dateStr + 'UTC')
 
-    if (this.notification.message.length > 69) {
-      this.notification.message = this.notification.message.substring(0, 68) + "...";
+    if (this.sizeMini &&  this.notification.message.length > 48) {
+      this.notification.message = this.notification.message.substring(0, 45) + "...";
     }
   }
 

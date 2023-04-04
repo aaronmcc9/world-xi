@@ -9,7 +9,6 @@ import { cloneDeep, isNumber } from 'lodash';
 import { AlertService } from '../alert/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnService } from '../columns.service';
-import { PlayerService } from '../players/player.service';
 import { TeamApiService } from '../api/team/team-api.service';
 import { Formation } from '../api/team/formation/formation.model';
 import { ModifyTeamDto } from '../api/team/modify-team.dto';

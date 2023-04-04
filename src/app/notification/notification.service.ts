@@ -13,7 +13,7 @@ export class NotificationService {
 
         let updatedNotifications = this.notifications.getValue()
             .map((n: Notification) => {
-                if (n.id = notification.id)
+                if (n.id === notification.id)
                     return notification;
 
                 return n;

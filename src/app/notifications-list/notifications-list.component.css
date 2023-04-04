@@ -1,5 +1,5 @@
 .outer{
-    height:100vh;
+    height:90vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -28,4 +28,16 @@
 .d-text label{
     font-size: 2.8rem;
     color: lightgray;
+}
+
+@media screen and (max-width: 859px) {
+    .page-nav-c {
+        width: 64rem;
+    }
+}
+
+@media screen and (max-width: 674px) {
+    .page-nav-c {
+        width: 44rem;
+    }
 }

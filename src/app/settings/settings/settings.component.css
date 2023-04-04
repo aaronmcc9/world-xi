@@ -1,32 +1,52 @@
-h1{
-    margin: 15rem 0 2rem;
+.outer {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.c-design{
+
+h1 {
+    margin: 0 0 2rem;
+
+}
+
+.c-design {
     border: 1px solid lightgray;
     border-radius: 1rem;
-    margin-bottom: 20rem;
-    height: 50vh;
+    min-height: 50vh;
     padding: 10rem;
 }
 
-.btn-container{
+.btn-container {
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
 }
 
-#chkDiscover{
+#chkDiscover {
     margin-right: 1rem;
 }
 
-#lblDiscover{
-    
-}
-
-.lblValid{
+.lblValid {
     margin-top: .5rem;
 }
 
-fa-icon{
+fa-icon {
     margin-right: .5rem;
+}
+
+@media screen and (max-height: 615px) {
+    .c-design {
+        padding: 5rem;
+    }
+
+    h1 {
+        text-align: center;
+    }
+}
+
+@media screen and (max-height: 485px) {
+    .c-design {
+        padding: 3rem;
+    }
 }

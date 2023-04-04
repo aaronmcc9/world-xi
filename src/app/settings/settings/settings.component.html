@@ -1,49 +1,52 @@
-<div class="container">
-    <h1>{{'SETTINGS' | translate}}</h1>
-
-    <div class="col-md-12 c-design">
-        <form [formGroup]="form">
-            <div class="form-check">
-                <input id="chkDiscover" type="checkbox" class="form-check-input" formControlName="discoverable">
-                <label id="lblDiscover" class="form-check-label" for="chkDiscover"> {{'MAKE_TEAM_DISCOVERABLE' |
-                    translate}}</label>
-            </div>
-
-            <div class="form-group">
-                <label for="username">{{'USERNAME' | translate}}</label>
-                <input type="text" class="form-control" id="username" formControlName="username">
-
-                <label *ngIf="form.controls['username']?.touched && (form.controls['username']?.errors || usernameExists)" class="lblValid text-danger">
-                    <fa-icon [icon]="existsError"></fa-icon>{{getError("username")}}
-                </label>
-                <label *ngIf="form.controls['username']?.touched &&
-                    form.controls['username']?.valid && !usernameExists" class="lblValid text-success">
-                    <fa-icon [icon]="nameAvailable"></fa-icon>{{'USERNAME_AVAILABLE' | translate}}
-                </label>
-            </div>
-
-            <div class="form-group">
-                <label for="teamName">{{'TEAM_NAME' | translate}}</label>
-                <input type="text" class="form-control" id="teamName" formControlName="teamName">
-
-                <label *ngIf="form.controls['teamName']?.touched && (form.controls['teamName']?.errors || teamNameExists)" class="lblValid text-danger">
-                    <fa-icon [icon]="existsError"></fa-icon>{{getError("teamName")}}
-                </label>
-                <label *ngIf="form.controls['teamName']?.touched &&
-                form.controls['teamName']?.valid && !teamNameExists" class="lblValid text-success">
-                    <fa-icon [icon]="nameAvailable"></fa-icon>{{'TEAM_NAME_AVAILABLE' | translate}}
-                </label>
-            </div>
-
-            <div class="btn-container">
-                <button class="btn btn-default" type="button" (mousedown)="cancel()" [disabled]="!form.dirty">{{'CANCEL'
-                    | translate}}</button>
-                <button class="btn btn-success" (mousedown)="saveSettings()"
-                    [disabled]="!teamExists || !form.valid || usernameExists || teamNameExists || !form.dirty">
-                    {{'SAVE' | translate}}
-                </button>
-            </div>
-        </form>
+<div class="outer">
+    <div class="container">
+        <h1>{{'SETTINGS' | translate}}</h1>
+    
+        <div class="col-md-12 c-design">
+            <form [formGroup]="form">
+                <div class="form-check">
+                    <input id="chkDiscover" type="checkbox" class="form-check-input" formControlName="discoverable">
+                    <label id="lblDiscover" class="form-check-label" for="chkDiscover"> {{'MAKE_TEAM_DISCOVERABLE' |
+                        translate}}</label>
+                </div>
+    
+                <div class="form-group">
+                    <label for="username">{{'USERNAME' | translate}}</label>
+                    <input type="text" class="form-control" id="username" formControlName="username">
+    
+                    <label *ngIf="form.controls['username']?.touched && (form.controls['username']?.errors || usernameExists)" class="lblValid text-danger">
+                        <fa-icon [icon]="existsError"></fa-icon>{{getError("username")}}
+                    </label>
+                    <label *ngIf="form.controls['username']?.touched &&
+                        form.controls['username']?.valid && !usernameExists" class="lblValid text-success">
+                        <fa-icon [icon]="nameAvailable"></fa-icon>{{'USERNAME_AVAILABLE' | translate}}
+                    </label>
+                </div>
+    
+                <div class="form-group">
+                    <label for="teamName">{{'TEAM_NAME' | translate}}</label>
+                    <input type="text" class="form-control" id="teamName" formControlName="teamName">
+    
+                    <label *ngIf="form.controls['teamName']?.touched && (form.controls['teamName']?.errors || teamNameExists)" class="lblValid text-danger">
+                        <fa-icon [icon]="existsError"></fa-icon>{{getError("teamName")}}
+                    </label>
+                    <label *ngIf="form.controls['teamName']?.touched &&
+                    form.controls['teamName']?.valid && !teamNameExists" class="lblValid text-success">
+                        <fa-icon [icon]="nameAvailable"></fa-icon>{{'TEAM_NAME_AVAILABLE' | translate}}
+                    </label>
+                </div>
+    
+                <div class="btn-container">
+                    <button class="btn btn-default" type="button" (mousedown)="cancel()" [disabled]="!form.dirty">{{'CANCEL'
+                        | translate}}</button>
+                    <button class="btn btn-success" (mousedown)="saveSettings()"
+                        [disabled]="!teamExists || !form.valid || usernameExists || teamNameExists || !form.dirty">
+                        {{'SAVE' | translate}}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>

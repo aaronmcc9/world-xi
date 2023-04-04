@@ -1,13 +1,23 @@
-<div *ngIf="notification" class="c-design" [ngClass]="sizeMini ? 'mini' : 'normal'">
-    <div class="n-header">
-        <h5 [ngClass]="{'unread': !notification.read}">{{notificationHeader}}</h5>
-        <h6>{{notification.sent | date:'short'}}</h6>
+<div *ngIf="notification" class="c-design" [ngClass]="[sizeMini ? 'mini' : 'normal', focused ? 'focused' : '']">
+
+    <div class="row row-p d-flex">
+        <div *ngIf="!notification.read" class="col-auto unread">
+
+        </div>
+
+        <div class="col-auto p-0">
+            <h5>{{notificationHeader}}</h5>
+            <p>{{notification.message}}</p>
+        </div>
+
+        <div class="col-auto p-0 flex-grow">
+            <h6 class="text-right">{{notification.sent | date:'short'}}</h6>
+        </div>
     </div>
 
-    <p>{{notification.message}}</p>
-
     <div class="action-container">
-        <button class="btn btn-outline" *ngIf="!notification.read" (click)="markAsRead()">{{'MARK_AS_READ' | translate}}</button>
+        <button class="btn btn-outline" *ngIf="!notification.read" (click)="markAsRead()">{{'MARK_AS_READ' |
+            translate}}</button>
         <div *ngIf="notification.actionRequired && notification?.notificationType == notificationType.FriendRequest
             || notification?.notificationType == notificationType.GameRequest">
             <button class="btn btn-outline" (click)="action(false)">{{'DENY' | translate}}</button>

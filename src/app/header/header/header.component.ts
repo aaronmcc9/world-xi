@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { faGear, faBell } from '@fortawesome/free-solid-svg-icons';
 import { NotificationApiService } from 'api/Dto/User/Notification/notification-api.service';
 import { lastValueFrom, Subscription } from 'rxjs';
@@ -34,7 +35,8 @@ export class HeaderComponent implements OnInit {
 
 
   constructor(private authService: AuthService, private notificationApiService: NotificationApiService,
-    private alertService: AlertService, private notificationService: NotificationService) { }
+    private alertService: AlertService, private notificationService: NotificationService,
+    private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     this.userSub = this.authService.userLoggedIn.subscribe(async (isLoggedIn) => {
@@ -75,5 +77,9 @@ export class HeaderComponent implements OnInit {
     catch (e) {
       this.alertService.toggleAlert("ALERT_NOTIFICATION_FETCH_FAILURE", AlertType.Danger);
     }
+  }
+
+  onNotificationClick(notificationId: number) {
+    this.router.navigate(['notifications/' + notificationId])
   }
 }

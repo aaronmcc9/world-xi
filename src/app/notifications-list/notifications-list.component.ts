@@ -4,6 +4,7 @@ import { Notification } from '../api/User/Notification/notification.dto';
 import { lastValueFrom } from 'rxjs';
 import { AlertService } from '../alert/alert.service';
 import { AlertType } from '../alert/alert-type.enum';
+import { ActivatedRoute, Params } from '@angular/router';
 
 
 @Component({
@@ -22,15 +23,20 @@ export class NotificationsListComponent implements OnInit {
   notifications: Notification[] = [];
   notificationsTotal = 0;
   sizeMenu = false;
+  highlightedItemId: number | null = null
 
   constructor(private notificationApiService: NotificationApiService,
-    private alertService: AlertService) { }
+    private alertService: AlertService, private route: ActivatedRoute) { }
 
   async ngOnInit(): Promise<void> {
     await this.reset();
   }
 
   private async reset() {
+    this.route.params.subscribe((params) => {
+      this.highlightedItemId = +params['id']
+    })
+
     this.notifications = await this.fetchNotifications();
   }
 

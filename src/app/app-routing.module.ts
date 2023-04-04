@@ -8,12 +8,13 @@ import { SettingsComponent } from './settings/settings/settings.component';
 import { TeamComponent } from './team/team.component';
 
 const routes: Routes = [
-  {path:'', redirectTo:'/players', pathMatch:"full"},
-  {path:'team/:id', component:TeamComponent, canActivate: [AuthGuard], },
-  {path:'explore', component:ExploreComponent, canActivate: [AuthGuard]},
-  {path:'auth', component:AuthComponent},
-  {path:'settings', component:SettingsComponent,canActivate: [AuthGuard]},
-  {path:'notifications', component:NotificationsListComponent,canActivate: [AuthGuard]},
+  { path: '', redirectTo: '/players', pathMatch: "full" },
+  { path: 'team/:id', component: TeamComponent, canActivate: [AuthGuard], },
+  { path: 'explore', component: ExploreComponent, canActivate: [AuthGuard] },
+  { path: 'auth', component: AuthComponent },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+  { path: 'notifications', component: NotificationsListComponent,canActivate: [AuthGuard] },
+  { path: 'notifications/:id', component: NotificationsListComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

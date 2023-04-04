@@ -2,7 +2,7 @@
     <div *ngIf="notifications.length > 0">
         <div class="container c-design">
             <div *ngFor="let notification of notifications">
-                <app-notification [notification]="notification" [sizeMini]="false"></app-notification>
+                <app-notification [notification]="notification" [sizeMini]="false" [focused]="highlightedItemId == notification.id"></app-notification>
             </div>
         </div>
         <div class="page-nav-c">

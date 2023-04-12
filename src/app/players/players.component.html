@@ -1,8 +1,0 @@
-<mat-grid-list rowHeight="1:1" [cols]="cols" gutterSize="25rem">
-    <mat-grid-tile>
-        <app-players-list [cols]="cols" [ngClass]="cols == 2 && isFixed ? 'fixed' : 'static'"></app-players-list>
-    </mat-grid-tile>
-    <mat-grid-tile id="bottom-tile" class="mt-1">
-        <router-outlet></router-outlet>
-    </mat-grid-tile>
-</mat-grid-list>

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { cloneDeep } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
@@ -8,6 +7,11 @@ import { TeamApiService } from 'src/app/api/team/team-api.service';
 import { Player } from 'src/app/players/player.model';
 import { Team } from '../team.model';
 import { TeamService } from '../team.service';
+
+export interface RevertTeamOptions{
+    action:string;
+    formation?:number;
+}
 
 @Component({
   selector: 'app-revert-team',
@@ -17,7 +21,7 @@ import { TeamService } from '../team.service';
 export class RevertTeamComponent implements OnInit {
 
   @Input('action') action: string = '';
-  @Output() closeModal = new EventEmitter<string>();
+    @Output() closeModal = new EventEmitter<RevertTeamOptions>();
   
   team: Team | null = null;
   title = '';
@@ -59,41 +63,42 @@ export class RevertTeamComponent implements OnInit {
       this.reset();
     else {
       this.teamService.setPlayersByPosition(this.team.players);
-      this.close('', false);
+      this.close(this.team.formation.id, false);
     }
   }
 
   async reset() {
     let formation = this.teamService.getDefaultFormation()
 
-    // will be false if sent here form cancelChanges
     if (this.team) {
-      formation = this.team.formation.id;
+        formation = this.team.formation;
+    //   try {
+    //     const result = await lastValueFrom(this.teamApiService.deleteTeam());
 
-      try {
-        const result = await lastValueFrom(this.teamApiService.deleteTeam());
-
-        if (result.success) {
-          this.alertService.toggleAlert("ALERT_TEAM_DELETE_SUCCESS", AlertType.Success);
-        }
-        else {
-          this.throwDeleteFailure();
-        }
-      }
-      catch (e) {
-        this.throwDeleteFailure();
-      }
+    //     if (result.success) {
+    //       this.alertService.toggleAlert("ALERT_TEAM_DELETE_SUCCESS", AlertType.Success);
+    //     }
+    //     else {
+    //       this.throwDeleteFailure();
+    //     }
+    //   }
+    //   catch (e) {
+    //     this.throwDeleteFailure();
+    //   }
     }
 
-    this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(4), new Array<Player>(4), new Array<Player>(2));
-    this.close(formation.toString(), true);
+      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation.structure[0]), new Array<Player>(+formation.structure[1]), new Array<Player>(+formation.structure[2]));
+      this.close(formation.id, true);
   }
 
-  close(formation: string, allowCancel: boolean) {
+  close(formation: number, allowCancel: boolean) {
     if (!allowCancel || formation)
       this.teamService.canCancelChanges = allowCancel;
 
-    this.closeModal.emit(formation);
+    this.closeModal.emit({
+        action: '',
+        formation:  formation
+    });
   }
 
   throwDeleteFailure() {

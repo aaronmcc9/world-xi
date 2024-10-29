@@ -118,19 +118,7 @@ namespace api.Services.FriendRequestService
           response.Message = $"You and {userSent.Username} are now friends!";
         }
         else if (dbfriendRequest.Status == FriendRequestStatus.Rejected)
-        {
-          //   var friendship = this._dataContext.Friendship
-          //       .FirstOrDefault(f => f.Users.Contains(userOne)
-          //         && f.Users.Contains(userTwo));
-
-          //   if (friendship == null)
-          //   {
-          //     response.Success = false;
-          //     response.Message = "Friend Request does not exist.";
-          //     return response;
-          //   }
           response.Message = $"Friend request denied for {userSent.Username}.";
-        }
 
         this._dataContext.FriendRequest.Update(friendRequest);
         await this._dataContext.SaveChangesAsync();
@@ -151,6 +139,11 @@ namespace api.Services.FriendRequestService
 
       return response;
     }
+
+    // private bool PendingFriendRequestExists(){
+    //     this._dataContext.FriendRequest
+    //         .Any(fr => fr.);
+    // }
 
     private int GetUserId()
     {

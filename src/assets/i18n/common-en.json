@@ -78,6 +78,7 @@
     "OK": "Ok",
     "PASSWORD": "Password",
     "PASSWORD_REQUIRED": "Password is required",
+    "PENDING": "Pending",
     "PLACEHOLDE_ALL": "-- All --",
     "PLAYER_DELETED": "{{firstName}} {{lastName}} has been deleted",
     "PLACEHOLDE_DYNAMIC": "-- {{param}} --",

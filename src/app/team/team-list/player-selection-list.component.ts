@@ -64,8 +64,6 @@ export class PlayerSelectionListComponent implements OnInit, OnDestroy {
       this.itemsViewingCount - playerTotals['totalOnPage'] :
       this.itemsViewingCount + playerTotals['totalOnPage'];
 
-      console.log(this.skip, this.take);
-    
     this.canPageRight = this.totalPlayers > this.itemsViewingCount;
   }
 

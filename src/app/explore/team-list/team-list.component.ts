@@ -6,7 +6,6 @@ import { TeamApiService } from 'src/app/api/team/team-api.service';
 import { FriendRequestApiService } from 'src/app/api/User/Friend/friend request/friend-request-api.service';
 import { FriendRequestStatus } from 'src/app/api/User/Friend/friend request/friend-request-status.enum';
 import { FriendRequest } from 'src/app/api/User/Friend/friend request/friend-request.dto';
-import { User } from 'src/app/api/User/user.dto';
 import { Team } from 'src/app/team/team.model';
 
 @Component({
@@ -85,12 +84,12 @@ export class TeamListComponent implements OnChanges {
       const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
 
       if (result.success) {
-        this.alertService.toggleAlert("", AlertType.Info, result.message,)
+        this.alertService.toggleAlert("", AlertType.Info, result.message);
         this.updateTeamByUser(userRequestedId, false, FriendRequestStatus.Pending);
 
       }
       else {
-        this.alertService.toggleAlert("", AlertType.Danger, result.message)
+        this.alertService.toggleAlert("", AlertType.Danger, result.message);
         this.updateTeamByUser(userRequestedId, false, undefined);
       }
 
@@ -102,6 +101,8 @@ export class TeamListComponent implements OnChanges {
 
   }
 
+  //update values for specific team
+  // updateSendingStatus indicates whether the loading spinner for completing friend request should be displayed
   private updateTeamByUser(userRequestedId: number, updateSendingStatus: boolean, friendRequestStatus?: FriendRequestStatus) {
     this.teams.map((team: Team) => {
 

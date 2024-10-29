@@ -84,7 +84,7 @@ export class TeamService {
     this.canCancelChanges = false;
   }
 
-  getDefaultFormation(): number {
-    return this.formations.find((f: Formation) => f.structure == "442")?.id ?? 0;
+  getDefaultFormation(): Formation {
+    return this.formations.find((f: Formation) => f.structure == "442")!;
   }
 }

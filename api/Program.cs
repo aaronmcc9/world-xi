@@ -59,7 +59,9 @@ builder.Services.AddCors(options => options.AddPolicy(name: "worldxi",
 
 var app = builder.Build();
 
-app.UseCors("worldxi");
+// "worldxi")
+app.UseCors(options =>
+    options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

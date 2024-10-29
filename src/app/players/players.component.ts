@@ -25,8 +25,6 @@ export class PlayersComponent implements OnInit, OnDestroy {
     if (colObs) {
       colObs.subscribe((cols) => {
         this.cols = cols;
-        console.log(this.cols);
-
       });
     }
 

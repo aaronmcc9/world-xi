@@ -113,7 +113,6 @@ export class ModifyPlayerComponent implements OnInit {
   }
 
   async onUpdate() {
-    console.log(this.form.value);
     if (!this.player) {
       this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Danger);
       throw Error("Invalid Operation");
@@ -159,7 +158,6 @@ export class ModifyPlayerComponent implements OnInit {
       }
     }
     catch (e) {
-      console.log(e);
       this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
       this.isLoading = false;
     }

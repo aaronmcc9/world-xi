@@ -161,7 +161,6 @@ export class SettingsComponent implements OnInit {
 
   getError(controlName: string): string {
 
-    console.log(this.usernameExists);
     if (this.usernameExists && controlName == "username")
       return this.translateService.instant("USERNAME_EXISTS");
     if (this.teamNameExists && controlName == "teamName")

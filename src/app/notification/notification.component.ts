@@ -30,8 +30,6 @@ export class NotificationComponent implements OnChanges {
     private notificationService: NotificationService) { }
 
   ngOnChanges(): void {
-    console.log(this.focused)
-
     if (!this.notification)
       return;
 
@@ -110,7 +108,6 @@ export class NotificationComponent implements OnChanges {
       }
     }
     catch(e){
-      console.log(e)
       this.alertService.toggleAlert("ALERT_NOTIFICATION_UPDATE_FAILURE", AlertType.Danger)
     }
   }

@@ -12,7 +12,7 @@ import { AlertService } from './alert.service';
   animations: [
     trigger('fade', [
       state('invisible', style({
-        transform: 'translateY(0)'
+        transform: 'translateY(-20px)'
       })),
       state('visible', style({
         transform: 'translateY(70px)'

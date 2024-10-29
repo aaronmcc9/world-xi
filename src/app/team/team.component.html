@@ -22,9 +22,9 @@
                             <div class="buttons" [ngStyle]="{'margin-left': belowMediumSize ? '0' : 'auto'}">
                                 <button type="submit" [disabled]="!canSave" (click)="save()"
                                     class="btn btn-success">{{'SAVE' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal('Reset')"
+                                <button type="button" (click)="toggleRevertModal({action:'Reset'})"
                                     class="btn btn-warning">{{'RESET' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal('Cancel')"
+                                <button type="button" (click)="toggleRevertModal({action:'Cancel'})"
                                     [disabled]="!teamService.canCancelChanges" class="btn btn-danger">{{'CANCEL' |
                                     translate}}</button>
                             </div>

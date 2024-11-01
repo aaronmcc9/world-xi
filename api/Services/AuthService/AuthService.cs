@@ -120,7 +120,7 @@ namespace api.Services.AuthService
       SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
       {
         Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.Now.AddDays(1),
+        Expires = DateTime.Now.AddHours(8),
         SigningCredentials = credentials
       };
 

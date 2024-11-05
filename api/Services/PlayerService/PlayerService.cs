@@ -70,9 +70,9 @@ namespace api.Services.PlayerService
       var response = new ServiceResponse<PlayerDto>();
       try
       {
-        var player = this.Query()
+        var player = await this.Query()
             .Where(p => p.Id == id)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         if (player == null)
         {

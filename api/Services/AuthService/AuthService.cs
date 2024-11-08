@@ -120,8 +120,8 @@ namespace api.Services.AuthService
       SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
       {
         Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.Now.AddHours(8),
-        SigningCredentials = credentials
+        Expires = DateTime.Now.AddDays(1),
+          SigningCredentials = credentials
       };
 
       JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();

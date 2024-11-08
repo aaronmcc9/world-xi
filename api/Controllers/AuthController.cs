@@ -26,7 +26,7 @@ namespace api.Controllers
       var response = await this._authService.Register(new User { Email = user.Email }, user.Password);
 
       if (!response.Success)
-        return BadRequest(response);
+        return BadRequest(response.Message);
 
       return Ok(response);
     }

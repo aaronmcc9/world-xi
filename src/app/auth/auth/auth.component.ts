@@ -8,6 +8,7 @@ import { AlertService } from 'src/app/alert/alert.service';
 import { AuthApiService } from 'src/app/api/auth/auth-api.service';
 import { ServiceResponse } from 'src/app/api/Common/service-response.dto';
 import { AuthService } from './auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface UserRequestDto {
   email: string,
@@ -72,9 +73,8 @@ export class AuthComponent implements OnInit {
         this.authService.setToken(res.data)
         this.router.navigate(['players']);
       },
-      error: (res: ServiceResponse<string>) => {
-        // this.error = errorMessage;
-        this.alertService.toggleAlert(res.message, AlertType.Danger)
+      error: (res: HttpErrorResponse) => {
+          this.alertService.toggleAlert('', AlertType.Danger, res.error.message)
       }
     })
 

@@ -4,47 +4,56 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Dal
 {
-    internal class Repository<TEntity> : IRepository<TEntity>
+    public class Repository<TEntity> : IRepository<TEntity>
     where TEntity : class
     {
 
         internal DataContext context;
         internal DbSet<TEntity> dbSet;
+        internal UnitOfWork unitOfWork;
 
-        public Repository(DataContext context)
+        public Repository(UnitOfWork unitOfWork, DataContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();
+            this.unitOfWork = unitOfWork;
         }
 
         public virtual void Create(TEntity entity)
         {
             dbSet.Add(entity);
+            unitOfWork.Save();
         }
 
-        public virtual Task CreateAsync(TEntity entity)
+        public virtual async Task CreateAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            dbSet.Add(entity);
+            await unitOfWork.SaveAsync();
         }
 
         public virtual void Delete(object id)
         {
             TEntity entity = dbSet.Find(id);
             Delete(entity);
+            unitOfWork.Save();
         }
 
         public virtual void Delete(TEntity entity)
         {
             if (context.Entry(entity).State == EntityState.Detached)
-            {
                 dbSet.Attach(entity);
-            }
+
             dbSet.Remove(entity);
+            unitOfWork.Save();
         }
 
-        public virtual Task DeleteAsync(TEntity entity)
+        public virtual async Task DeleteAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            if (context.Entry(entity).State == EntityState.Detached)
+                dbSet.Attach(entity);
+
+            dbSet.Remove(entity);
+            await unitOfWork.SaveAsync();
         }
 
         public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filter = null,
@@ -67,11 +76,16 @@ namespace api.Dal
         {
             dbSet.Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
+
+            unitOfWork.Save();
         }
 
-        public virtual Task UpdateAsync(TEntity entity)
+        public virtual async Task UpdateAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            dbSet.Attach(entity);
+            context.Entry(entity).State = EntityState.Modified;
+
+            await unitOfWork.SaveAsync();
         }
     }
 }

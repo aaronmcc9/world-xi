@@ -7,6 +7,7 @@ namespace api
     {
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
+        // public DataContext()
         {
 
         }

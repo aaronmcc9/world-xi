@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using api;
+using api.Dal;
+using api.Dal.Contracts.Common;
 using api.Services.AuthService;
 using api.Services.FormationService;
 using api.Services.FriendRequestService;
@@ -46,6 +48,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFormationService, FormationService>();
 builder.Services.AddScoped<IFriendRequestService, FriendRequestService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 

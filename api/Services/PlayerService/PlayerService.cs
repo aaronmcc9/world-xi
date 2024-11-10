@@ -11,22 +11,20 @@ namespace api.Services.PlayerService
 {
     public class PlayerService : IPlayerService
     {
-        private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
         private IUnitOfWork unitOfWork;
 
-        public PlayerService(DataContext dataContext, IMapper mapper, IUnitOfWork unitOfWork)
+        public PlayerService(IMapper mapper, IUnitOfWork unitOfWork)
         {
-            this._dataContext = dataContext;
             this._mapper = mapper;
             this.unitOfWork = unitOfWork;
-    }
+        }
 
         public IQueryable<Player> Query()
         {
-            return this._dataContext.Players
-                .OrderBy(p => p.FirstName)
-                .ThenBy(p => p.LastName);
+            return this.unitOfWork.Repository<Player>()
+                .Query(null, (p) => p.OrderBy(p => p.FirstName)
+                .ThenBy(p => p.LastName));
         }
 
         public async Task<ServiceResponse<PagedResponseDto<PlayerDto>>> FetchAllPlayers(int? skip, int? take)
@@ -133,8 +131,6 @@ namespace api.Services.PlayerService
             try
             {
                 var player = this._mapper.Map<Player>(newPlayer);
-                // this._dataContext.Players.Add(player);
-                // await this._dataContext.SaveChangesAsync();
                 await this.unitOfWork.Repository<Player>().CreateAsync(player);
 
                 response.Data = await this.Query()
@@ -157,8 +153,7 @@ namespace api.Services.PlayerService
             try
             {
                 var player = this._mapper.Map<Player>(playerToUpdate);
-                this._dataContext.Players.Update(player);
-                await this._dataContext.SaveChangesAsync();
+                await this.unitOfWork.Repository<Player>().UpdateAsync(player);
 
                 response.Data = await this.Query()
                   .Select(p => this._mapper.Map<PlayerDto>(p))
@@ -191,8 +186,7 @@ namespace api.Services.PlayerService
                 }
 
                 var player = this._mapper.Map<Player>(playerToDelete);
-                this._dataContext.Players.Remove(player);
-                await this._dataContext.SaveChangesAsync();
+                await this.unitOfWork.Repository<Player>().DeleteAsync(player);
 
                 response.Data = await this.Query()
                   .Select(p => this._mapper.Map<PlayerDto>(p))

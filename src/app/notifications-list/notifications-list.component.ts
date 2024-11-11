@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NotificationApiService } from 'api/Dto/User/Notification/notification-api.service';
 import { Notification } from '../api/User/Notification/notification.dto';
 import { lastValueFrom } from 'rxjs';
 import { AlertService } from '../alert/alert.service';
 import { AlertType } from '../alert/alert-type.enum';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({

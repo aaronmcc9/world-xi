@@ -12,74 +12,79 @@ import { DropdownDirective } from 'src/app/common/dropdown.directive';
 import { NotificationService } from 'src/app/notification/notification.service';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  collapsed = true;
-  isAuthenticated = false;
-  userSub = new Subscription;
+    collapsed = true;
+    isAuthenticated = false;
+    userSub = new Subscription;
 
-  //icon
-  settingsIcon = faGear;
-  notificationIcon = faBell;
+    //icon
+    settingsIcon = faGear;
+    notificationIcon = faBell;
 
-  notifications: Notification[] = [];
-  skip = 0;
-  take = 3;
-  notificationType: NotificationType = NotificationType.All;
-  hasUnreadNotifications = false;
+    notifications: Notification[] = [];
+    skip = 0;
+    take = 3;
+    notificationType: NotificationType = NotificationType.All;
+    hasUnreadNotifications = false;
 
-  @ViewChild('dd') element: DropdownDirective | null = null;
+    @ViewChild('dd') element: DropdownDirective | null = null;
 
 
-  constructor(private authService: AuthService, private notificationApiService: NotificationApiService,
-    private alertService: AlertService, private notificationService: NotificationService,
-    private router: Router) { }
+    constructor(private authService: AuthService, private notificationApiService: NotificationApiService,
+        private alertService: AlertService, private notificationService: NotificationService,
+        private router: Router) { }
 
-  async ngOnInit(): Promise<void> {
-    this.userSub = this.authService.userLoggedIn.subscribe(async (isLoggedIn) => {
+    async ngOnInit(): Promise<void> {
+        this.userSub = this.authService.userLoggedIn.subscribe(async (isLoggedIn) => {
 
-      this.notificationService.notifications.subscribe((notifications: Notification[]) => {
-        this.notifications = notifications;
-        this.hasUnreadNotifications = this.notifications.some(n => !n.read);
-      })
+            this.notificationService.notifications.subscribe((notifications: Notification[]) => {
+                this.notifications = notifications;
+                this.hasUnreadNotifications = this.notifications.some(n => !n.read);
+            })
 
-      //dont keep fetching only if value chnages
-      //if auth is false here, it will be true in a moment if this case is met
-      if (!this.isAuthenticated && this.isAuthenticated != isLoggedIn) {
-        await this.fetchUserNotifications()
-      }
-      this.isAuthenticated = isLoggedIn;
-    });
-  }
-
-  logout() {
-    this.authService.logout();
-  }
-
-  async fetchUserNotifications(skip?: number, take?: number) {
-    //open event happens after, so while opening, the element isOpen will appear as false
-    if (this.element?.isOpen)
-      return;
-
-    try {
-      const result = await lastValueFrom(this.notificationApiService.fetchNotifications(skip ?? this.skip, take ?? this.take));
-
-      if (result.success) {
-        this.notificationService.notifications.next(result.data.items);
-      }
-      else {
-        this.alertService.toggleAlert("", AlertType.Danger, result.message);
-      }
+            //dont keep fetching only if value changes
+            //if auth is false here, it will be true in a moment if this case is met
+            if (!this.isAuthenticated && this.isAuthenticated != isLoggedIn) {
+                await this.fetchUserNotifications()
+            }
+            this.isAuthenticated = isLoggedIn;
+        });
     }
-    catch (e) {
-      this.alertService.toggleAlert("ALERT_NOTIFICATION_FETCH_FAILURE", AlertType.Danger);
-    }
-  }
 
-  onNotificationClick(notificationId: number) {
-    this.router.navigate(['notifications/' + notificationId])
-  }
+    logout() {
+        this.authService.logout();
+    }
+
+    async fetchUserNotifications(skip?: number, take?: number) {
+        try {
+            const result = await lastValueFrom(this.notificationApiService.fetchNotifications(skip ?? this.skip, take ?? this.take));
+
+            if (result.success) {
+                this.notificationService.notifications.next(result.data.items);
+            }
+            else {
+                this.alertService.toggleAlert("", AlertType.Danger, result.message);
+            }
+        }
+        catch (e) {
+            this.alertService.toggleAlert("ALERT_NOTIFICATION_FETCH_FAILURE", AlertType.Danger);
+        }
+    }
+
+    onNotificationClick(notificationId: number) {
+        this.router.navigate(['notifications/' + notificationId])
+    }
+
+    async toggleNotificationTray(open: boolean) {
+        if (this.element) {
+            if (!this.element.isOpen && open)
+                await this.fetchUserNotifications();
+
+            this.element.setOpen(open);
+        }
+    }
 }

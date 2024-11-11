@@ -16,7 +16,7 @@
                 <li *ngIf="isAuthenticated" routerLinkActive="active"><a routerLink="/explore">{{'EXPLORE' |
                         translate}}</a></li>
                 <li *ngIf="isAuthenticated" class="dropdown" #dd='appDropdown'appDropdown >
-                    <a class="dropdown-toggle" (click)="fetchUserNotifications()">
+                    <a class="dropdown-toggle" (click)="toggleNotificationTray(!element?.isOpen)">
                         <fa-icon [ngClass]="{'unread': hasUnreadNotifications}" [icon]="notificationIcon"></fa-icon>
                         <span class="caret"></span>
                     </a>
@@ -27,7 +27,7 @@
                         </li>
                         <label class="notification-empty" *ngIf="notifications.length === 0">{{'NOTIFICATIONS_EMPTY' | translate}}</label>
                         <div class="view-all-container">
-                                <a class="btn btn-link" routerLink="/notifications">{{'VIEW_ALL_NOTIFICATIONS' | translate}}</a>
+                                <a class="btn btn-link" (click)="toggleNotificationTray(false)" routerLink="/notifications">{{'VIEW_ALL_NOTIFICATIONS' | translate}}</a>
                         </div>
                     </ul>
                 </li>

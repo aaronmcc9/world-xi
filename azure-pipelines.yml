@@ -1,0 +1,57 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  name: DefaultWorld
+
+variables:
+  # serviceConnection: ${serviceConnection}  # <-- update
+  # webAppName: ${webAppName}               # <-- update
+  buildConfiguration: 'Release'
+  projectPath: 'api/api.csproj'   # e.g. src/WebApp/WebApp.csproj
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - checkout: self
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '8.0.x'
+    - script: |
+        dotnet restore $(projectPath)
+        dotnet publish $(projectPath) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
+      displayName: Restore & Publish
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
+        replaceExistingArchive: true
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployWeb
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(serviceConnection)'
+              appName: '$(webAppName)'
+              appType: webApp
+              package: '$(Pipeline.Workspace)/drop/drop.zip'

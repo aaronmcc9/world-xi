@@ -12,7 +12,7 @@ variables:
   buildConfiguration: 'Release'
   projectPath: 'api/api.csproj'
   clientPath: '.' # Angular project is in the repo root
-  distSubFolder: 'world-xi' # value in angular.json "outputPath"
+  # distSubFolder: 'world-xi' # value in angular.json "outputPath"
 
 stages:
 - stage: Build
@@ -35,37 +35,40 @@ stages:
     
     - script: |
         npm ci
-        npx ng version
-        npx ng build --configuration production --output-path "$(Build.ArtifactStagingDirectory)/ngdist"
+        npm run build -- --configuration production
       displayName: Build Angular
-      workingDirectory: '$(Build.SourcesDirectory)'   # your angular.json is at repo root
+      workingDirectory: '$(Build.SourcesDirectory)'
+
 
     - powershell: |
-       $publish = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
-       $ngdist  = "$(Build.ArtifactStagingDirectory)\ngdist"
-       $browser = Join-Path $ngdist "browser"
+        $srcRoot = "$(Build.SourcesDirectory)"
+        $publish = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
 
-       Write-Host "Looking for Angular output:"
-       Write-Host "  ngdist:  $ngdist"
-       Write-Host "  browser: $browser"
+        $dist = Join-Path $srcRoot "dist\world-xi"
+        $browser = Join-Path $dist "browser"
 
-       if (Test-Path $browser) {
-         $finalDist = $browser
-       } elseif (Test-Path $ngdist) {
-         $finalDist = $ngdist
-       } else {
-         Write-Host "DEBUG: Listing ngdist parent for diagnostics:"
-         Get-ChildItem -Recurse -Force (Split-Path $ngdist -Parent) |
-           Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
-         throw "Could not find Angular build output (expected $browser or $ngdist)."
-       }
+        Write-Host "Looking for Angular build output:"
+        Write-Host "  $browser"
+        Write-Host "  $dist"
 
-       Write-Host "Copying from: $finalDist"
-       Write-Host "Copying to:   $publish"
+        if (Test-Path $browser) { $final = $browser }
+        elseif (Test-Path $dist) { $final = $dist }
+        else {
+          Write-Host "DEBUG: dist folder tree:"
+          if (Test-Path (Join-Path $srcRoot "dist")) {
+            Get-ChildItem -Recurse -Force (Join-Path $srcRoot "dist") |
+              Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
+          } else {
+            Write-Host "No dist folder found at $(Join-Path $srcRoot 'dist')"
+          }
+          throw "Angular build output not found at dist/world-xi[/browser]."
+        }
 
-       New-Item -ItemType Directory -Force -Path $publish | Out-Null
-       robocopy $finalDist $publish /E /NFL /NDL /NJH /NJS /NP
-       if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
+        Write-Host "Copying from: $final"
+        Write-Host "Copying to:   $publish"
+        New-Item -ItemType Directory -Force -Path $publish | Out-Null
+        robocopy $final $publish /E /NFL /NDL /NJH /NJS /NP
+        if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
       displayName: Copy Angular dist to wwwroot
 
 

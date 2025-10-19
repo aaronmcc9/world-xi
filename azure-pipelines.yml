@@ -32,68 +32,40 @@ stages:
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x'
-
+    
     - script: |
-        npm ci --prefix $(clientPath)
-        npm run build --prefix $(clientPath)
+        npm ci
+        npx ng version
+        npx ng build --configuration production --output-path "$(Build.ArtifactStagingDirectory)/ngdist"
       displayName: Build Angular
+      workingDirectory: '$(Build.SourcesDirectory)'   # your angular.json is at repo root
 
-    # Copy Angular dist into published wwwroot
     - powershell: |
-        $srcRoot    = "$(Build.SourcesDirectory)"
-        $clientPath = "$(clientPath)"
-        $publish    = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
-    
-        # 1) Locate and parse angular.json
-        $angPath = Join-Path (Join-Path $srcRoot $clientPath) "angular.json"
-        if (!(Test-Path $angPath)) {
-          throw "angular.json not found at $angPath. Set variables.clientPath correctly."
-        }
-    
-        Write-Host "Reading angular.json from: $angPath"
-        $json = Get-Content $angPath -Raw | ConvertFrom-Json
-    
-        # 2) Find the first project that has a build->options->outputPath
-        $projects = $json.projects | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-        $outputPath = $null
-        foreach ($p in $projects) {
-          $proj = $json.projects.$p
-          $op   = $proj.architect.build.options.outputPath
-          if ($op) { $outputPath = $op; $projectName = $p; break }
-        }
-    
-        if (-not $outputPath) {
-          throw "Could not find build.options.outputPath in angular.json"
-        }
-    
-        # 3) Resolve the absolute dist path
-        if ([System.IO.Path]::IsPathRooted($outputPath)) {
-          $distAbs = $outputPath
-        } else {
-          $distAbs = Join-Path (Join-Path $srcRoot $clientPath) $outputPath
-        }
-    
-        # 4) Prefer .../browser if it exists (Angular 16+), else use outputPath
-        $browserPath = Join-Path $distAbs "browser"
-        if (Test-Path $browserPath) {
-          $finalDist = $browserPath
-        } elseif (Test-Path $distAbs) {
-          $finalDist = $distAbs
-        } else {
-          Write-Host "DEBUG: Listing dist parent for diagnostics:"
-          Get-ChildItem -Recurse -Force (Split-Path $distAbs -Parent) | 
-            Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
-          throw "Built dist folder not found. Expected: $browserPath or $distAbs"
-        }
-    
-        Write-Host "Angular project: $projectName"
-        Write-Host "Resolved outputPath: $outputPath"
-        Write-Host "Copying from: $finalDist"
-        Write-Host "Copying to:   $publish"
-    
-        New-Item -ItemType Directory -Force -Path $publish | Out-Null
-        robocopy $finalDist $publish /E /NFL /NDL /NJH /NJS /NP
-        if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
+       $publish = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
+       $ngdist  = "$(Build.ArtifactStagingDirectory)\ngdist"
+       $browser = Join-Path $ngdist "browser"
+
+       Write-Host "Looking for Angular output:"
+       Write-Host "  ngdist:  $ngdist"
+       Write-Host "  browser: $browser"
+
+       if (Test-Path $browser) {
+         $finalDist = $browser
+       } elseif (Test-Path $ngdist) {
+         $finalDist = $ngdist
+       } else {
+         Write-Host "DEBUG: Listing ngdist parent for diagnostics:"
+         Get-ChildItem -Recurse -Force (Split-Path $ngdist -Parent) |
+           Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
+         throw "Could not find Angular build output (expected $browser or $ngdist)."
+       }
+
+       Write-Host "Copying from: $finalDist"
+       Write-Host "Copying to:   $publish"
+
+       New-Item -ItemType Directory -Force -Path $publish | Out-Null
+       robocopy $finalDist $publish /E /NFL /NDL /NJH /NJS /NP
+       if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
       displayName: Copy Angular dist to wwwroot
 
 

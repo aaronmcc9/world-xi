@@ -4,72 +4,86 @@ trigger:
       - main
 
 pool:
-  name: DefaultWorld
+  name: DefaultWorld   # your self-hosted agent pool
 
 variables:
-  # serviceConnection: ${serviceConnection}  # <-- update
-  # webAppName: ${webAppName}               # <-- update
+  # Set these in the pipeline UI (Variables tab) or inline here:
+  # serviceConnection: 'azure-subscription-conn'
+  # webAppName: 'my-live-site'
   buildConfiguration: 'Release'
   projectPath: 'api/api.csproj'
-  clientPath: '.' # Angular project is in the repo root
-  # distSubFolder: 'world-xi' # value in angular.json "outputPath"
+  clientPath: '.'   # Angular project is at repo root (angular.json in /)
 
 stages:
 - stage: Build
+  displayName: Build
   jobs:
   - job: Build
+    displayName: Build & Package
     steps:
     - checkout: self
+
+    # ----- .NET restore/publish -----
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
         version: '8.0.x'
+
     - script: |
+        echo === DOTNET RESTORE/PUBLISH ===
+        dotnet --info
         dotnet restore $(projectPath)
         dotnet publish $(projectPath) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
-      displayName: Restore & Publish
+      displayName: Restore & Publish .NET
 
+    # ----- Angular build -----
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x'
-    
+
     - script: |
+        echo === NPM CI @ %CD% ===
         npm ci
-        npx ng version
-        npx ng build --configuration production --output-path "$(Build.ArtifactStagingDirectory)/ngdist"
-      displayName: Build Angular
-      workingDirectory: '$(Build.SourcesDirectory)'   # your angular.json is at repo root
+      displayName: NPM CI (Angular)
+      workingDirectory: '$(Build.SourcesDirectory)'
 
+    # Uses local @angular/cli via package.json "build": "ng build"
+    - script: |
+        echo === NPM RUN BUILD (production) @ %CD% ===
+        npm run build -- --configuration production
+      displayName: Build Angular (npm run build)
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+    # ----- Copy Angular dist into API publish/wwwroot -----
     - powershell: |
-       $publish = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
-       $ngdist  = "$(Build.ArtifactStagingDirectory)\ngdist"
-       $browser = Join-Path $ngdist "browser"
+        $srcRoot = "$(Build.SourcesDirectory)"
+        $publish = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
+        $dist    = Join-Path $srcRoot "dist\world-xi"
+        $browser = Join-Path $dist "browser"
 
-       Write-Host "Looking for Angular output:"
-       Write-Host "  ngdist:  $ngdist"
-       Write-Host "  browser: $browser"
+        Write-Host "=== Checking Angular dist folders ==="
+        Write-Host "Expect: $browser (Angular 16+), else $dist"
+        if (Test-Path $browser) { $final = $browser }
+        elseif (Test-Path $dist) { $final = $dist }
+        else {
+          Write-Host "No dist found. Tree under dist/ for diagnostics:"
+          if (Test-Path (Join-Path $srcRoot "dist")) {
+            Get-ChildItem -Recurse -Force (Join-Path $srcRoot "dist") |
+              Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
+          } else {
+            Write-Host "dist/ does not exist at $(Join-Path $srcRoot 'dist')"
+          }
+          throw "Angular build output not found at dist/world-xi[/browser]."
+        }
 
-       if (Test-Path $browser) {
-         $finalDist = $browser
-       } elseif (Test-Path $ngdist) {
-         $finalDist = $ngdist
-       } else {
-         Write-Host "DEBUG: Listing ngdist parent for diagnostics:"
-         Get-ChildItem -Recurse -Force (Split-Path $ngdist -Parent) |
-           Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
-         throw "Could not find Angular build output (expected $browser or $ngdist)."
-       }
-
-       Write-Host "Copying from: $finalDist"
-       Write-Host "Copying to:   $publish"
-
-       New-Item -ItemType Directory -Force -Path $publish | Out-Null
-       robocopy $finalDist $publish /E /NFL /NDL /NJH /NJS /NP
-       if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
+        Write-Host "Copying from: $final"
+        Write-Host "Copying to:   $publish"
+        New-Item -ItemType Directory -Force -Path $publish | Out-Null
+        robocopy $final $publish /E /NFL /NDL /NJH /NJS /NP
+        if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
       displayName: Copy Angular dist to wwwroot
 
-
-    # Zip & publish artifact
+    # ----- Package artifact -----
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
@@ -77,12 +91,14 @@ stages:
         archiveType: zip
         archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
         replaceExistingArchive: true
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
 
 - stage: Deploy
+  displayName: Deploy to App Service
   dependsOn: Build
   jobs:
   - deployment: DeployWeb
@@ -97,5 +113,5 @@ stages:
             inputs:
               azureSubscription: '$(serviceConnection)'
               appName: '$(webAppName)'
-              appType: webApp
+              appType: 'webApp'
               package: '$(Pipeline.Workspace)/drop/drop.zip'

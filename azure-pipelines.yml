@@ -12,7 +12,7 @@ variables:
   buildConfiguration: 'Release'
   projectPath: 'api/api.csproj'
   clientPath: '.' # Angular project is in the repo root
-  distSubFolder: 'world-xi' # value in angular.json "outputPath"
+  # distSubFolder: 'world-xi' # value in angular.json "outputPath"
 
 stages:
 - stage: Build
@@ -40,58 +40,74 @@ stages:
 
     # Copy Angular dist into published wwwroot
     - powershell: |
-        $srcRoot = "$(Build.SourcesDirectory)"
+        $srcRoot    = "$(Build.SourcesDirectory)"
         $clientPath = "$(clientPath)"
-        $distSub  = "$(distSubfolder)"
-        $publish  = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
+        $publish    = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
 
-        $distRoot = Join-Path $srcRoot $clientPath
-        $distRoot = Join-Path $distRoot "dist"
-
-        Write-Host "Looking for Angular dist here:"
-        Write-Host "  $distRoot"
-        if ($distSub -ne "") {
-          $candidate1 = Join-Path $distRoot $distSub        # dist/<app-name>
-          $candidate2 = Join-Path $candidate1 "browser"     # dist/<app-name>/browser (Angular 16+)
-        } else {
-          $candidate1 = $distRoot                           # dist/
-          $candidate2 = Join-Path $distRoot "browser"       # dist/browser (rare)
+        # 1) Locate and parse angular.json
+        $angPath = Join-Path (Join-Path $srcRoot $clientPath) "angular.json"
+        if (!(Test-Path $angPath)) {
+          throw "angular.json not found at $angPath. Set variables.clientPath correctly."
         }
 
-        Write-Host "Candidate paths:"
-        Write-Host "  $candidate2"
-        Write-Host "  $candidate1"
+        Write-Host "Reading angular.json from: $angPath"
+        $json = Get-Content $angPath -Raw | ConvertFrom-Json
 
-        if (Test-Path $candidate2) {
-          $finalDist = $candidate2
-        } elseif (Test-Path $candidate1) {
-          $finalDist = $candidate1
-        } else {
-          Write-Host "Contents of dist for debugging:"
-          Get-ChildItem -Recurse -Force $distRoot | Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
-          throw "Could not find Angular build output. Expected: $candidate2 or $candidate1"
+        # 2) Find the first project that has a build->options->outputPath
+        $projects = $json.projects | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+        $outputPath = $null
+        foreach ($p in $projects) {
+          $proj = $json.projects.$p
+          $op   = $proj.architect.build.options.outputPath
+          if ($op) { $outputPath = $op; $projectName = $p; break }
         }
 
+        if (-not $outputPath) {
+          throw "Could not find build.options.outputPath in angular.json"
+        }
+
+        # 3) Resolve the absolute dist path
+        if ([System.IO.Path]::IsPathRooted($outputPath)) {
+          $distAbs = $outputPath
+        } else {
+          $distAbs = Join-Path (Join-Path $srcRoot $clientPath) $outputPath
+        }
+
+        # 4) Prefer .../browser if it exists (Angular 16+), else use outputPath
+        $browserPath = Join-Path $distAbs "browser"
+        if (Test-Path $browserPath) {
+          $finalDist = $browserPath
+        } elseif (Test-Path $distAbs) {
+          $finalDist = $distAbs
+        } else {
+          Write-Host "DEBUG: Listing dist parent for diagnostics:"
+          Get-ChildItem -Recurse -Force (Split-Path $distAbs -Parent) | 
+            Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize
+          throw "Built dist folder not found. Expected: $browserPath or $distAbs"
+        }
+
+        Write-Host "Angular project: $projectName"
+        Write-Host "Resolved outputPath: $outputPath"
         Write-Host "Copying from: $finalDist"
         Write-Host "Copying to:   $publish"
 
         New-Item -ItemType Directory -Force -Path $publish | Out-Null
         robocopy $finalDist $publish /E /NFL /NDL /NJH /NJS /NP
         if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
-      displayName: Copy Angular dist to wwwroot
+          displayName: Copy Angular dist to wwwroot
 
-    # Zip & publish artifact
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
-        replaceExistingArchive: true
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
+        # Zip & publish artifact
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+            includeRootFolder: false
+            archiveType: zip
+            archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
+            replaceExistingArchive: true
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'drop'
 
 - stage: Deploy
   dependsOn: Build

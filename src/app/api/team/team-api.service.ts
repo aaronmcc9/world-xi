@@ -7,6 +7,7 @@ import { PagedResponseDto } from "../Common/paged-response.dto";
 import { ServiceResponse } from "../Common/service-response.dto";
 import { ModifyTeamDto } from "./modify-team.dto";
 import { Settings } from "./settings.dto";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,7 @@ import { Settings } from "./settings.dto";
 
 export class TeamApiService {
 
-    private readonly url = "https://localhost:7258/api/team/";
+    private readonly url = environment.apiBaseUrl + "/team/";
 
     constructor(private http: HttpClient, private apiService: ApiService) { }
 

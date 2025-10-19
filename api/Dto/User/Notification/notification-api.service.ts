@@ -5,13 +5,14 @@ import { ApiService } from "src/app/api/api.service";
 import { PagedResponseDto } from "src/app/api/Common/paged-response.dto";
 import { ServiceResponse } from "src/app/api/Common/service-response.dto";
 import { Notification } from "src/app/api/User/Notification/notification.dto";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
 })
 export class NotificationApiService {
 
-    private readonly url = "https://localhost:7258/api/notification/";
+    private readonly url = environment.apiBaseUrl + "/notification/";
     constructor(private apiService: ApiService, private http: HttpClient) {
 
     }

@@ -6,13 +6,14 @@ import { ServiceResponse } from "src/app/api/Common/service-response.dto";
 import { Notification } from "../../Notification/notification.dto";
 import { FriendRequest } from "./friend-request.dto";
 import { UpdateFriendRequest } from "./update-friend-request.dto";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
 })
 export class FriendRequestApiService{
 
-    private readonly url = "https://localhost:7258/api/friendrequest/"
+    private readonly url = environment.apiBaseUrl + "/friendrequest/"
 
     constructor(private http: HttpClient, private apiService: ApiService){
 

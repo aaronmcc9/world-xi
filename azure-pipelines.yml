@@ -10,7 +10,9 @@ variables:
   # serviceConnection: ${serviceConnection}  # <-- update
   # webAppName: ${webAppName}               # <-- update
   buildConfiguration: 'Release'
-  projectPath: 'api/api.csproj'   # e.g. src/WebApp/WebApp.csproj
+  projectPath: 'api/api.csproj'
+  clientPath: '.' # Angular project is in the repo root
+  distSubFolder: 'world-xi' # value in angular.json "outputPath"
 
 stages:
 - stage: Build
@@ -26,6 +28,22 @@ stages:
         dotnet restore $(projectPath)
         dotnet publish $(projectPath) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
       displayName: Restore & Publish
+
+    # Copy Angular dist into published wwwroot
+    - powershell: |
+        $distRoot = "$(Build.SourcesDirectory)\$(clientPath)\dist"
+        if ("$(distSubfolder)" -ne "") { $distRoot = Join-Path $distRoot "$(distSubfolder)" }
+        $target = "$(Build.ArtifactStagingDirectory)\publish\wwwroot"
+
+        Write-Host "Copying Angular dist from: $distRoot"
+        Write-Host "To wwwroot: $target"
+
+        New-Item -ItemType Directory -Force -Path $target | Out-Null
+        robocopy $distRoot $target /E /NFL /NDL /NJH /NJS /NP
+        if ($LASTEXITCODE -gt 7) { exit $LASTEXITCODE } else { exit 0 }
+      displayName: Copy Angular dist to wwwroot
+
+    # Zip & publish artifact
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'

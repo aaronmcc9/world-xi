@@ -62,24 +62,24 @@ builder.Services.AddCors(options => options.AddPolicy(name: "worldxi",
 
 var app = builder.Build();
 
-// "worldxi")
-app.UseCors(options =>
-    options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("worldxi"); // allow localhost:4200 only in dev
     app.UseSwagger();
     app.UseSwaggerUI();
-// }
+}
+
+// Static files for Angular
+app.UseDefaultFiles();   // enables default docs like index.html
+app.UseStaticFiles(); // serves files from wwwroot
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => Results.Redirect("/swagger"));
-
 app.MapControllers();
+app.MapFallbackToFile("/index.html");
 
 app.Run();

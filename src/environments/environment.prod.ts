@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  apiBaseUrl: '/api' // same-origin in Azure → no CORS
 };

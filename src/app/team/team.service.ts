@@ -15,9 +15,6 @@ import { User } from "../api/User/user.dto";
 })
 export class TeamService {
 
-  private readonly url = "https://localhost:7258/api/team/"
-
-
   constructor(private alertService: AlertService,
     private formationApiService: FormationApiService) { }
 

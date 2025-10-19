@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Position } from "src/app/players/player-position";
@@ -6,6 +6,7 @@ import { Player } from "../../players/player.model";
 import { ApiService } from "../api.service";
 import { PagedResponseDto } from "../Common/paged-response.dto";
 import { ServiceResponse } from "../Common/service-response.dto";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +14,7 @@ import { ServiceResponse } from "../Common/service-response.dto";
 
 export class PlayersApiService {
 
-    private readonly url = "https://localhost:7258/api/player/";
+    private readonly url = environment.apiBaseUrl + "/player/";
 
     constructor(private http: HttpClient, private apiService: ApiService) { }
 

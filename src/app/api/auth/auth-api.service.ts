@@ -3,12 +3,13 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { UserRequestDto } from "src/app/auth/auth/auth.component";
 import { ServiceResponse } from "../Common/service-response.dto";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthApiService {
-    private readonly url = "https://localhost:7258/api/auth"
+    private readonly url = environment.apiBaseUrl + "/auth"
 
     constructor(private http: HttpClient) { }
 

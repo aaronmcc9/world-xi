@@ -9,6 +9,7 @@ using api.Services.NotificationService;
 using api.Services.PlayerService;
 using api.Services.TeamService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -73,13 +74,22 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 
-builder.Services.AddCors(options => options.AddPolicy(name: "worldxi",
-    policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-          .AllowAnyMethod()
-          .AllowAnyHeader();
-    }));
+// 1) Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", p => p
+        .WithOrigins("http://localhost:4200", "http://localhost:60333")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+
+    // Put your real frontend URLs here (both http/https or apex/www if applicable)
+    options.AddPolicy("ProdCors", p => p
+        .WithOrigins(
+            "https://world-xi-cgbndraeeab5h9eb.canadacentral-01.azurewebsites.net")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .SetPreflightMaxAge(TimeSpan.FromHours(12)));
+});
 
 var app = builder.Build();
 
@@ -87,10 +97,14 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors("worldxi"); // allow localhost:4200 only in dev
+    app.UseCors("DevCors"); // allow localhost:4200 only in dev
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else if(app.Environment.IsProduction())
+{
+    app.UseCors("ProdCors");
+}   
 
 // Static files for Angular
 app.UseDefaultFiles();   // enables default docs like index.html

@@ -68,8 +68,7 @@ namespace api.Services.PlayerService
             try
             {
                 var player = await this.Query()
-                    .Where(p => p.Id == id)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(p => p.Id == id); 
 
                 if (player == null)
                 {
@@ -124,18 +123,16 @@ namespace api.Services.PlayerService
             return response;
         }
 
-        public async Task<ServiceResponse<List<PlayerDto>>> InsertPlayer(PlayerDto newPlayer)
+        public async Task<ServiceResponse<PlayerDto>> InsertPlayer(PlayerDto newPlayer)
         {
-            var response = new ServiceResponse<List<PlayerDto>>();
+            var response = new ServiceResponse<PlayerDto>();
 
             try
             {
                 var player = this._mapper.Map<Player>(newPlayer);
                 await this.unitOfWork.Repository<Player>().CreateAsync(player);
 
-                response.Data = await this.Query()
-                  .Select(p => this._mapper.Map<PlayerDto>(p))
-                  .ToListAsync();
+                response.Data = this._mapper.Map<PlayerDto>(player);
             }
             catch (Exception e)
             {

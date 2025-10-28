@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
-import { Player } from '../../player.model';
+import { PlayerDto } from '../../player.dto';
 import { PlayersApiService } from '../../../api/players/players-api.service';
 import { lastValueFrom } from 'rxjs';
 import { PlayerService } from '../../player.service';
@@ -15,7 +15,7 @@ import { PlayerService } from '../../player.service';
 })
 export class DeletePlayerComponent implements OnInit {
 
-  @Input() player: Player | null = null;
+  @Input() player: PlayerDto | null = null;
   @Output() closeModal = new EventEmitter<boolean>();
   isLoading = false;
 

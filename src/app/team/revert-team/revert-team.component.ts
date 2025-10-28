@@ -4,7 +4,7 @@ import { lastValueFrom } from 'rxjs';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { TeamApiService } from 'src/app/api/team/team-api.service';
-import { Player } from 'src/app/players/player.model';
+import { PlayerDto } from 'src/app/players/player.dto';
 import { Team } from '../team.model';
 import { TeamService } from '../team.service';
 
@@ -87,7 +87,7 @@ export class RevertTeamComponent implements OnInit {
     //   }
     }
 
-      this.teamService.setPlayersInPosition(new Array<Player>(1), new Array<Player>(+formation.structure[0]), new Array<Player>(+formation.structure[1]), new Array<Player>(+formation.structure[2]));
+      this.teamService.setPlayersInPosition(new Array<PlayerDto>(1), new Array<PlayerDto>(+formation.structure[0]), new Array<PlayerDto>(+formation.structure[1]), new Array<PlayerDto>(+formation.structure[2]));
       this.close(formation.id, true);
   }
 

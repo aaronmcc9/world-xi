@@ -1,37 +1,50 @@
 <app-delete-player *ngIf="deleteModalVisible"
- (closeModal)="toggleDeletePlayer($event)" [player]="player"></app-delete-player>
- 
- <div class="row d-flex-justify-center">
+                   (closeModal)="toggleDeletePlayer($event)"
+                   [player]="player"></app-delete-player>
+
+<div class="row d-flex-justify-center">
     <div class="col-xs-9 d-flex-justify-center">
 
-        <app-error *ngIf="error && !isLoading" [(message)]=" error"></app-error>
+        <app-error *ngIf="error && !isLoading"
+                   [(message)]=" error"></app-error>
         <div *ngIf="!error && !isLoading">
             <h2 class="text-center">{{player.firstName}} {{player.lastName}} </h2>
 
-            <img src="{{player.imagePath}}" />
+            <img *ngIf="player.photoUrl"
+                 src="{{player.photoUrl}}" />
 
             <div class="data-container">
                 <div class="form-group">
-                    <label class="display-text">{{'CLUB' | translate}}: <span class="player-text">{{player.club}}</span></label>
+                    <label class="display-text">{{'CLUB' | translate}}: <span
+                              class="player-text">{{player.club}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">{{'COUNTRY' | translate}}: <span class="player-text">{{player.country}}</span></label>
+                    <label class="display-text">{{'COUNTRY' | translate}}: <span
+                              class="player-text">{{player.country}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">{{'POSITION' | translate}}: <span class="player-text">{{positionService.getPositionName(player.position)}}</span></label>
+                    <label class="display-text">{{'POSITION' | translate}}: <span
+                              class="player-text">{{positionService.getPositionName(player.position)}}</span></label>
                 </div>
                 <div class="form-group">
-                    <label class="display-text">{{'AGE' | translate}}: <span class="player-text">{{player.age}}</span></label>
+                    <label class="display-text">{{'AGE' | translate}}: <span
+                              class="player-text">{{player.age}}</span></label>
                 </div>
             </div>
 
             <div class="data-container">
-                <button class="btn btn-primary float-right" type="button" routerLink="/team/0">{{'TEAM_SELECTION' | translate}}</button>
+                <button class="btn btn-primary float-right"
+                        type="button"
+                        routerLink="/team/0">{{'TEAM_SELECTION' | translate}}</button>
 
                 <div class="btn-data">
-                    <button class="btn btn-success" type="button" routerLink="../edit/{{player.id}}">{{'EDIT' | translate}}</button>
-                    <button class="btn btn-danger" (click)="toggleDeletePlayer(true)" type="button">{{'DELETE' | translate}}</button>
-                </div> 
+                    <button class="btn btn-success"
+                            type="button"
+                            routerLink="../edit/{{player.id}}">{{'EDIT' | translate}}</button>
+                    <button class="btn btn-danger"
+                            (click)="toggleDeletePlayer(true)"
+                            type="button">{{'DELETE' | translate}}</button>
+                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Player } from 'src/app/players/player.model';
+import { PlayerDto } from 'src/app/players/player.dto';
 import { TeamService } from '../team.service';
 
 @Component({
@@ -10,14 +10,14 @@ import { TeamService } from '../team.service';
 })
 export class FormationRowComponent implements OnInit, OnDestroy{
 
-  @Input('players') players: (Player|undefined)[] = [];
-  playerToModify: Player | null = null;
+  @Input('players') players: (PlayerDto|undefined)[] = [];
+  playerToModify: PlayerDto | null = null;
   playerToModifySubscription = new Subscription();
   
   constructor(private teamService: TeamService) { }
 
   ngOnInit(): void {
-    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((player: Player | null) => {
+    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((player: PlayerDto | null) => {
       this.playerToModify = player;
     });
   }
@@ -26,7 +26,7 @@ export class FormationRowComponent implements OnInit, OnDestroy{
     this.playerToModifySubscription.unsubscribe();
   }
 
-  removePlayer(player: Player) {
+  removePlayer(player: PlayerDto) {
     //only can modify one player at a time
     if(!this.playerToModify)
       this.teamService.playerToModify.next(player);

@@ -3,7 +3,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { Position } from 'src/app/players/player-position';
-import { Player } from 'src/app/players/player.model';
+import { PlayerDto } from 'src/app/players/player.dto';
 import { PositionService } from 'src/app/players/position.service';
 import { SelectionAction } from '../selection-action';
 import { TeamService } from '../team.service';
@@ -15,7 +15,7 @@ import { TeamService } from '../team.service';
 })
 export class ModifySelectionComponent implements OnInit, OnDestroy {
 
-  player: Player | null = null;
+  player: PlayerDto | null = null;
   action: string = '';
   error: string = '';
   isPlayerSelected = false;
@@ -26,7 +26,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
   @Input('forwardCount') forwardCount = 1;
 
   playerToModifySubscription = new Subscription();
-  playersListToModifySubscription = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
+  playersListToModifySubscription = new BehaviorSubject<(PlayerDto | undefined)[]>(new Array<PlayerDto>(4));
 
 
   constructor(private teamService: TeamService, private alertService: AlertService,
@@ -34,7 +34,7 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((player: Player | null) => {
+    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((player: PlayerDto | null) => {
       this.player = player;
     });
 
@@ -145,8 +145,8 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private addPlayer(players: (Player | undefined)[],
-    end: number): (Player | undefined)[] {
+  private addPlayer(players: (PlayerDto | undefined)[],
+    end: number): (PlayerDto | undefined)[] {
 
     let start = 0;
 
@@ -174,8 +174,8 @@ export class ModifySelectionComponent implements OnInit, OnDestroy {
     return players;
   }
 
-  private removePlayer(players: (Player | undefined)[]): (Player | undefined)[] {
-    let idx = players.findIndex((player: Player | undefined) => {
+  private removePlayer(players: (PlayerDto | undefined)[]): (PlayerDto | undefined)[] {
+    let idx = players.findIndex((player: PlayerDto | undefined) => {
       return player?.id == this.player?.id;
     });
 

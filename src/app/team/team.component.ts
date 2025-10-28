@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PositionService } from '../players/position.service';
 import { lastValueFrom, pairwise, Subscription, throwError } from 'rxjs';
 import { TeamService } from './team.service';
-import { Player } from '../players/player.model';
+import { PlayerDto } from '../players/player.dto';
 import { AlertType } from '../alert/alert-type.enum';
 import { cloneDeep } from 'lodash';
 import { AlertService } from '../alert/alert.service';
@@ -37,14 +37,14 @@ export class TeamComponent implements OnInit, OnDestroy {
     isLoading = false;
 
     //formation values
-    goalkeeper: (Player | undefined)[] = new Array<Player>(1);
-    defence: (Player | undefined)[] = new Array<Player>(4);
-    midfield: (Player | undefined)[] = new Array<Player>(4);
-    forwards: (Player | undefined)[] = new Array<Player>(2);
+    goalkeeper: (PlayerDto | undefined)[] = new Array<PlayerDto>(1);
+    defence: (PlayerDto | undefined)[] = new Array<PlayerDto>(4);
+    midfield: (PlayerDto | undefined)[] = new Array<PlayerDto>(4);
+    forwards: (PlayerDto | undefined)[] = new Array<PlayerDto>(2);
 
     //team information
     playersSelected: number = 0;
-    playerToModify: Player | null = null;
+    playerToModify: PlayerDto | null = null;
     canSave: boolean = false;
 
     //Cancel/ Reset
@@ -125,7 +125,7 @@ export class TeamComponent implements OnInit, OnDestroy {
     }
 
 
-    private populatePlayerArray(existingPlayers: (Player | undefined)[], formationValue: number) {
+    private populatePlayerArray(existingPlayers: (PlayerDto | undefined)[], formationValue: number) {
         //remove empties
         let existingPlayersLength = existingPlayers.filter(Boolean).length
 
@@ -134,7 +134,7 @@ export class TeamComponent implements OnInit, OnDestroy {
             return existingPlayers.filter(Boolean);
 
         //new empty array with new desired value
-        let players = new Array<Player>(formationValue);
+        let players = new Array<PlayerDto>(formationValue);
         //how much players can we fill / how much to be undefined
         let indexesToFill = (formationValue - existingPlayersLength) - 1;
 
@@ -332,7 +332,7 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     }
 
-    private checkMaximumPlayersSelected(team: (Player | undefined)[]) {
+    private checkMaximumPlayersSelected(team: (PlayerDto | undefined)[]) {
         let playersFull = team.every((player) => {
             return player != undefined;
         });
@@ -343,7 +343,7 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     private getDto(): ModifyTeamDto {
         let formValue = this.form.getRawValue();
-        let players: (Player | undefined)[] = <(Player | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
+        let players: (PlayerDto | undefined)[] = <(PlayerDto | undefined)[]>[...this.goalkeeper, ...this.defence, ...this.midfield, ...this.forwards];
 
         if (!this.checkMaximumPlayersSelected(players)) {
             this.alertService.toggleAlert('ALERT_ELEVEN_PLAYERS_TO_SAVE', AlertType.Danger);
@@ -353,7 +353,7 @@ export class TeamComponent implements OnInit, OnDestroy {
         return {
             id: this.teamService.savedTeam.getValue()?.id ?? 0,
             formationId: formValue.formation,
-            playerIds: players.map((p: Player | undefined) => p!.id)
+            playerIds: players.map((p: PlayerDto | undefined) => p!.id)
         } as ModifyTeamDto;
     }
 }

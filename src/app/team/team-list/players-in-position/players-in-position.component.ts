@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Position } from 'src/app/players/player-position';
-import { Player } from 'src/app/players/player.model';
+import { PlayerDto } from 'src/app/players/player.dto';
 import { PlayersApiService } from 'src/app/api/players/players-api.service';
 import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { lastValueFrom, Subscription } from 'rxjs';
@@ -27,9 +27,9 @@ export class PlayersInPositionComponent implements OnChanges, OnDestroy {
   @Input('take') take = 4;
 
   playerToModifySubscription = new Subscription();
-  playerToModify: Player | null = null;
+  playerToModify: PlayerDto | null = null;
 
-  players: Player[] = [];
+  players: PlayerDto[] = [];
   error = '';
   isLoading = false;
 
@@ -44,7 +44,7 @@ export class PlayersInPositionComponent implements OnChanges, OnDestroy {
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     await this.fetchPlayersByPosition();
 
-    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((playerToModify: Player | null) => {
+    this.playerToModifySubscription = this.teamService.playerToModify.subscribe((playerToModify: PlayerDto | null) => {
       this.playerToModify = playerToModify;
     });
   }
@@ -73,7 +73,7 @@ export class PlayersInPositionComponent implements OnChanges, OnDestroy {
     }
   }
 
-  modifyPlayer(player: Player) {
+  modifyPlayer(player: PlayerDto) {
     if (!this.playerToModify)
       this.teamService.playerToModify.next(player);
   }

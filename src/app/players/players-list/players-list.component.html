@@ -1,14 +1,17 @@
-<div class="row" >
+<div class="row">
     <div class="col-xs-12 col-lg-offset-2">
         <div>
-            <button class="btn btn-success" type="button" routerLink="/players/new">{{'ADD_PLAYER' |
+            <button class="btn btn-success"
+                    type="button"
+                    routerLink="/players/new">{{'ADD_PLAYER' |
                 translate}}</button>
             <h1>{{'AVAILABLE_PLAYERS' | translate}}</h1>
         </div>
 
         <h3 *ngIf="players.length === 0">{{'USER_NO_PLAYERS' | translate}}</h3>
 
-        <table class="table table-bordered table-striped table-mg" *ngIf="players.length > 0">
+        <table class="table table-bordered table-striped table-mg"
+               *ngIf="players.length > 0">
             <thead>
                 <tr>
                     <th>{{'NAME' | translate}}</th>
@@ -29,21 +32,29 @@
                     <td *ngIf="screenSize != 'sm' && screenSize != 'xs'">{{player.country}}</td>
                     <td>{{ positionService.getPositionName(player.position) }}</td>
                     <td *ngIf="screenSize != 'sm' && screenSize != 'xs'S">{{player.age}}</td>
-                    <td *ngIf="player.isSelected && screenSize != 'xs'" class="icon-center">
+                    <td *ngIf="player.isSelected && screenSize != 'xs'"
+                        class="icon-center">
                         <fa-icon [icon]="selectedIcon"></fa-icon>
                     </td>
-                    <td *ngIf="!player.isSelected&& screenSize != 'xs'" class="icon-center">
-                        <fa-icon class="absent-colour" [icon]="absentIcon"></fa-icon>
+                    <td *ngIf="!player.isSelected&& screenSize != 'xs'"
+                        class="icon-center">
+                        <fa-icon class="absent-colour"
+                                 [icon]="absentIcon"></fa-icon>
                     </td>
-                    <td><img class="table-img-container" src="{{player.imagePath}}" /></td>
+                    <td><img class="table-img-container"
+                            *ngIf="player.photoUrl"
+                             src="{{player.photoUrl}}" /></td>
                     <td class="icon-center">
-                        <fa-icon class="pointer" routerLink="{{player.id}}" [icon]="openIcon"></fa-icon>
+                        <fa-icon class="pointer"
+                                 routerLink="{{player.id}}"
+                                 [icon]="openIcon"></fa-icon>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <app-error *ngIf="error" [(message)]="error"></app-error>
+        <app-error *ngIf="error"
+                   [(message)]="error"></app-error>
 
     </div>
 </div>

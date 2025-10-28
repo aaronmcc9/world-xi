@@ -1,21 +1,30 @@
-<div class="modify-container">
+<div class="modify-container"
+     *ngIf="form">
     <div class="row p-1">
         <div class="p-1">
             <form [formGroup]="form">
 
-                <app-error *ngIf="error" [message]="error"></app-error>
+                <app-error *ngIf="error"
+                           [message]="error"></app-error>
 
                 <div class="btn-flex-left">
-                    <button *ngIf="!editMode" [disabled]="!form.valid" class="btn btn-success"
-                        (click)="onSubmit()">{{'ADD' |
+                    <button *ngIf="!editMode"
+                            [disabled]="!form.valid"
+                            class="btn btn-success"
+                            (click)="onSubmit()">{{'ADD' |
                         translate}}</button>
-                    <button *ngIf="editMode" class="btn btn-success"
-                         [disabled]="!form.valid"
-                         (click)="onSubmit()"
-                         >{{'UPDATE' | translate}}</button>
-                    <button class="btn btn-default" type="button" [disabled]=!form.dirty (click)="onClear()">{{'CLEAR' |
+                    <button *ngIf="editMode"
+                            class="btn btn-success"
+                            [disabled]="!form.valid"
+                            (click)="onSubmit()">{{'UPDATE' | translate}}</button>
+                    <button class="btn btn-default"
+                            type="button"
+                            [disabled]=!form.dirty
+                            (click)="onClear()">{{'CLEAR' |
                         translate}}</button>
-                    <button class="btn btn-danger" type="button" routerLink="/players">{{'CANCEL' | translate}}</button>
+                    <button class="btn btn-danger"
+                            type="button"
+                            routerLink="/players">{{'CANCEL' | translate}}</button>
                 </div>
 
                 <h3>
@@ -27,29 +36,42 @@
                     <div class="col-sm-12">
 
                         <div class="img-container">
-                            <img *ngIf="form.value.imagePath != null && form.value.imagePath != ''"
-                                [src]="form.value.imagePath" />
+                            <img *ngIf="form.value.photoUrl"
+                                 [src]="form.value.photoUrl"
+                                 alt="Preview" />
                         </div>
                         <div class="row mb-row">
                             <div class="col-xs-6">
-                                <label class="required" for="firstName">{{'FIRST_NAME' | translate}}</label>
-                                <input type="text" formControlName="firstName" class="form-control">
+                                <label class="required"
+                                       for="firstName">{{'FIRST_NAME' | translate}}</label>
+                                <input type="text"
+                                       formControlName="firstName"
+                                       class="form-control">
                             </div>
                             <div class="col-xs-6">
-                                <label class="required" for="lastName">{{'LAST_NAME' | translate}}</label>
-                                <input type="text" formControlName="lastName" class="form-control">
+                                <label class="required"
+                                       for="lastName">{{'LAST_NAME' | translate}}</label>
+                                <input type="text"
+                                       formControlName="lastName"
+                                       class="form-control">
                             </div>
                         </div>
                         <div class="row mb-row">
                             <div class="col-xs-3">
-                                <label class="required" for="age">{{'AGE' | translate}}</label>
-                                <input type="number" formControlName="age" class="form-control">
+                                <label class="required"
+                                       for="age">{{'AGE' | translate}}</label>
+                                <input type="number"
+                                       formControlName="age"
+                                       class="form-control">
                             </div>
                             <div class="col-xs-9">
-                                <label class="required" for="position">{{'POSITION' | translate}}</label>
-                                <select type="number" formControlName="position" class="form-control">
+                                <label class="required"
+                                       for="position">{{'POSITION' | translate}}</label>
+                                <select type="number"
+                                        formControlName="position"
+                                        class="form-control">
                                     <option *ngFor="let pos of positions"
-                                    [ngValue]="pos">
+                                            [ngValue]="pos">
                                         {{ positionService.getPositionName(pos)}}
                                     </option>
                                 </select>
@@ -58,17 +80,28 @@
 
                         <div class="row mb-row">
                             <div class="col-xs-6">
-                                <label class="required" for="club">{{'CLUB' | translate}}</label>
-                                <input type="text" formControlName="club" class="form-control">
+                                <label class="required"
+                                       for="club">{{'CLUB' | translate}}</label>
+                                <input type="text"
+                                       formControlName="club"
+                                       class="form-control">
                             </div>
                             <div class="col-xs-6">
-                                <label class="required" for="country">{{'COUNTRY' | translate}}</label>
-                                <input type="text" formControlName="country" class="form-control">
+                                <label class="required"
+                                       for="country">{{'COUNTRY' | translate}}</label>
+                                <input type="text"
+                                       formControlName="country"
+                                       class="form-control">
                             </div>
                         </div>
                         <div class="col-sm-15">
-                            <label for="imagePath">{{'IMAGE_SRC' | translate}}</label>
-                            <input type="text" formControlName="imagePath" class="form-control">
+                            <label for="photo">{{'IMAGE_SRC' | translate}}</label>
+                            <input type="file"
+                                   #fileInput
+                                   class="form-control"
+                                   accept="image/*"
+                                   (change)="onFileSelected($event)" />
+                                   <span *ngIf="!form.value.photoFile && form.value.photoBlobName" class="file-name" aria-live="polite">{{ form.value.photoBlobName }}</span>
                         </div>
                     </div>
 

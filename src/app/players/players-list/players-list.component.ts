@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Player } from '../player.model';
+import { PlayerDto } from '../player.dto';
 import { PlayersApiService } from '../../api/players/players-api.service';
 import { faCircleCheck, faXmark, faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { lastValueFrom, Subscription } from 'rxjs';
@@ -17,7 +17,7 @@ import { PositionService } from '../position.service';
   styleUrls: ['./players-list.component.css']
 })
 export class PlayersListComponent implements OnInit, OnDestroy {
-  players: Player[] = [];
+  players: PlayerDto[] = [];
   subscription: Subscription = new Subscription();
   error = '';
   isLoading = false;
@@ -44,7 +44,7 @@ export class PlayersListComponent implements OnInit, OnDestroy {
       this.screenSize = screenSize;
     });
 
-    this.subscription = this.playerService.players.subscribe((players: Player[]) => {
+    this.subscription = this.playerService.players.subscribe((players: PlayerDto[]) => {
       return this.players = players;
     })
 
@@ -57,9 +57,11 @@ export class PlayersListComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       const result = await lastValueFrom(this.playersApiService.fetchAllPlayers());
 
-      if (result.data) {
+      if (result.success) {
         this.playerService.players.next(result.data.items);
-        // this.players = result.data;
+      }
+      else {
+        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message);
       }
 
       this.isLoading = false

@@ -1,38 +1,36 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
-
 namespace api.Dto.Player
 {
     public class PlayerDto
     {
-        [DataMember(Name =("id"))]
+        [DataMember(Name = ("id"))]
         public int Id { get; set; }
 
-        [DataMember(Name =("firstName"))]
+        [DataMember(Name = ("firstName"))]
         public string FirstName { get; set; } = string.Empty;
-        
-        [DataMember(Name =("lastName"))]
+
+        [DataMember(Name = ("lastName"))]
         public string LastName { get; set; } = string.Empty;
-        
-        [DataMember(Name =("club"))]
+
+        [DataMember(Name = ("club"))]
         public string Club { get; set; } = string.Empty;
-        
-        [DataMember(Name =("country"))]
+
+        [DataMember(Name = ("country"))]
         public string Country { get; set; } = string.Empty;
 
-        [DataMember(Name =("age"))]
+        [DataMember(Name = ("age"))]
         public int Age { get; set; }
-        
-        [DataMember(Name =("position"))]
+
+        [DataMember(Name = ("position"))]
         public PlayerPosition Position { get; set; } = PlayerPosition.Goalkeeper;
 
-        [DataMember(Name =("imagePath"))]
-        public string? ImagePath { get; set; } = string.Empty;
+        [DataMember(Name = ("photoBlobName"))]
+        public string? PhotoBlobName { get; set; } = string.Empty;
 
-        [DataMember(Name =("isSelected"))]
+        [DataMember(Name = ("photoUrl"))]
+        public string? PhotoUrl { get; set; }
+
+        [DataMember(Name = ("isSelected"))]
         public bool IsSelected { get; set; } = false;
 
     }

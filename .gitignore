@@ -58,3 +58,15 @@ api/appsettings.Development.json
 api/appsettings.Local.json
 api/appsettings.*.json
 !api/appsettings.json
+
+# ===== Azurite local data =====
+__azurite_db_*
+AzuriteConfig.json
+.azurite/
+*.azurite
+__blobstorage__/
+__queuestorage__/
+__tablestorage__/
+.azurite_working_dir/
+
+

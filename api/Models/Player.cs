@@ -9,7 +9,7 @@ namespace api.Models
         public string Country { get; set; } = string.Empty;
         public int Age { get; set; }
         public PlayerPosition Position { get; set; } = PlayerPosition.Goalkeeper;
-        public string? ImagePath { get; set; } = string.Empty;
+        public string PhotoBlobName { get; set; } = string.Empty;
         public bool IsSelected { get; set; } = false;
         public List<Team> Teams { get; set; }
 

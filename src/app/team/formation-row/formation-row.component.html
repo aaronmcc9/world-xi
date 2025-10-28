@@ -4,8 +4,8 @@
             class="player-container pointer"
             (click)="removePlayer(player)"
             [ngClass]="playerToModify ? 'disabled' : 'pointer'">
-            <div class="img-container">
-                <img [src]="player.imagePath" />
+            <div class="img-container" *ngIf="player.photoUrl">
+                <img [src]="player.photoUrl" />
             </div>
             <label>{{player.firstName}} {{player.lastName}}</label>
         </div>

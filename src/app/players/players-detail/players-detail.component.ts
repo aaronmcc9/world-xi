@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
-import { Player } from '../player.model';
+import { PlayerDto } from '../player.dto';
 import { PlayersApiService } from '../../api/players/players-api.service';
 import { lastValueFrom } from 'rxjs';
 import { PositionService } from '../position.service';
@@ -13,7 +13,7 @@ import { PositionService } from '../position.service';
   styleUrls: ['./players-detail.component.css']
 })
 export class PlayersDetailComponent implements OnInit {
-  player: Player = <Player>{};
+  player: PlayerDto = <PlayerDto>{};
   error: string = '';
   isLoading = false;
   deleteModalVisible = false;

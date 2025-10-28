@@ -7,9 +7,6 @@ pool:
   name: DefaultWorld   # your self-hosted agent pool
 
 variables:
-  # Set these in the pipeline UI (Variables tab) or inline here:
-  # serviceConnection: 'azure-subscription-conn'
-  # webAppName: 'my-live-site'
   buildConfiguration: 'Release'
   projectPath: 'api/api.csproj'
   clientPath: '.'   # Angular project is at repo root (angular.json in /)
@@ -35,6 +32,24 @@ stages:
         dotnet restore $(projectPath)
         dotnet publish $(projectPath) -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)/publish
       displayName: Restore & Publish .NET
+
+    # ----- EF Core: generate idempotent migration script -----
+    - powershell: |
+        Write-Host "=== Install dotnet-ef and generate idempotent script ==="
+        # Ensure dotnet-ef is available on PATH (handles Windows/Linux agents)
+        dotnet tool install --global dotnet-ef --version 8.*
+        $toolRoot = if ($env:USERPROFILE) { Join-Path $env:USERPROFILE ".dotnet\tools" } else { Join-Path $env:HOME ".dotnet/tools" }
+        $env:PATH = "$toolRoot;$env:PATH"
+
+        # Generate a single script that safely applies only missing migrations
+        dotnet ef migrations script `
+          --idempotent `
+          --project "$(projectPath)" `
+          --startup-project "$(projectPath)" `
+          -o "$(Build.ArtifactStagingDirectory)\ef-migrations.sql"
+
+        Write-Host "Generated: $(Build.ArtifactStagingDirectory)\ef-migrations.sql"
+      displayName: Generate EF migration script (idempotent)
 
     # ----- Angular build -----
     - task: NodeTool@0
@@ -109,6 +124,36 @@ stages:
           steps:
           - download: current
             artifact: drop
+
+          # ----- Apply EF migrations to Azure SQL using Entra ID token (no password) -----
+          - task: AzureCLI@2
+            displayName: Apply EF migrations to Azure SQL (Entra token)
+            inputs:
+              azureSubscription: '$(serviceConnection)'   # same service connection used for App Service
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                Write-Host "=== Installing SqlServer PowerShell module (if needed) ==="
+                try { Import-Module SqlServer -ErrorAction Stop } catch { Install-Module SqlServer -Scope CurrentUser -Force; Import-Module SqlServer }
+
+                $sqlFile = "$(Pipeline.Workspace)/drop/ef-migrations.sql"
+                if (-not (Test-Path $sqlFile)) {
+                  throw "Migration script not found at $sqlFile (did the Build stage publish it?)"
+                }
+
+                Write-Host "=== Getting Entra ID access token for Azure SQL ==="
+                $token = az account get-access-token --resource https://database.windows.net/ --query accessToken -o tsv
+
+                Write-Host "=== Running migration script against $(sqlServer) / $(sqlDatabase) ==="
+                Invoke-Sqlcmd `
+                  -ServerInstance "$(sqlServer)" `
+                  -Database "$(sqlDatabase)" `
+                  -AccessToken $token `
+                  -InputFile $sqlFile `
+                  -QueryTimeout 1200  # 20 minutes for big migrations
+
+                Write-Host "=== EF migrations applied ==="
+
           - task: AzureWebApp@1
             inputs:
               azureSubscription: '$(serviceConnection)'

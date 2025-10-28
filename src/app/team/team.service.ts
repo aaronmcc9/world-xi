@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, lastValueFrom } from "rxjs";
 import { Position } from "../players/player-position";
-import { Player } from "../players/player.model";
+import { PlayerDto } from "../players/player.dto";
 import { Team } from "./team.model";
 import { __ } from "lodash";
 import { AlertService } from "../alert/alert.service";
@@ -18,12 +18,12 @@ export class TeamService {
   constructor(private alertService: AlertService,
     private formationApiService: FormationApiService) { }
 
-  playerToModify = new BehaviorSubject<Player | null>(null);
+  playerToModify = new BehaviorSubject<PlayerDto | null>(null);
 
-  teamGoalkeeper = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(1));
-  teamDefence = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
-  teamMidfield = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(4));
-  teamForward = new BehaviorSubject<(Player | undefined)[]>(new Array<Player>(2));
+  teamGoalkeeper = new BehaviorSubject<(PlayerDto | undefined)[]>(new Array<PlayerDto>(1));
+  teamDefence = new BehaviorSubject<(PlayerDto | undefined)[]>(new Array<PlayerDto>(4));
+  teamMidfield = new BehaviorSubject<(PlayerDto | undefined)[]>(new Array<PlayerDto>(4));
+  teamForward = new BehaviorSubject<(PlayerDto | undefined)[]>(new Array<PlayerDto>(2));
 
   emptyUser:User = {
     id: 0,
@@ -63,7 +63,7 @@ export class TeamService {
    * @param players 
    * Sorts players by position before pushing the results to the relevant subscribers
    */
-  setPlayersByPosition(players: Player[]) {
+  setPlayersByPosition(players: PlayerDto[]) {
     let goalkeeper = players.filter((player) => player.position === Position.Goalkeeper);
     let defence = players.filter((player) => player.position === Position.Defender);
     let midfield = players.filter((player) => player.position === Position.Midfield);
@@ -71,8 +71,8 @@ export class TeamService {
     this.setPlayersInPosition(goalkeeper, defence, midfield, forward);
   }
 
-  setPlayersInPosition(goalkeeper: Player[], defence: Player[], midfield: Player[],
-    forwards: Player[]) {
+  setPlayersInPosition(goalkeeper: PlayerDto[], defence: PlayerDto[], midfield: PlayerDto[],
+    forwards: PlayerDto[]) {
     this.teamGoalkeeper.next(goalkeeper);
     this.teamDefence.next(defence);
     this.teamMidfield.next(midfield);

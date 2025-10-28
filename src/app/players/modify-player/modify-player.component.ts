@@ -5,178 +5,248 @@ import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
 import { ColumnService } from 'src/app/columns.service';
 import { Position } from '../player-position';
-import { Player } from '../player.model';
+import { PlayerDto } from '../player.dto';
 import { PlayersApiService } from '../../api/players/players-api.service';
 import { lastValueFrom } from 'rxjs';
 import { PositionService } from '../position.service';
 import { PlayerService } from '../player.service';
 
+
+interface FormValue {
+    id: FormControl<number | null>;
+    firstName: FormControl<string | null>;
+    lastName: FormControl<string | null>;
+    age: FormControl<number | null>;
+    position: FormControl<Position | null>;
+    club: FormControl<string | null>;
+    country: FormControl<string | null>;
+    photoFile: FormControl<File | null>;
+    photoUrl: FormControl<string | null>;
+    photoBlobName: FormControl<string | null>;
+    isSelected: FormControl<boolean>;
+}
+
 @Component({
-  selector: 'app-modify-player',
-  templateUrl: './modify-player.component.html',
-  styleUrls: ['./modify-player.component.css']
+    selector: 'app-modify-player',
+    templateUrl: './modify-player.component.html',
+    styleUrls: ['./modify-player.component.css']
 })
 export class ModifyPlayerComponent implements OnInit {
-  editMode = false;
-  player: Player | null = null;
-  positions: Position[] = [];
+    editMode = false;
+    positions: Position[] = [];
 
-  id: number = 0;
-  isLoading = false;
-  error = '';
-  form: FormGroup = new FormGroup({});
-  cols: number = 2;
+    id: number = 0;
+    isLoading = false;
+    error = '';
+    form: FormGroup<FormValue> | null = null;
+    cols: number = 2;
 
-  constructor(private playersApiService: PlayersApiService,
-    private playerService: PlayerService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private alertService: AlertService,
-    private columnService: ColumnService,
-    public positionService: PositionService) { }
+    @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  async ngOnInit(): Promise<void> {
+    constructor(private playersApiService: PlayersApiService,
+        private playerService: PlayerService,
+        private activatedRoute: ActivatedRoute,
+        private router: Router,
+        private alertService: AlertService,
+        private columnService: ColumnService,
+        public positionService: PositionService) { }
 
-    this.columnService.columnObs?.subscribe((cols) => {
-      this.cols = cols;
-    })
+    async ngOnInit(): Promise<void> {
 
-    this.positions = this.positionService.fetchPositionValues();
-
-    this.form = new FormGroup({
-      firstName: new FormControl<string>('', Validators.required),
-      lastName: new FormControl<string>('', Validators.required),
-      age: new FormControl<number>(16, [Validators.required, Validators.min(16)]),
-      position: new FormControl<Position>(Position.Goalkeeper,
-        [Validators.required, Validators.min(Math.min(...this.positions)), Validators.max(Math.max(...this.positions))]),
-      club: new FormControl<string>('', Validators.required),
-      country: new FormControl<string>('', Validators.required),
-      imagePath: new FormControl<string>('')
-    });
-
-    this.activatedRoute.params.subscribe((params) => {
-      this.id = params['id'];
-    })
-
-    if (this.id) {
-      this.editMode = true;
-
-      const playerToEdit = this.playerService.players
-        .getValue()
-        .find((player: Player) => {
-          return player.id === this.id;
+        this.columnService.columnObs?.subscribe((cols) => {
+            this.cols = cols;
         })
 
-      this.player = playerToEdit ?? await this.onFetchPlayer(this.id);
+        this.positions = this.positionService.fetchPositionValues();
 
-      this.onSetForm();
-    }
-    else {
-      this.editMode = false;
-    }
-  }
+        this.activatedRoute.params.subscribe((params) => {
+            this.id = params['id'];
+        })
 
-  async onSubmit() {
-    if (!this.form.valid) {
-      this.form.markAsDirty();
-      return;
-    }
+        let player: PlayerDto | null = null;
+        if (this.id) {
+            this.editMode = true;
 
-    if (this.editMode)
-      await this.onUpdate();
-    else
-      await this.onCreate()
-  }
+            const playerToEdit = this.playerService.players
+                .getValue()
+                .find((player: PlayerDto) => {
+                    return player.id === this.id;
+                })
 
-  async onCreate() {
-    this.isLoading = true;
+            player = playerToEdit ?? await this.onFetchPlayer(this.id);
+        }
+        else {
+            this.editMode = false;
+        }
 
-    try {
-      let result = await lastValueFrom(this.playersApiService.createPlayer(this.form.value));
-      this.isLoading = false;
-      this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
-
-      if (result.data) {
-        //latest fetch of players to notify existing sets
-        this.playerService.players.next(result.data);
-        this.onClear();
-        this.router.navigate(['']);
-      }
-      else {
-        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
-      }
-    }
-    catch (e) {
-      this.isLoading = false;
-      this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
-    }
-  }
-
-  async onUpdate() {
-    if (!this.player) {
-      this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Danger);
-      throw Error("Invalid Operation");
+        this.form = new FormGroup<FormValue>({
+            id: new FormControl<number | null>(player?.id ?? 0),
+            firstName: new FormControl<string | null>(player?.firstName ?? null, Validators.required),
+            lastName: new FormControl<string | null>(player?.lastName ?? null, Validators.required),
+            age: new FormControl<number | null>(player?.age ?? 16, [Validators.required, Validators.min(16)]),
+            position: new FormControl<Position | null>(player?.position ?? Position.Goalkeeper,
+                [Validators.required, Validators.min(Math.min(...this.positions)), Validators.max(Math.max(...this.positions))]),
+            club: new FormControl<string | null>(player?.club ?? null, Validators.required),
+            country: new FormControl<string | null>(player?.country ?? null, Validators.required),
+            photoFile: new FormControl<File | null>(null, Validators.required),
+            photoUrl: new FormControl<string | null>(player?.photoUrl ?? null),
+            photoBlobName: new FormControl<string | null>(player?.photoBlobName ?? null),
+            isSelected: new FormControl<boolean>(player?.isSelected ?? false, { nonNullable: true })
+        });
     }
 
-    this.isLoading = true;
+    async onSubmit() {
+        if (!this.form?.valid) {
+            this.form?.markAsDirty();
+            return;
+        }
 
-    try {
-      const result = await lastValueFrom(this.playersApiService.updatePlayer({ ...this.form.value, id: this.player.id }));
-      this.isLoading = false;
-      this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
-
-      if (result.data) {
-        //latest fetch of players to notify existing sets
-        this.playerService.players.next(result.data);
-        this.onClear();
-        this.router.navigate(['']);
-      }
-      else {
-        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Warning, result.message)
-      }
-    }
-    catch (e) {
-      this.isLoading = false;
-      this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger)
-    }
-  }
-
-  onClear() {
-    this.form.reset();
-  }
-
-  async onFetchPlayer(id: number): Promise<Player | null> {
-    this.isLoading = true;
-    try {
-      const result = await lastValueFrom(this.playersApiService.fetchPlayerById(id));
-      this.isLoading = false;
-
-      if (result.data) {
-        return result.data;
-      } else {
-        this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Warning, result.message)
-      }
-    }
-    catch (e) {
-      this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
-      this.isLoading = false;
+        if (this.editMode)
+            await this.onUpdate();
+        else
+            await this.onCreate()
     }
 
-    return null;
-  }
 
-  onSetForm() {
-    if (!this.player)
-      return;
 
-    this.form.setValue({
-      firstName: this.player.firstName,
-      lastName: this.player.lastName,
-      age: this.player.age,
-      position: this.player.position,
-      club: this.player.club,
-      country: this.player.country,
-      imagePath: this.player.imagePath
-    });
-  }
+    onFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        // store the File object in the form
+        this.form?.patchValue({ photoFile: file });
+
+        //preview
+        const reader = new FileReader();
+        reader.onload = () => (this.form?.patchValue({ photoUrl: reader.result?.toString() || null }));
+        reader.readAsDataURL(file);
+    }
+
+
+    private async onCreate() {
+        this.isLoading = true;
+
+        const player = this.getDto(this.form!);
+
+        try {
+            let result = await lastValueFrom(this.playersApiService.createPlayer(player));
+            this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
+
+            if (result.success) {
+
+                await this.uploadBlobPhoto(result.data!.id, this.form!.value.photoFile!);
+                //latest fetch of players to notify existing sets
+                // this.playerService.players.next(result.data);
+
+                this.isLoading = false;
+                this.onClear();
+                this.router.navigate(['']);
+            }
+            else {
+                // this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
+            }
+
+        }
+        catch (e) {
+            this.isLoading = false;
+            this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
+        }
+    }
+
+    private async onUpdate() {
+        this.isLoading = true;
+        const player = this.getDto(this.form!);
+
+        try {
+            const result = await lastValueFrom(this.playersApiService.updatePlayer({ ...player, id: player.id }));
+            this.isLoading = false;
+            this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
+
+            if (result.data) {
+                //latest fetch of players to notify existing sets
+                // this.playerService.players.next(result.data);
+
+                //if a file has been selected, upload it
+                if (this.fileInput?.nativeElement.files?.length) {
+                    await this.uploadBlobPhoto(player.id, this.fileInput.nativeElement.files[0]);
+                }
+
+                this.onClear();
+                this.router.navigate(['']);
+            }
+            else {
+                this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Warning, result.message)
+            }
+        }
+        catch (e) {
+            this.isLoading = false;
+            this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger)
+        }
+    }
+
+    onClear() {
+        this.fileInput.nativeElement.value = '';
+        this.form?.reset();
+    }
+
+    private async onFetchPlayer(id: number): Promise<PlayerDto | null> {
+        this.isLoading = true;
+        try {
+            const result = await lastValueFrom(this.playersApiService.fetchPlayerById(id));
+            this.isLoading = false;
+
+            if (result.data) {
+                return result.data;
+            } else {
+                this.alertService.toggleAlert('ALERT_PLAYER_NOT_FOUND', AlertType.Warning, result.message)
+            }
+        }
+        catch (e) {
+            this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYER', AlertType.Danger)
+            this.isLoading = false;
+        }
+
+        return null;
+    }
+
+    private getDto(form: FormGroup<FormValue>): PlayerDto {
+        const formValue = form!.getRawValue();
+        return {
+            id: !formValue.id ? 0 : formValue.id,
+            firstName: formValue.firstName!,
+            lastName: formValue.lastName!,
+            age: formValue.age!,
+            position: formValue.position!,
+            club: formValue.club!,
+            country: formValue.country!,
+            isSelected: formValue.isSelected,
+        };
+    }
+
+    private async uploadBlobPhoto(playerId: number, photoFile: File): Promise<void> {
+        try {
+            const sasResponse = await lastValueFrom(this.playersApiService.getUploadSasUrls(playerId, 'image/jpeg'));
+            // uploads blob photo to storage
+            if (sasResponse.data) {
+                const putRes = await fetch(sasResponse.data.uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'x-ms-blob-type': 'BlockBlob',
+                        'Content-Type': photoFile.type || 'application/octet-stream'
+                    },
+                    body: photoFile
+                });
+
+                if (!putRes.ok) {
+                    throw new Error(`Upload failed with ${putRes.status} ${putRes.statusText}`);
+                }
+
+                await lastValueFrom(this.playersApiService.savePlayerPhoto(playerId, sasResponse.data.photoBlobName));
+            }
+        }
+        catch (e) {
+            this.alertService.toggleAlert('ALERT_PLAYER_PHOTO_UPLOAD_FAILURE', AlertType.Danger)
+        }
+    }
 }

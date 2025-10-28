@@ -1,4 +1,13 @@
 {
     "html.format.wrapAttributes": "force-aligned",
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    // "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "editor.formatOnSaveMode": "file",
+    // "prettier.enable": true
+
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+        // "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
 }

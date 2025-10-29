@@ -149,17 +149,18 @@ stages:
           
                # ------------------- Warm-up step -------------------
                Write-Host "=== Warming up serverless Azure SQL database (SELECT 1) ==="
-               $maxRetries = 8
+               $maxRetries = 15        # give it up to ~8–10 minutes
+               $delayBase  = 20        # start with 20s between tries
                for ($i=1; $i -le $maxRetries; $i++) {
                  try {
-                   Invoke-Sqlcmd -ConnectionString $connectionString -AccessToken $token -Query "SELECT 1;" -QueryTimeout 10
+                   Invoke-Sqlcmd -ConnectionString $connectionString -AccessToken $token -Query "SELECT 1;" -QueryTimeout 15
                    Write-Host "Database responded successfully on attempt $i"
                    break
                  }
                  catch {
                    Write-Warning "Attempt $i failed: $($_.Exception.Message)"
                    if ($i -eq $maxRetries) { throw "Database did not wake up after $maxRetries attempts." }
-                   Start-Sleep -Seconds (10 * $i)
+                   Start-Sleep -Seconds ($delayBase * $i / 3)  # gentle back-off
                  }
                }
           

@@ -129,31 +129,51 @@ stages:
           - task: AzureCLI@2
             displayName: Apply EF migrations to Azure SQL (Entra token)
             inputs:
-              azureSubscription: '$(serviceConnection)'   # same service connection used for App Service
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-                Write-Host "=== Installing SqlServer PowerShell module (if needed) ==="
-                try { Import-Module SqlServer -ErrorAction Stop } catch { Install-Module SqlServer -Scope CurrentUser -Force; Import-Module SqlServer }
-
-                $sqlFile = "$(Pipeline.Workspace)/drop/ef-migrations.sql"
-                if (-not (Test-Path $sqlFile)) {
-                  throw "Migration script not found at $sqlFile (did the Build stage publish it?)"
-                }
-
-                Write-Host "=== Getting Entra ID access token for Azure SQL ==="
-                $token = az account get-access-token --resource https://database.windows.net/ --query accessToken -o tsv
-
-                Write-Host "=== Running migration script against $(sqlServer) / $(sqlDatabase) ==="
-                Invoke-Sqlcmd `
-                  -ServerInstance "$(sqlServer)" `
-                  -Database "$(sqlDatabase)" `
-                  -AccessToken $token `
-                  -InputFile $sqlFile `
-                  -QueryTimeout 1200  # 20 minutes for big migrations
-
-                Write-Host "=== EF migrations applied ==="
-
+             azureSubscription: '$(serviceConnection)'   # same service connection used for App Service
+             scriptType: pscore
+             scriptLocation: inlineScript
+             inlineScript: |
+               Write-Host "=== Installing SqlServer PowerShell module (if needed) ==="
+               try { Import-Module SqlServer -ErrorAction Stop } catch { Install-Module SqlServer -Scope CurrentUser -Force; Import-Module SqlServer }
+          
+               $sqlFile = "$(Pipeline.Workspace)/drop/ef-migrations.sql"
+               if (-not (Test-Path $sqlFile)) {
+                 throw "Migration script not found at $sqlFile (did the Build stage publish it?)"
+               }
+          
+               Write-Host "=== Getting Entra ID access token for Azure SQL ==="
+               $token = az account get-access-token --resource https://database.windows.net/ --query accessToken -o tsv
+          
+               Write-Host "=== Using connection string: $(sqlConnectionString) ==="
+               $connectionString = "$(sqlConnectionString)"
+          
+               # ------------------- Warm-up step -------------------
+               Write-Host "=== Warming up serverless Azure SQL database (SELECT 1) ==="
+               $maxRetries = 8
+               for ($i=1; $i -le $maxRetries; $i++) {
+                 try {
+                   Invoke-Sqlcmd -ConnectionString $connectionString -AccessToken $token -Query "SELECT 1;" -QueryTimeout 10
+                   Write-Host "Database responded successfully on attempt $i"
+                   break
+                 }
+                 catch {
+                   Write-Warning "Attempt $i failed: $($_.Exception.Message)"
+                   if ($i -eq $maxRetries) { throw "Database did not wake up after $maxRetries attempts." }
+                   Start-Sleep -Seconds (10 * $i)
+                 }
+               }
+          
+               # ------------------- Migration step -------------------
+               # using connection string with bigger timeout incase sql server is cold
+               Write-Host "=== Running migration script against $(sqlDatabase) ==="
+               Invoke-Sqlcmd `
+                 -ConnectionString $connectionString `
+                 -AccessToken $token `
+                 -InputFile $sqlFile `
+                 -QueryTimeout 1200  # 20 minutes for big migrations
+          
+               Write-Host "=== EF migrations applied successfully ==="
+          
           - task: AzureWebApp@1
             inputs:
               azureSubscription: '$(serviceConnection)'

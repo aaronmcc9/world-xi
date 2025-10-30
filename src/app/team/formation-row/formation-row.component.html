@@ -1,16 +1,17 @@
 <div class="flex-row">
     <div *ngFor="let player of players">
-        <div *ngIf="player" 
-            class="player-container pointer"
-            (click)="removePlayer(player)"
-            [ngClass]="playerToModify ? 'disabled' : 'pointer'">
-            <div class="img-container" *ngIf="player.photoUrl">
-                <img [src]="player.photoUrl" />
+        <div *ngIf="player"
+             class="player-container pointer"
+             (click)="removePlayer(player)"
+             [ngClass]="playerToModify ? 'disabled' : 'pointer'">
+            <div class="img-container">
+                <img [src]="player?.photoUrl ?? '../../assets/images/jersey.png'" />
             </div>
             <label>{{player.firstName}} {{player.lastName}}</label>
         </div>
-        <div *ngIf="player == null" class="img-container">
-            <img [src]="'../../assets/images/jersey.jpg'" />
+        <div *ngIf="!player"
+             class="img-container">
+            <img [src]="'../../assets/images/jersey.png'" />
         </div>
     </div>
 </div>

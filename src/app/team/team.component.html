@@ -1,49 +1,71 @@
-<app-modify-selection [defenceCount]="defence.length" [midfieldCount]="midfield.length" [forwardCount]="forwards.length"
-    *ngIf="playerToModify"></app-modify-selection>
-<app-revert-team *ngIf="revertAction" [action]="revertAction" (closeModal)="toggleRevertModal($event)">
+<app-modify-selection [defenceCount]="defence.length"
+                      [midfieldCount]="midfield.length"
+                      [forwardCount]="forwards.length"
+                      *ngIf="playerToModify"></app-modify-selection>
+<app-revert-team *ngIf="revertAction"
+                 [action]="revertAction"
+                 (closeModal)="toggleRevertModal($event)">
 </app-revert-team>
-<app-error *ngIf="error" [(message)]="error"></app-error>
+<app-error *ngIf="error"
+           [(message)]="error"></app-error>
 
 <div class="row team-padding-top">
-    <mat-grid-list rowHeight="1:1" [cols]="cols" gutterSize="0">
-        <mat-grid-tile class="tile" [colspan]="pitchColspan">
+    <mat-grid-list rowHeight="1:1"
+                   [cols]="cols"
+                   gutterSize="0">
+        <mat-grid-tile class="tile"
+                       [colspan]="pitchColspan">
             <!-- <div class="col-xs-8"> -->
-                <div class="img-container">
-                    <form *ngIf="form && !viewMode" [formGroup]="form">
-                        <h2 *ngIf="this.playersSelected != 11" class="text-center">{{'SELECT_XI' | translate}}</h2>
-                        <div [ngClass]="belowMediumSize ? 'form-controls-sm' : 'form-controls'">
-                            <div class="formation" [ngStyle]="{'padding': belowMediumSize ? '1rem' : '2rem'}">
-                                <label class="formation-label">{{'FORMATION' | translate}}</label>
-                                <select formControlName="formation" name="formation" id="formation"
+            <div class="img-container">
+                <form *ngIf="form && !viewMode"
+                      [formGroup]="form">
+                    <h2 *ngIf="this.playersSelected != 11"
+                        class="text-center">{{'SELECT_XI' | translate}}</h2>
+                    <div [ngClass]="belowMediumSize ? 'form-controls-sm' : 'form-controls'">
+                        <div class="formation"
+                             [ngStyle]="{'padding': belowMediumSize ? '1rem' : '2rem'}">
+                            <label class="formation-label">{{'FORMATION' | translate}}</label>
+                            <select formControlName="formation"
+                                    name="formation"
+                                    id="formation"
                                     class="formation-select">
-                                    <option *ngFor="let f of formationsList" [ngValue]="f.id">{{f.structure}}</option>
-                                </select>
-                            </div>
-                            <div class="buttons" [ngStyle]="{'margin-left': belowMediumSize ? '0' : 'auto'}">
-                                <button type="submit" [disabled]="!canSave" (click)="save()"
-                                    class="btn btn-success">{{'SAVE' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal({action:'Reset'})"
-                                    class="btn btn-warning">{{'RESET' | translate}}</button>
-                                <button type="button" (click)="toggleRevertModal({action:'Cancel'})"
-                                    [disabled]="!teamService.canCancelChanges" class="btn btn-danger">{{'CANCEL' |
-                                    translate}}</button>
-                            </div>
+                                <option *ngFor="let f of formationsList"
+                                        [ngValue]="f.id">{{f.structure}}</option>
+                            </select>
                         </div>
-                    </form>
-                    <div class="pitch">
-                        <app-formation-row [players]="goalkeeper"></app-formation-row>
-                        <app-formation-row [players]="defence"></app-formation-row>
-                        <app-formation-row [players]="midfield"></app-formation-row>
-                        <app-formation-row [players]="forwards"></app-formation-row>
+                        <div class="buttons"
+                             [ngStyle]="{'margin-left': belowMediumSize ? '0' : 'auto'}">
+                            <button type="submit"
+                                    [disabled]="!canSave"
+                                    (click)="save()"
+                                    class="btn btn-success">{{'SAVE' | translate}}</button>
+                            <button type="button"
+                                    (click)="toggleRevertModal({action:'Reset'})"
+                                    class="btn btn-warning">{{'RESET' | translate}}</button>
+                            <button type="button"
+                                    (click)="toggleRevertModal({action:'Cancel'})"
+                                    [disabled]="!teamService.canCancelChanges"
+                                    class="btn btn-danger">{{'CANCEL' |
+                                translate}}</button>
+                        </div>
                     </div>
+                </form>
+                <div class="pitch">
+                    <app-formation-row [players]="goalkeeper"></app-formation-row>
+                    <app-formation-row [players]="defence"></app-formation-row>
+                    <app-formation-row [players]="midfield"></app-formation-row>
+                    <app-formation-row [players]="forwards"></app-formation-row>
                 </div>
+            </div>
             <!-- </div> -->
         </mat-grid-tile>
         <mat-grid-tile [ngClass]="cols > 1 ? '' :'bottom-tile-padding'">
-            <div *ngIf="!viewMode" class="col-xs-9">
+            <div *ngIf="!viewMode"
+                 class="col-xs-9">
                 <app-team-list></app-team-list>
             </div>
-            <div *ngIf="viewMode" class="col-xs-12">
+            <div *ngIf="viewMode"
+                 class="col-xs-12">
                 <app-team-info class="team-info-sm"></app-team-info>
             </div>
         </mat-grid-tile>

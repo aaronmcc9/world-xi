@@ -12,7 +12,7 @@
 .pitch {
     width: 84rem;
     /* height: 50rem; */
-    background-image: url(../../assets/images/pitch2.png);
+    background-image: url(../../assets/images/pitch.png);
     background-size: cover;
     background-repeat: no-repeat;
 }

@@ -33,6 +33,7 @@
     "ALERT_UNABLE_TO_VALIDATE_TEAMNAME": "Unable to validate team name.",
     "ALERT_UNABLE_TO_VALIDATE_USERNAME": "Unable to validate username.",
     "ALL_TEAMS": "All",
+    "AN_UNKNOWN_ERROR_OCCURRED": "An Unknown Error Occurred",
     "ARE_YOU_SURE_ACTION": "Are you sure you want to {{perform}} {{firstName}} {{lastName}}",
     "AUTHENTICATE": "Authenticate",
     "AVAILABLE_PLAYERS": "Available Players",

@@ -83,7 +83,7 @@
     "PENDING": "Pending",
     "PLACEHOLDE_ALL": "-- All --",
     "PLAYER_DELETED": "{{firstName}} {{lastName}} has been deleted",
-    "PLACEHOLDE_DYNAMIC": "-- {{param}} --",
+    "PLACEHOLDER_DYNAMIC": "-- {{param}} --",
     "PLAYERS": "Players",
     "POSITION": "Position",
     "REGISTER": "Register",

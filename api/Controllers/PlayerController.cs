@@ -14,8 +14,6 @@ namespace api.Controllers
         private readonly DataContext _dataContext;
         private readonly IPlayerService _playerService;
         private readonly IPlayerPhotoService _playerPhotoService;
-
-        public record PlayerBlobRef(int Id, string PhotoBlobName);
         public record BlobSASRef(string uploadUrl, string PhotoBlobName);
 
 
@@ -34,18 +32,6 @@ namespace api.Controllers
             if (response.Data == null)
                 return NotFound(response);
 
-            var playerBlobNames = response.Data.Items.Select(p => new PlayerBlobRef(p.Id, p.PhotoBlobName)).ToArray();
-            var previewUrlsDict = await this._playerPhotoService.BuildPreviewUrlsAsync(playerBlobNames.ToArray(), TimeSpan.FromMinutes(30));
-
-            //assign urls back to players
-            foreach (var player in response.Data.Items)
-            {
-                if (previewUrlsDict.TryGetValue(player.Id, out var previewUrl))
-                {
-                    player.PhotoUrl = previewUrl.ToString();
-                }
-            }
-
             return Ok(response);
         }
 
@@ -57,8 +43,6 @@ namespace api.Controllers
             if (response.Data == null)
                 return NotFound(response);
 
-            var previewUrlsDict = await this._playerPhotoService.BuildPreviewUrlsAsync(new PlayerBlobRef[] { new PlayerBlobRef(response.Data.Id, response.Data.PhotoBlobName) }, TimeSpan.FromMinutes(30));
-            response.Data.PhotoUrl = previewUrlsDict[response.Data.Id].ToString();
             return Ok(response);
         }
 
@@ -75,7 +59,7 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<List<PlayerDto>>>> InsertPlayer(PlayerDto newPlayer)
+        public async Task<ActionResult<ServiceResponse<PlayerDto>>> InsertPlayer(PlayerDto newPlayer)
         {
             var response = await this._playerService.InsertPlayer(newPlayer);
             return Ok(response);

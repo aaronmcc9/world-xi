@@ -35,3 +35,25 @@ img {
 .p-1{
     padding: 1rem;
 }
+
+.custom-file-input input[type="file"] {
+  display: none; 
+}
+
+.file-label {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: lightslategray;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.file-label:hover {
+  background-color: lightgreen;
+}
+
+.file-name {
+  margin-left: 8px;
+  font-weight: 500;
+}

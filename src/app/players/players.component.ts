@@ -3,38 +3,36 @@ import { fromEvent, Observable, Subscription } from 'rxjs';
 import { ColumnService } from '../columns.service';
 
 @Component({
-  selector: 'app-players',
-  templateUrl: './players.component.html',
-  styleUrls: ['./players.component.css']
+    selector: 'app-players',
+    templateUrl: './players.component.html',
+    styleUrls: ['./players.component.css']
 })
 export class PlayersComponent implements OnInit, OnDestroy {
 
-  cols: number = 2;
-  isFixed = true;
-  constructor(private columnService: ColumnService) { }
+    cols: number = 2;
+    isFixed = true;
+    constructor(private columnService: ColumnService) { }
 
-  resizeObservable: Observable<Event> = new Observable();
-  resizeSubscription: Subscription = new Subscription();
+    resizeObservable: Observable<Event> = new Observable();
+    resizeSubscription: Subscription = new Subscription();
 
+    ngOnInit(): void {
+        let colObs = this.columnService.columnObs;
+        this.isFixed = window.innerHeight > 650;
 
+        if (colObs) {
+            colObs.subscribe((cols) => {
+                this.cols = cols;
+            });
+        }
 
-  ngOnInit(): void {
-    let colObs = this.columnService.columnObs;
-    this.isFixed = window.innerHeight > 650;
-
-    if (colObs) {
-      colObs.subscribe((cols) => {
-        this.cols = cols;
-      });
+        this.resizeObservable = fromEvent(window, 'resize');
+        this.resizeSubscription = this.resizeObservable.subscribe(evt => {
+            this.isFixed = window.innerHeight > 650;
+        })
     }
 
-    this.resizeObservable = fromEvent(window, 'resize');
-    this.resizeSubscription = this.resizeObservable.subscribe(evt => {
-      this.isFixed = window.innerHeight > 650;
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.resizeSubscription.unsubscribe();
-  }
+    ngOnDestroy(): void {
+        this.resizeSubscription.unsubscribe();
+    }
 }

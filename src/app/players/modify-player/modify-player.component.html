@@ -36,8 +36,7 @@
                     <div class="col-sm-12">
 
                         <div class="img-container">
-                            <img *ngIf="form.value.photoUrl"
-                                 [src]="form.value.photoUrl"
+                            <img [src]="form.value.photoUrl ?? 'assets/images/soccer-avatar.png'"
                                  alt="Preview" />
                         </div>
                         <div class="row mb-row">
@@ -95,13 +94,26 @@
                             </div>
                         </div>
                         <div class="col-sm-15">
+
+
                             <label for="photo">{{'IMAGE_SRC' | translate}}</label>
-                            <input type="file"
-                                   #fileInput
-                                   class="form-control"
-                                   accept="image/*"
-                                   (change)="onFileSelected($event)" />
-                                   <span *ngIf="!form.value.photoFile && form.value.photoBlobName" class="file-name" aria-live="polite">{{ form.value.photoBlobName }}</span>
+
+                            <div class="custom-file-input">
+                                <input type="file"
+                                       #fileInput
+                                       id="fileUpload"
+                                       accept="image/*"
+                                       (change)="onFileSelected($event)" />
+                                <label for="fileUpload"
+                                       class="file-label">
+                                    <span *ngIf="!form.value.photoFile && !form.value.photoBlobName">Choose a
+                                        file</span>
+                                    <span *ngIf="form.value.photoFile"
+                                          class="file-name">{{ form.value.photoFile.name }}</span>
+                                    <span *ngIf="!form.value.photoFile && form.value.photoBlobName"
+                                          class="file-name">{{ form.value.photoBlobName }}</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 

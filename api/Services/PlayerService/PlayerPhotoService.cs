@@ -1,7 +1,8 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
-using static api.Controllers.PlayerController;
+using static api.Services.PlayerService.PlayerService;
 
 namespace api.Services.PlayerService
 {
@@ -169,6 +170,20 @@ namespace api.Services.PlayerService
                 var q = b.ToSasQueryParameters(udk.Value, _accountName).ToString();
                 return new Uri($"{blobClient.Uri}?{q}");
             }
+        }
+
+        public async Task<bool> DeleteAsync(string blobName, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(blobName)) return true; // nothing to delete
+            var blob = _containerClient.GetBlobClient(blobName);
+
+            // Safe to call repeatedly; includes snapshots if you ever created them
+            var result = await blob.DeleteIfExistsAsync(
+                DeleteSnapshotsOption.IncludeSnapshots,
+                conditions: null,
+                cancellationToken: ct);
+
+            return result.Value;
         }
     }
 }

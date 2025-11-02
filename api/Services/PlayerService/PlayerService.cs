@@ -13,11 +13,16 @@ namespace api.Services.PlayerService
     {
         private readonly IMapper _mapper;
         private IUnitOfWork unitOfWork;
+        private readonly IPlayerPhotoService _playerPhotoService;
+        public record PlayerBlobRef(int Id, string PhotoBlobName);
 
-        public PlayerService(IMapper mapper, IUnitOfWork unitOfWork)
+
+
+        public PlayerService(IMapper mapper, IUnitOfWork unitOfWork, IPlayerPhotoService playerPhotoService)
         {
             this._mapper = mapper;
             this.unitOfWork = unitOfWork;
+            this._playerPhotoService = playerPhotoService;
         }
 
         public IQueryable<Player> Query()
@@ -33,22 +38,25 @@ namespace api.Services.PlayerService
 
             try
             {
-                var players = this.Query()
+                var playersQuery = this.Query()
                     .Select(p => this._mapper.Map<PlayerDto>(p));
 
-                var total = await players.CountAsync();
+                var total = await playersQuery.CountAsync();
 
                 if (take.HasValue)
-                    players = players.Take(take.Value);
+                    playersQuery = playersQuery.Take(take.Value);
 
                 if (skip.HasValue)
-                    players = players.Skip(skip.Value);
+                    playersQuery = playersQuery.Skip(skip.Value);
 
+                var players = await playersQuery
+                    .Select(p => this._mapper.Map<PlayerDto>(p))
+                    .ToListAsync();
 
                 response.Data = new PagedResponseDto<PlayerDto>
                 {
                     Total = total,
-                    Items = await players.ToListAsync()
+                    Items = await this.getPlayerPhotoPreviewUrls(players)
                 };
 
                 return response;
@@ -68,7 +76,7 @@ namespace api.Services.PlayerService
             try
             {
                 var player = await this.Query()
-                    .FirstOrDefaultAsync(p => p.Id == id); 
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (player == null)
                 {
@@ -76,7 +84,11 @@ namespace api.Services.PlayerService
                     response.Message = "Could not find Player!";
                     return response;
                 }
+
                 response.Data = this._mapper.Map<PlayerDto>(player);
+
+                if (response.Data.PhotoBlobName != null)
+                    response.Data.PhotoUrl = (await this._playerPhotoService.BuildPreviewUrlsAsync(new[] { new PlayerBlobRef(response.Data.Id, response.Data.PhotoBlobName) }, TimeSpan.FromMinutes(30))).First().Value.ToString();
             }
             catch (Exception e)
             {
@@ -93,25 +105,27 @@ namespace api.Services.PlayerService
 
             try
             {
-                var players = this.Query()
+                var playersQuery = this.Query()
                   .Where(p => p.Position == (Models.PlayerPosition)position);
 
-                var total = await players.CountAsync();
+                var total = await playersQuery.CountAsync();
 
                 if (take.HasValue)
-                    players = players
+                    playersQuery = playersQuery
 
                     .Take(take.Value);
 
                 if (skip.HasValue)
-                    players = players.Skip(skip.Value);
+                    playersQuery = playersQuery.Skip(skip.Value);
+
+                var players = await playersQuery
+                    .Select(p => this._mapper.Map<PlayerDto>(p))
+                    .ToListAsync();
 
                 response.Data = new PagedResponseDto<PlayerDto>
                 {
                     Total = total,
-                    Items = await players
-                    .Select(p => this._mapper.Map<PlayerDto>(p))
-                    .ToListAsync()
+                    Items = await this.getPlayerPhotoPreviewUrls(players)
                 };
             }
             catch (Exception e)
@@ -152,9 +166,12 @@ namespace api.Services.PlayerService
                 var player = this._mapper.Map<Player>(playerToUpdate);
                 await this.unitOfWork.Repository<Player>().UpdateAsync(player);
 
-                response.Data = await this.Query()
+                var players = await this.Query()
                   .Select(p => this._mapper.Map<PlayerDto>(p))
                   .ToListAsync();
+
+                //get the player display urls
+                response.Data = await this.getPlayerPhotoPreviewUrls(players);
             }
             catch (Exception e)
             {
@@ -171,9 +188,9 @@ namespace api.Services.PlayerService
 
             try
             {
-                var playerToDelete = this.Query()
-                  .Where(p => p.Id == id)
-                  .FirstOrDefault();
+                var playerToDelete = await this.Query()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (playerToDelete == null)
                 {
@@ -182,12 +199,16 @@ namespace api.Services.PlayerService
                     return response;
                 }
 
-                var player = this._mapper.Map<Player>(playerToDelete);
-                await this.unitOfWork.Repository<Player>().DeleteAsync(player);
+                //Delete the blob first so failures don't orphan it
+                var deleted = await _playerPhotoService.DeleteAsync(playerToDelete.PhotoBlobName);
 
-                response.Data = await this.Query()
+                await this.unitOfWork.Repository<Player>().DeleteAsync(playerToDelete);
+
+                var players = await this.Query()
                   .Select(p => this._mapper.Map<PlayerDto>(p))
                   .ToListAsync();
+
+                response.Data = await this.getPlayerPhotoPreviewUrls(players);
             }
             catch (Exception e)
             {
@@ -196,6 +217,23 @@ namespace api.Services.PlayerService
             }
 
             return response;
+        }
+
+        private async Task<List<PlayerDto>> getPlayerPhotoPreviewUrls(List<PlayerDto> players)
+        {
+            var playerBlobNames = players.Select(p => new PlayerBlobRef(p.Id, p.PhotoBlobName)).ToArray();
+            var previewUrlsDict = await this._playerPhotoService.BuildPreviewUrlsAsync(playerBlobNames!, TimeSpan.FromMinutes(30));
+
+            //assign urls back to players
+            foreach (var player in players)
+            {
+                if (previewUrlsDict.TryGetValue(player.Id, out var previewUrl))
+                {
+                    player.PhotoUrl = previewUrl.ToString();
+                }
+            }
+
+            return players;
         }
     }
 }

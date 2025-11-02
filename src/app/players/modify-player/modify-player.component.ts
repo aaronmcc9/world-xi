@@ -10,7 +10,7 @@ import { PlayersApiService } from '../../api/players/players-api.service';
 import { lastValueFrom } from 'rxjs';
 import { PositionService } from '../position.service';
 import { PlayerService } from '../player.service';
-
+import { orderBy } from 'lodash';
 
 interface FormValue {
     id: FormControl<number | null>;
@@ -127,31 +127,43 @@ export class ModifyPlayerComponent implements OnInit {
     private async onCreate() {
         this.isLoading = true;
 
-        const player = this.getDto(this.form!);
+        const dto = this.getDto(this.form!);
 
         try {
-            let result = await lastValueFrom(this.playersApiService.createPlayer(player));
+            let result = await lastValueFrom(this.playersApiService.createPlayer(dto));
             this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
 
             if (result.success) {
+                // upload to blob and sql storage
+                const uploadResult = await this.uploadBlobPhoto(result.data.id, this.form!.value.photoFile!);
 
-                await this.uploadBlobPhoto(result.data!.id, this.form!.value.photoFile!);
-                //latest fetch of players to notify existing sets
-                // this.playerService.players.next(result.data);
+                if (uploadResult) {
+                    [result.data.photoBlobName, result.data.photoUrl] = [uploadResult.photoBlobName, uploadResult.uploadUrl];
+                }
+
+                //add the new player to the list
+                const updatedPlayerList = [...this.playerService.players.getValue(), result.data];
+
+                //sort and push the updated list
+                this.playerService.players.next(orderBy(updatedPlayerList,
+                    [(p: PlayerDto) => p.firstName.toLowerCase(),
+                    (p: PlayerDto) => p.lastName.toLowerCase()]));
 
                 this.isLoading = false;
                 this.onClear();
                 this.router.navigate(['']);
+                return;
             }
             else {
-                // this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Danger, result.message)
+                this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
             }
 
         }
         catch (e) {
-            this.isLoading = false;
             this.alertService.toggleAlert('ALERT_PLAYER_ADD_FAILURE', AlertType.Danger)
         }
+
+        this.isLoading = false;
     }
 
     private async onUpdate() {
@@ -164,25 +176,38 @@ export class ModifyPlayerComponent implements OnInit {
             this.alertService.toggleAlert('ALERT_PLAYER_UPDATED', AlertType.Success)
 
             if (result.data) {
-                //latest fetch of players to notify existing sets
-                // this.playerService.players.next(result.data);
 
                 //if a file has been selected, upload it
                 if (this.fileInput?.nativeElement.files?.length) {
-                    await this.uploadBlobPhoto(player.id, this.fileInput.nativeElement.files[0]);
+                    const uploadResult = await this.uploadBlobPhoto(player.id, this.fileInput.nativeElement.files[0]);
+
+                    if (uploadResult) {
+                        // update player blob name in the list
+                        result.data = result.data.map((p) => {
+                            if (p.id === player.id) {
+                                [p.photoBlobName, p.photoUrl] = [uploadResult.photoBlobName, uploadResult.uploadUrl];
+                            }
+
+                            return p;
+                        })
+                    }
                 }
 
+                //push updated list and close edit
+                this.playerService.players.next(result.data);
                 this.onClear();
                 this.router.navigate(['']);
+                return;
             }
             else {
                 this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_PLAYERS', AlertType.Warning, result.message)
             }
         }
         catch (e) {
-            this.isLoading = false;
             this.alertService.toggleAlert('ALERT_PLAYER_UPDATE_FAILURE', AlertType.Danger)
         }
+
+        this.isLoading = false;
     }
 
     onClear() {
@@ -224,9 +249,11 @@ export class ModifyPlayerComponent implements OnInit {
         };
     }
 
-    private async uploadBlobPhoto(playerId: number, photoFile: File): Promise<void> {
+    private async uploadBlobPhoto(playerId: number, photoFile: File): Promise<{ uploadUrl: string; photoBlobName: string } | undefined> {
         try {
             const sasResponse = await lastValueFrom(this.playersApiService.getUploadSasUrls(playerId, 'image/jpeg'));
+            console.log("sasResponse", sasResponse);
+
             // uploads blob photo to storage
             if (sasResponse.data) {
                 const putRes = await fetch(sasResponse.data.uploadUrl, {
@@ -242,11 +269,15 @@ export class ModifyPlayerComponent implements OnInit {
                     throw new Error(`Upload failed with ${putRes.status} ${putRes.statusText}`);
                 }
 
+                //saves player photo blob name to sql db
                 await lastValueFrom(this.playersApiService.savePlayerPhoto(playerId, sasResponse.data.photoBlobName));
+                return sasResponse.data;
             }
         }
         catch (e) {
             this.alertService.toggleAlert('ALERT_PLAYER_PHOTO_UPLOAD_FAILURE', AlertType.Danger)
         }
+
+        return undefined;
     }
 }

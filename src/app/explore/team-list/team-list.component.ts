@@ -9,117 +9,129 @@ import { FriendRequest } from 'src/app/api/User/Friend/friend request/friend-req
 import { Team } from 'src/app/team/team.model';
 
 @Component({
-  selector: 'app-team-list',
-  templateUrl: './team-list.component.html',
-  styleUrls: ['./team-list.component.css']
+    selector: 'app-team-list',
+    templateUrl: './team-list.component.html',
+    styleUrls: ['./team-list.component.css']
 })
 export class TeamListComponent implements OnChanges {
 
-  @Input("friends") friends = false;
-  teams: Team[] = [];
-  isLoading = false;
+    @Input("friends") friends = false;
+    teams: Team[] = [];
+    isLoading = false;
 
-  //paging
-  itemLimit = 10;
-  totalItems = 0;
-  itemsViewingCount = 0;
-  skip = 0;
-  take = this.itemLimit;
-  page = 1;
-  canMoveRight = false;
+    //paging
+    itemLimit = 10;
+    totalItems = 0;
+    itemsViewingCount = 0;
+    skip = 0;
+    take = this.itemLimit;
+    page = 1;
+    canMoveRight = false;
+    isTeamDiscoverable = false;
 
-  readonly friendRequestStatus = FriendRequestStatus;
+    readonly FriendRequestStatus = FriendRequestStatus;
 
-  constructor(private teamApiService: TeamApiService, private alertService: AlertService,
-    private friendRequestApiService: FriendRequestApiService) { }
+    constructor(private teamApiService: TeamApiService, private alertService: AlertService,
+        private friendRequestApiService: FriendRequestApiService) { }
 
-  async ngOnChanges(): Promise<void> {
-    await this.reset();
-  }
-
-  async reset(filterText?: string) {
-    await this.fetchTeams(this.friends, filterText);
-  }
-
-  async fetchTeams(friends: boolean, filterText?: string) {
-    try {
-      this.isLoading = true;
-      const result = await lastValueFrom(this.teamApiService.fetchAllTeams(friends, filterText, this.skip, this.take));
-      
-      if (result.success) {
-        this.teams = result.data.items;
-        this.page = this.take / this.itemLimit;
-
-        this.itemsViewingCount = this.teams.length + this.skip;
-        this.totalItems = result.data.total;
-        this.canMoveRight = this.take < this.totalItems;
-      }
-      else {
-        this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger, result.message)
-      }
-
-      this.isLoading = false;
-    }
-    catch (e) {
-      this.isLoading = false;
-      this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger);
-    }
-  }
-
-  async addFriend(userRequestedId: number) {
-
-    let friendRequest: FriendRequest = {
-      id: 0,
-      status: FriendRequestStatus.Pending,
-      userReceivedId: userRequestedId,
-      userSentId: 0, //will get at backend
-      created: new Date(new Date().toUTCString())
-    };
-
-
-    try {
-
-      this.updateTeamByUser(userRequestedId, true, undefined);
-
-      const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
-
-      if (result.success) {
-        this.alertService.toggleAlert("", AlertType.Info, result.message);
-        this.updateTeamByUser(userRequestedId, false, FriendRequestStatus.Pending);
-
-      }
-      else {
-        this.alertService.toggleAlert("", AlertType.Danger, result.message);
-        this.updateTeamByUser(userRequestedId, false, undefined);
-      }
-
-    }
-    catch (e) {
-      this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
-      this.updateTeamByUser(userRequestedId, false, undefined);
+    async ngOnChanges(): Promise<void> {
+        await this.reset();
     }
 
-  }
+    async reset(filterText?: string) {
+        await this.fetchTeams(this.friends, filterText);
+    }
 
-  //update values for specific team
-  // updateSendingStatus indicates whether the loading spinner for completing friend request should be displayed
-  private updateTeamByUser(userRequestedId: number, updateSendingStatus: boolean, friendRequestStatus?: FriendRequestStatus) {
-    this.teams.map((team: Team) => {
+    async fetchTeams(friends: boolean, filterText?: string) {
+        try {
+            this.isLoading = true;
+            const [settingsResult, teamsResult] = [
+                await lastValueFrom(this.teamApiService.fetchTeamSettings()),
+                await lastValueFrom(this.teamApiService.fetchAllTeams(friends, filterText, this.skip, this.take))
+            ];
 
-      if (team.user.id != userRequestedId)
-        return team;
 
-      team.friendRequestSending = updateSendingStatus;
-      team.friendRequestStatus = friendRequestStatus;
-      return team;
-    })
-  }
+            if (settingsResult.success) {
+                this.isTeamDiscoverable = settingsResult.data.isDiscoverable;
+            }
+            else {
+                this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAM_SETTINGS', AlertType.Danger, settingsResult.message);
+            }
 
-  async onPageChanged(page: number) {
-      this.take = this.itemLimit * page;
-      this.skip = this.take - this.itemLimit
+            if (teamsResult.success) {
+                this.teams = teamsResult.data.items;
+                this.page = this.take / this.itemLimit;
 
-    await this.reset();
-  }
+                this.itemsViewingCount = this.teams.length + this.skip;
+                this.totalItems = teamsResult.data.total;
+                this.canMoveRight = this.take < this.totalItems;
+            }
+            else {
+                this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger, teamsResult.message)
+            }
+
+            this.isLoading = false;
+        }
+        catch (e) {
+            this.isLoading = false;
+            this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAMS', AlertType.Danger);
+        }
+    }
+
+    async addFriend(userRequestedId: number) {
+
+        let friendRequest: FriendRequest = {
+            id: 0,
+            status: FriendRequestStatus.Pending,
+            userReceivedId: userRequestedId,
+            userSentId: 0, //will get at backend
+            created: new Date(new Date().toUTCString())
+        };
+
+
+        try {
+
+            this.updateTeamByUser(userRequestedId, true, undefined);
+
+            const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
+
+            if (result.success) {
+                this.alertService.toggleAlert("", AlertType.Info, result.message);
+                this.updateTeamByUser(userRequestedId, false, FriendRequestStatus.Pending);
+
+            }
+            else {
+                this.alertService.toggleAlert("", AlertType.Danger, result.message);
+                this.updateTeamByUser(userRequestedId, false, undefined);
+            }
+
+        }
+        catch (e) {
+            this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
+            this.updateTeamByUser(userRequestedId, false, undefined);
+        }
+
+    }
+
+    //update values for specific team
+    // updateSendingStatus indicates whether the loading spinner for completing friend request should be displayed
+    private updateTeamByUser(userRequestedId: number, updateSendingStatus: boolean, friendRequestStatus?: FriendRequestStatus) {
+        this.teams.map((team: Team) => {
+
+            if (team.user.id != userRequestedId)
+                return team;
+
+            team.friendRequestSending = updateSendingStatus;
+            team.friendRequestStatus = friendRequestStatus;
+            return team;
+        })
+    }
+
+    async onPageChanged(page: number) {
+        this.take = this.itemLimit * page;
+        this.skip = this.take - this.itemLimit
+
+        await this.reset();
+    }
 
 }

@@ -20,13 +20,16 @@
                 <span class="ratio">D</span>-{{team.draws}}
             </td>
             <td style="width: 5rem;">
-                <div *ngIf="!friends && !team.friendRequestSending && !team.friendRequestStatus"
-                     class="btn btn-success"
-                     (click)="addFriend(team.user.id)">
+                <button *ngIf="!friends && 
+                    !team.friendRequestSending ||
+                    team.friendRequestStatus == FriendRequestStatus.Rejected"
+                        [disabled]="!isTeamDiscoverable"
+                        class="btn btn-success"
+                        (click)="addFriend(team.user.id)">
                     {{'ADD_FRIEND' | translate}}
-                </div>
+                </button>
                 <div class="text-center"
-                     *ngIf="!team.friendRequestSending && team.friendRequestStatus == friendRequestStatus.Pending">
+                     *ngIf="!team.friendRequestSending && team.friendRequestStatus == FriendRequestStatus.Pending">
                     {{'PENDING' | translate}}
                 </div>
                 <app-loading-spinner [forWholeScreen]="false"

@@ -10,8 +10,7 @@
         <div *ngIf="!error && !isLoading">
             <h2 class="text-center">{{player.firstName}} {{player.lastName}} </h2>
 
-            <img *ngIf="player.photoUrl"
-                 src="{{player.photoUrl}}" />
+            <img src="{{player.photoUrl || 'assets/images/soccer-avatar.png'}}" />
 
             <div class="data-container">
                 <div class="form-group">

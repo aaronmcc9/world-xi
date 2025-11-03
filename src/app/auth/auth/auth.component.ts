@@ -71,7 +71,7 @@ export class AuthComponent implements OnInit {
                 this.form.reset();
             },
             error: (res: HttpErrorResponse) => {
-                this.alertService.toggleAlert(res.error ?? this.translateService.instant("AN_UNKNOWN_ERROR_OCCURRED"), AlertType.Danger, res.error.message)
+                this.alertService.toggleAlert(res.error['message'] ?? this.translateService.instant("AN_UNKNOWN_ERROR_OCCURRED"), AlertType.Danger)
             }
         })
 

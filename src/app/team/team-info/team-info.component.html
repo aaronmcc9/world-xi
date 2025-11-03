@@ -39,9 +39,10 @@
 
         <div class="row">
             <div class="button-container">
-                <button *ngIf="!team.friendRequestSending && !team.friendRequestStatus"
+                <button *ngIf="!team.friendRequestSending && team.friendRequestStatus == FriendRequestStatus.Rejected"
                         class="btn btn-success"
-                        (click)="addFriend()">
+                        (click)="addFriend()"
+                        [disabled]="!isTeamDiscoverable">
                     {{'ADD_FRIEND' | translate}}
                 </button>
                 <app-loading-spinner [forWholeScreen]="false"

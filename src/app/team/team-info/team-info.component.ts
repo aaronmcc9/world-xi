@@ -7,59 +7,80 @@ import { FriendRequestStatus } from 'src/app/api/User/Friend/friend request/frie
 import { FriendRequest } from 'src/app/api/User/Friend/friend request/friend-request.dto';
 import { Team } from '../team.model';
 import { TeamService } from '../team.service';
+import { TeamApiService } from 'src/app/api/team/team-api.service';
 
 @Component({
-  selector: 'app-team-info',
-  templateUrl: './team-info.component.html',
-  styleUrls: ['./team-info.component.css']
+    selector: 'app-team-info',
+    templateUrl: './team-info.component.html',
+    styleUrls: ['./team-info.component.css']
 })
 export class TeamInfoComponent implements OnInit {
 
-  team: Team | null = null
-  constructor(private teamService: TeamService, private alertService: AlertService,
-    private friendRequestApiService: FriendRequestApiService) { }
+    team: Team | null = null
+    isTeamDiscoverable = false;
+    FriendRequestStatus = FriendRequestStatus;
+    constructor(private teamService: TeamService, private alertService: AlertService,
+        private friendRequestApiService: FriendRequestApiService,
+        private teamApiService: TeamApiService) { }
 
-  ngOnInit(): void {
-    this.teamService.savedTeam.subscribe((team) => {
-      this.team = team;
-    })
-  }
+    ngOnInit(): void {
+        this.teamService.savedTeam.subscribe((team) => {
+            this.team = team;
+        })
 
-
-  async addFriend() {
-    if (!this.team)
-      return;
-
-    let friendRequest: FriendRequest = {
-      id: 0,
-      status: FriendRequestStatus.Pending,
-      userReceivedId: this.team!.user.id,
-      userSentId: 0, //will get at backend
-      created: new Date(new Date().toUTCString())
-    };
+        this.determineTeamDiscoverable();
+    }
 
 
-    try {
-      this.team!.friendRequestSending = true;
-      const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
+    async addFriend() {
+        if (!this.team)
+            return;
 
-      if (result.success) {
-        this.alertService.toggleAlert("", AlertType.Info, result.message)
-        this.team!.friendRequestStatus = FriendRequestStatus.Pending
+        let friendRequest: FriendRequest = {
+            id: 0,
+            status: FriendRequestStatus.Pending,
+            userReceivedId: this.team!.user.id,
+            userSentId: 0, //will get at backend
+            created: new Date(new Date().toUTCString())
+        };
+
+
+        try {
+            this.team!.friendRequestSending = true;
+            const result = await lastValueFrom(this.friendRequestApiService.createFriendRequest(friendRequest));
+
+            if (result.success) {
+                this.alertService.toggleAlert("", AlertType.Info, result.message)
+                this.team!.friendRequestStatus = FriendRequestStatus.Pending
+                this.team!.friendRequestSending = false;
+            }
+            else {
+                this.alertFriendRequestFailure("", result.message);
+            }
+        }
+        catch (e) {
+            this.alertFriendRequestFailure("ALERT_FRIEND_REQUEST_FAILURE")
+            this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
+        }
+    }
+
+    alertFriendRequestFailure(key: string, error?: string) {
         this.team!.friendRequestSending = false;
-      }
-      else {
-        this.alertFriendRequestFailure("", result.message);
-      }
+        this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
     }
-    catch (e) {
-      this.alertFriendRequestFailure("ALERT_FRIEND_REQUEST_FAILURE")
-      this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
-    }
-  }
 
-  alertFriendRequestFailure(key: string, error?: string) {
-    this.team!.friendRequestSending = false;
-    this.alertService.toggleAlert("ALERT_FRIEND_REQUEST_FAILURE", AlertType.Danger);
-  }
+    private async determineTeamDiscoverable() {
+        try {
+
+            const result = await lastValueFrom(this.teamApiService.fetchTeamSettings())
+
+
+            if (result.success) {
+                this.isTeamDiscoverable = result.data.isDiscoverable;
+            }
+        }
+        catch (e) {
+            this.alertService.toggleAlert('ALERT_UNABLE_TO_FETCH_TEAM_SETTINGS', AlertType.Danger);
+        }
+    }
 }

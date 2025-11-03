@@ -39,7 +39,8 @@
 
         <div class="row">
             <div class="button-container">
-                <button *ngIf="!team.friendRequestSending && team.friendRequestStatus == FriendRequestStatus.Rejected"
+                <button *ngIf="!team.friendRequestSending && (!team.friendRequestStatus ||
+                    team.friendRequestStatus == FriendRequestStatus.Rejected)"
                         class="btn btn-success"
                         (click)="addFriend()"
                         [disabled]="!isTeamDiscoverable">

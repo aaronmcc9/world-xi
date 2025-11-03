@@ -21,8 +21,9 @@
             </td>
             <td style="width: 5rem;">
                 <button *ngIf="!friends && 
-                    !team.friendRequestSending ||
-                    team.friendRequestStatus == FriendRequestStatus.Rejected"
+                    !team.friendRequestSending &&
+                      (!team.friendRequestStatus ||
+                    team.friendRequestStatus == FriendRequestStatus.Rejected)"
                         [disabled]="!isTeamDiscoverable"
                         class="btn btn-success"
                         (click)="addFriend(team.user.id)">

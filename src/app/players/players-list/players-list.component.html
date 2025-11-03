@@ -42,8 +42,7 @@
                                  [icon]="absentIcon"></fa-icon>
                     </td>
                     <td><img class="table-img-container"
-                            *ngIf="player.photoUrl"
-                             src="{{player.photoUrl}}" /></td>
+                             src="{{player.photoUrl || 'assets/images/soccer-avatar.png'}}" /></td>
                     <td class="icon-center">
                         <fa-icon class="pointer"
                                  routerLink="{{player.id}}"

@@ -221,7 +221,9 @@ namespace api.Services.PlayerService
 
         private async Task<List<PlayerDto>> getPlayerPhotoPreviewUrls(List<PlayerDto> players)
         {
-            var playerBlobNames = players.Select(p => new PlayerBlobRef(p.Id, p.PhotoBlobName)).ToArray();
+            var playerBlobNames = players
+                .Where(p => !string.IsNullOrEmpty(p.PhotoBlobName))
+                .Select(p => new PlayerBlobRef(p.Id, p.PhotoBlobName!)).ToArray();
             var previewUrlsDict = await this._playerPhotoService.BuildPreviewUrlsAsync(playerBlobNames!, TimeSpan.FromMinutes(30));
 
             //assign urls back to players

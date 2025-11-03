@@ -36,7 +36,7 @@
                     <div class="col-sm-12">
 
                         <div class="img-container">
-                            <img [src]="form.value.photoUrl ?? 'assets/images/soccer-avatar.png'"
+                            <img [src]="form.value.photoUrl || 'assets/images/soccer-avatar.png'"
                                  alt="Preview" />
                         </div>
                         <div class="row mb-row">

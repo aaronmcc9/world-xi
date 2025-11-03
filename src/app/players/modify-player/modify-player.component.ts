@@ -88,7 +88,7 @@ export class ModifyPlayerComponent implements OnInit {
                 [Validators.required, Validators.min(Math.min(...this.positions)), Validators.max(Math.max(...this.positions))]),
             club: new FormControl<string | null>(player?.club ?? null, Validators.required),
             country: new FormControl<string | null>(player?.country ?? null, Validators.required),
-            photoFile: new FormControl<File | null>(null, Validators.required),
+            photoFile: new FormControl<File | null>(null),
             photoUrl: new FormControl<string | null>(player?.photoUrl ?? null),
             photoBlobName: new FormControl<string | null>(player?.photoBlobName ?? null),
             isSelected: new FormControl<boolean>(player?.isSelected ?? false, { nonNullable: true })
@@ -133,12 +133,16 @@ export class ModifyPlayerComponent implements OnInit {
             let result = await lastValueFrom(this.playersApiService.createPlayer(dto));
             this.alertService.toggleAlert('ALERT_PLAYER_ADDED', AlertType.Success)
 
-            if (result.success) {
-                // upload to blob and sql storage
-                const uploadResult = await this.uploadBlobPhoto(result.data.id, this.form!.value.photoFile!);
+            if (result.data) {
 
-                if (uploadResult) {
-                    [result.data.photoBlobName, result.data.photoUrl] = [uploadResult.photoBlobName, uploadResult.uploadUrl];
+                // upload photo if selected
+                if (this.form?.value.photoFile) {
+                    // upload to blob and sql storage
+                    const uploadResult = await this.uploadBlobPhoto(result.data.id, this.form!.value.photoFile!);
+
+                    if (uploadResult) {
+                        [result.data.photoBlobName, result.data.photoUrl] = [uploadResult.photoBlobName, uploadResult.uploadUrl];
+                    }
                 }
 
                 //add the new player to the list
@@ -252,7 +256,6 @@ export class ModifyPlayerComponent implements OnInit {
     private async uploadBlobPhoto(playerId: number, photoFile: File): Promise<{ uploadUrl: string; photoBlobName: string } | undefined> {
         try {
             const sasResponse = await lastValueFrom(this.playersApiService.getUploadSasUrls(playerId, 'image/jpeg'));
-            console.log("sasResponse", sasResponse);
 
             // uploads blob photo to storage
             if (sasResponse.data) {

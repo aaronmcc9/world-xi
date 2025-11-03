@@ -207,6 +207,8 @@ namespace api.Services.TeamService
                 team.Formation = this._unitOfWork.Repository<Formation>().Query().
                   First(f => f.Id == newTeam.FormationId);
 
+                team.Established = DateTime.Today;
+
                 await this._unitOfWork.Repository<Team>().CreateAsync(team);
                 response.Data = this._mapper.Map<TeamDto>(team);
             }

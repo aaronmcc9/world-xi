@@ -87,7 +87,7 @@ namespace api.Services.PlayerService
 
                 response.Data = this._mapper.Map<PlayerDto>(player);
 
-                if (response.Data.PhotoBlobName != null)
+                if (!string.IsNullOrEmpty(response.Data.PhotoBlobName))
                     response.Data.PhotoUrl = (await this._playerPhotoService.BuildPreviewUrlsAsync(new[] { new PlayerBlobRef(response.Data.Id, response.Data.PhotoBlobName) }, TimeSpan.FromMinutes(30))).First().Value.ToString();
             }
             catch (Exception e)

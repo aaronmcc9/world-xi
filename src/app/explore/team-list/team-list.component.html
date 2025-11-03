@@ -33,7 +33,10 @@
                                      *ngIf="team.friendRequestSending"></app-loading-spinner>
             </td>
             <td style="width: 5rem;">
-                <div class="btn btn-primary">{{'REQUEST_MATCH' | translate}}</div>
+                <!-- disabled as no logic yet -->
+
+                <button class="btn btn-primary"
+                        [disabled]="true">{{'REQUEST_MATCH' | translate}}</button>
             </td>
         </tr>
     </tbody>

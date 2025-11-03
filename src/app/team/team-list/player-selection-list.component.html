@@ -25,5 +25,5 @@
 <app-page-navigation (pageChanged)="onPageChanged($event)"
                      [page]="page"
                      [canPageRight]="canPageRight"
-                     [pageItems]="itemsViewingCount"
+                     [pageItems]="itemsViewingCount.value"
                      [totalItems]="totalPlayers"></app-page-navigation>

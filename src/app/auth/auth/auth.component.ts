@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { faFutbolBall } from '@fortawesome/free-solid-svg-icons';
+import { LoadingSpinnerComponent } from '../../loading-spinner/loading-spinner.component';
 import { Observable } from 'rxjs';
 import { AlertType } from 'src/app/alert/alert-type.enum';
 import { AlertService } from 'src/app/alert/alert.service';
@@ -31,6 +32,7 @@ export class AuthComponent implements OnInit {
     error = '';
     isLogin = true;
     form!: FormGroup<FormValue>;
+    isLoading = false;
 
     //icons
     ball = faFutbolBall;
@@ -54,12 +56,12 @@ export class AuthComponent implements OnInit {
     }
 
     onSubmit() {
-
         if (!this.form.valid) {
             this.form.markAsDirty();
             return;
         }
 
+        this.isLoading = true;
         let authObservable: Observable<ServiceResponse<string>>;
         let user = this.getDto();
 
@@ -69,12 +71,13 @@ export class AuthComponent implements OnInit {
                 this.authService.setToken(res.data)
                 this.router.navigate(['players']);
                 this.form.reset();
+                this.isLoading = false;
             },
             error: (res: HttpErrorResponse) => {
                 this.alertService.toggleAlert(res.error['message'] ?? this.translateService.instant("AN_UNKNOWN_ERROR_OCCURRED"), AlertType.Danger)
+                this.isLoading = false;
             }
         })
-
     }
 
     onSwitchMode() {
